@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, PasswordInput, Button, Paper, Title, Stack } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Paper, Title, Stack, Box } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 import { AuthService } from '../services/AuthService';
@@ -27,31 +27,36 @@ export default function LoginPage() {
         try {
             const response = await AuthService.login(username, password);
 
-            console.log(response)
             if (response.ok) {
                 console.log("Login success:", response.data);
 
-                const { access_token, role } = response.data;
-                setAuth(access_token, role);
+                const { access_token, user } = response.data;
+                setAuth(access_token, user);
                 const rolePath = "/dashboard";
                 navigate(rolePath, { replace: true });
 
             } else {
-                console.error("Login failed:", response.message);
-                // TODO: แสดง error message ให้ user
+                form.setErrors({
+                    username: " ",
+                    password: response.message,
+                });
             }
         } catch (err) {
             console.error("Unexpected error:", err);
+            form.setErrors({
+                username: " ",
+                password: "Unexpected error, please try again",
+            });
         }
     };
 
     return (
-        <div
+        <Box
             style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh', // เต็มหน้าจอแนวตั้ง
+                height: '100vh',
             }}
         >
             <Paper withBorder shadow="md" p={40} radius="md" style={{ width: 400 }}>
@@ -79,6 +84,6 @@ export default function LoginPage() {
                     </Stack>
                 </form>
             </Paper>
-        </div>
+        </Box>
     );
 }

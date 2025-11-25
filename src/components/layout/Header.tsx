@@ -1,9 +1,9 @@
-import { Group, Text, Button } from "@mantine/core";
+import { Group, Text, Button, Box } from "@mantine/core";
 import { AuthProvider } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const { logout, role } = AuthProvider.useAuth();
+  const { logout } = AuthProvider.useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,7 +12,7 @@ export default function Header() {
   };
 
   return (
-    <div
+    <Box
       style={{
         height: "100%",
         display: "flex",
@@ -23,16 +23,12 @@ export default function Header() {
     >
       <Group>
         <Text fw={700}>ERP System</Text>
-        {role && (
-          <Text color="dimmed">
-            Role: {role === 1 ? "Admin" : role === 2 ? "Staff" : "Viewer"}
-          </Text>
-        )}
+    
       </Group>
 
       <Button color="red" size="sm" onClick={handleLogout}>
         Logout
       </Button>
-    </div>
+    </Box>
   );
 }

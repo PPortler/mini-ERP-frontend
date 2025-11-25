@@ -1,30 +1,49 @@
-import { Text, Stack, Button } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { Text, Stack, Button, Box } from "@mantine/core";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
+import styles from "../layout/layout.module.css"
+import { useRoleName } from "../../hooks/useRoleName";
+import { menuItems } from "../../config/menuItems";
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { role } = AuthProvider.useAuth();
+  const location = useLocation();
+  const { user } = AuthProvider.useAuth();
+  const roleName = useRoleName(user?.role);
 
   return (
-    <Stack gap="sm">
-      <Text fw={700}>Menu</Text>
-
-      {role === 1 && (
-        <Button variant="subtle" onClick={() => navigate("/dashboard/admin")}>
-          Admin Panel
-        </Button>
-      )}
-
-      {(role === 1 || role === 2) && (
-        <Button variant="subtle" onClick={() => navigate("/dashboard/staff")}>
-          Staff Actions
-        </Button>
-      )}
-
-      <Button variant="subtle" onClick={() => navigate("/dashboard/view")}>
-        View Data
-      </Button>
+    <Stack gap="sm" className={styles.sideBarContainer}>
+      <Box className={styles.userSection}>
+        <Text
+          style={{
+            fontWeight: 700,
+            fontSize: "16px"
+          }}>
+          {user?.name || "Name Test"}
+        </Text>
+        <Text color="dimmed">
+          {roleName}
+        </Text>
+      </Box>
+      <div className={styles.divider}></div>
+      <Box className={styles.menuButtonFrame}>
+        {menuItems
+          .filter((item) => user?.role && item.roles.includes(user?.role))
+          .map((item) => {
+            const isActive = location.pathname === item.path
+            return (
+              <Button
+                key={item.path}
+                variant="subtle"
+                className={`${styles.menuButton} ${isActive ? styles.activeMenu : ""}`}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Button>
+            )
+          })}
+     
+      </Box>
     </Stack>
   );
 }

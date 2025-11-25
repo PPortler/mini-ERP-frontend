@@ -1,0 +1,37 @@
+/* layout.module.css */
+.sideBarContainer {
+  width: 100%;
+}
+
+.userSection {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.menuButtonFrame {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuButton {
+  justify-content: flex-start;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
+  color: black;
+}
+
+.activeMenu {
+  background-color: #e7f1ff;
+  font-weight: 600;
+}
+
+.menuButton:hover {
+  background-color: #e7f5ff;
+  color: #1c7ed6;
+}

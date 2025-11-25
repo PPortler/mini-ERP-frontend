@@ -15,14 +15,14 @@ export default function ProtectedRoute({
     redirectTo = "/",
     blockIfAuth = false,
 }: ProtectedRouteProps) {
-    const { accessToken, role } = AuthProvider.useAuth();
+    const { accessToken, user } = AuthProvider.useAuth();
 
-    if (blockIfAuth && accessToken && role) {
+    if (blockIfAuth && accessToken && user?.role) {
         return <Navigate to="/dashboard" replace />;
     }
 
     // ถ้า allowedRoles กำหนดและ role ไม่มีสิทธิ์
-    if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+    if (allowedRoles && (!user?.role || !allowedRoles.includes(user?.role))) {
         return <Navigate to={redirectTo} replace />;
     }
 
