@@ -1,6 +1,6 @@
 
 import type { ReactNode } from "react";
-import { AppShell } from "@mantine/core";
+import { AppShell, Box } from "@mantine/core";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Breadcrumb from "./Breadcrumb";
@@ -8,7 +8,6 @@ import Breadcrumb from "./Breadcrumb";
 type GlobalLayoutProps = {
   children: ReactNode;
 };
-
 
 export default function GlobalLayout({ children }: GlobalLayoutProps) {
   return (
@@ -29,7 +28,11 @@ export default function GlobalLayout({ children }: GlobalLayoutProps) {
       </AppShell.Navbar>
       <AppShell.Main>
         <Breadcrumb />
-        {children}
+        <Box style={{
+          marginTop: "10px"
+        }}>
+          {children}
+        </Box>
       </AppShell.Main>
     </AppShell>
   );

@@ -1,0 +1,83 @@
+import { AxiosUtil } from "../utils/AxiosUtil";
+import type { CatagoriesType } from "../types/catagories";
+import { mockCatagories } from "../mocks/mockCatagories";
+
+export type CatagoriesListResponse = CatagoriesType[];
+
+export type CatagoriesServiceResult =
+  | { ok: true; data: CatagoriesListResponse }
+  | { ok: false; message: string };
+
+export const CatagoriesService = {
+  // ดึงหมวดหมู่ทั้งหมด
+  async getAll(): Promise<CatagoriesServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      return { ok: true, data: mockCatagories };
+    }
+
+    return AxiosUtil.createRequest<CatagoriesListResponse>({
+      method: "GET",
+      url: "/categories",
+    });
+  },
+
+  // ดึงหมวดหมู่ตาม ID
+  async getById(category_id: string): Promise<CatagoriesServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const category = mockCatagories.find(c => c.category_id === category_id);
+      if (category) return { ok: true, data: [category] };
+      return { ok: false, message: "Category not found (mock)" };
+    }
+
+    return AxiosUtil.createRequest<CatagoriesListResponse>({
+      method: "GET",
+      url: `/categories/${category_id}`,
+    });
+  },
+
+  // เพิ่มหมวดหมู่ใหม่
+  async create(category: Omit<CatagoriesType, "category_id">): Promise<CatagoriesServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const newCategory = { ...category, category_id: crypto.randomUUID() };
+      mockCatagories.push(newCategory);
+      return { ok: true, data: [newCategory] };
+    }
+
+    return AxiosUtil.createRequest<CatagoriesListResponse>({
+      method: "POST",
+      url: "/categories",
+      data: category,
+    });
+  },
+
+  // แก้ไขหมวดหมู่
+  async update(category_id: string, category: Partial<CatagoriesType>): Promise<CatagoriesServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockCatagories.findIndex(c => c.category_id === category_id);
+      if (idx === -1) return { ok: false, message: "Category not found (mock)" };
+      mockCatagories[idx] = { ...mockCatagories[idx], ...category, updatedAt: new Date() };
+      return { ok: true, data: [mockCatagories[idx]] };
+    }
+
+    return AxiosUtil.createRequest<CatagoriesListResponse>({
+      method: "PUT",
+      url: `/categories/${category_id}`,
+      data: category,
+    });
+  },
+
+  // ลบหมวดหมู่
+  async delete(category_id: string): Promise<CatagoriesServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockCatagories.findIndex(c => c.category_id === category_id);
+      if (idx === -1) return { ok: false, message: "Category not found (mock)" };
+      const deleted = mockCatagories.splice(idx, 1);
+      return { ok: true, data: deleted };
+    }
+
+    return AxiosUtil.createRequest<CatagoriesListResponse>({
+      method: "DELETE",
+      url: `/categories/${category_id}`,
+    });
+  },
+};

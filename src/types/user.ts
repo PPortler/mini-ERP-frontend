@@ -1,6 +1,11 @@
 export type UserInfoType = {
+  user_id: string;
   username: string;
-  name?: string;
+  password?: string;
+  first_name?: string;
+  last_name?: string;
   phone?: string;
-  role: number;
+  role: string;
+  create_at?: Date
+  updated_at?: Date
 };

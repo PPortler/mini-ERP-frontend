@@ -1,12 +1,14 @@
-export type RoleId = 1 | 2 | 3;
+import Cookies from "js-cookie";
 
-export const ROLE_NAMES: Record<RoleId, string> = {
-  1: "Admin",
-  2: "Staff",
-  3: "Viewer",
-};
+export function getRoleCurrent(): string | null {
+  try {
+    const userCookie = Cookies.get("user");
+    if (!userCookie) return null;
 
-export function getRoleName(roleId: number | undefined): string {
-  if (!roleId) return "Unknown";
-  return ROLE_NAMES[roleId as RoleId] || "Unknown";
+    const user = JSON.parse(userCookie);
+    return user.role || null;
+  } catch (err) {
+    console.error("Failed to get current role:", err);
+    return null;
+  }
 }

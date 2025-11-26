@@ -1,0 +1,58 @@
+import type { ProductType } from "../types/product";
+
+export const mockProducts: ProductType[] = [
+  {
+    product_id: "1a2b3c4d-0001",
+    name: "กาวร้อน 12ml",
+    cost_price: 15,
+    selling_price: 25,
+    min_stock: 10,
+    unit: 1,
+    category_id: "1",
+  },
+  {
+    product_id: "1a2b3c4d-0002",
+    name: "เครื่องเขียน A4",
+    cost_price: 5,
+    selling_price: 10,
+    min_stock: 20,
+    unit: 1,
+    category_id: "1",
+  },
+  {
+    product_id: "1a2b3c4d-0003",
+    name: "แฟ้มสันกว้าง",
+    cost_price: 20,
+    selling_price: 35,
+    min_stock: 10,
+    unit: 1,
+    category_id: "2",
+  },
+  {
+    product_id: "1a2b3c4d-0004",
+    name: "ลวดเย็บกระดาษ",
+    cost_price: 2,
+    selling_price: 5,
+    min_stock: 10,
+    unit: 1,
+    category_id: "1",
+  },
+  {
+    product_id: "1a2b3c4d-0005",
+    name: "หมึกปากกา",
+    cost_price: 10,
+    selling_price: 18,
+    min_stock: 12,
+    unit: 1,
+    category_id: "2",
+  },
+  {
+    product_id: "1a2b3c4d-0006",
+    name: "กระดาษก้อน",
+    cost_price: 8,
+    selling_price: 15,
+    min_stock: 10,
+    unit: 1,
+    category_id: "2",
+  },
+];

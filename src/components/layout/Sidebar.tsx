@@ -2,14 +2,14 @@ import { Text, Stack, Button, Box } from "@mantine/core";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
 import styles from "../layout/layout.module.css"
-import { useRoleName } from "../../hooks/useRoleName";
 import { menuItems } from "../../config/menuItems";
+import { getRoleCurrent } from "../../utils/RoleUtil";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = AuthProvider.useAuth();
-  const roleName = useRoleName(user?.role);
+  const roleCurrent = getRoleCurrent();
 
   return (
     <Stack gap="sm" className={styles.sideBarContainer}>
@@ -19,16 +19,16 @@ export default function Sidebar() {
             fontWeight: 700,
             fontSize: "16px"
           }}>
-          {user?.name || "Name Test"}
+          {user?.first_name + ' ' + user?.last_name || "Name Test"}
         </Text>
         <Text color="dimmed">
-          {roleName}
+          {roleCurrent}
         </Text>
       </Box>
       <div className={styles.divider}></div>
       <Box className={styles.menuButtonFrame}>
         {menuItems
-          .filter((item) => user?.role && item.roles.includes(user?.role))
+          .filter((item) => roleCurrent && item.roles.includes(roleCurrent))
           .map((item) => {
             const isActive = location.pathname === item.path
             return (
@@ -42,7 +42,7 @@ export default function Sidebar() {
               </Button>
             )
           })}
-     
+
       </Box>
     </Stack>
   );

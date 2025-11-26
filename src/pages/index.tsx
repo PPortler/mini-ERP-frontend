@@ -65,7 +65,6 @@ export default function LoginPage() {
                         <Title fw={700} mb="lg">
                             ERP System
                         </Title>
-
                         <TextInput
                             label="Username"
                             placeholder="you@example.com"
