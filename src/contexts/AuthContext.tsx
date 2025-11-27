@@ -2,11 +2,11 @@ import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
 import Cookies from "js-cookie";
 import type { UserInfoType } from "../types/user";
+import { LoadingProvider } from "./LoadingContext";
 
 type AuthContextType = {
     accessToken: string | null;
     user: UserInfoType | null;
-    loading: boolean
     setAuth: (token: string, user: UserInfoType) => void;
     logout: () => void;
 };
@@ -16,7 +16,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [user, setUser] = useState<UserInfoType | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const token = Cookies.get("access_token") || null;
@@ -24,7 +23,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setTimeout(() => {
             setAccessToken(token);
             setUser(storedUser);
-            setLoading(false);
         }, 0)
     }, []);
 
@@ -44,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ accessToken, user, loading, setAuth, logout }}>
+        <AuthContext.Provider value={{ accessToken, user, setAuth, logout }}>
             {children}
         </AuthContext.Provider>
     );

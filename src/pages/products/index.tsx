@@ -15,7 +15,7 @@ import { ProductService } from '../../services/ProductService';
 import { notify } from '../../utils/Notify';
 
 function ProductPage() {
-  const { products, categories } = useLoadInitialData();
+  const { products, categories, refetch } = useLoadInitialData();
   const roleCurrent = getRoleCurrent();
 
   // State สำหรับ modal
@@ -42,13 +42,34 @@ function ProductPage() {
     setModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    console.log('Confirmed delete', selectedProduct?.product_id);
+  const confirmDelete = async () => {
+    if (!selectedProduct?.product_id) return;
+    try {
+      const res = await ProductService.delete(selectedProduct.product_id)
+
+      if (!res.ok) {
+        notify({
+          type: 'error',
+          message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+        });
+        return;
+      }
+      notify({
+        type: 'success',
+        message: 'ลบสินค้าสำเร็จ',
+      });
+      refetch();
+    } catch (err: any) {
+      notify({
+        type: "error",
+        message: err.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+      })
+    }
     setModalOpen(false);
     setSelectedProduct(null);
   };
 
-  const saveEdit = async (updatedProduct: ProductType) => {
+  const saveItems = async (updatedProduct: ProductType) => {
     try {
       let result;
       if (!updatedProduct.product_id) {
@@ -59,7 +80,7 @@ function ProductPage() {
           min_stock: updatedProduct.min_stock,
           unit: updatedProduct.unit,
           category_id: updatedProduct.category_id,
-          stock: updatedProduct.stock, 
+          stock: updatedProduct.stock,
         });
       } else {
         result = await ProductService.update(updatedProduct.product_id, updatedProduct);
@@ -72,6 +93,7 @@ function ProductPage() {
             ? `แก้ไขสินค้า "${updatedProduct.name}" สำเร็จ`
             : `เพิ่มสินค้า "${updatedProduct.name}" สำเร็จ`,
         });
+        refetch();
       } else {
         notify({
           type: 'error',
@@ -126,7 +148,7 @@ function ProductPage() {
                 }}
               >เพิ่มสินค้า</Button>
             )}
-            <Button leftSection={<DownloadIcon />}>Export Excel</Button>
+            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
           </Box>
         </Group>
         <DataTable columns={columnsWithAction} data={products} pageSize={10} />
@@ -176,7 +198,7 @@ function ProductPage() {
               options: categoryOptions,
             },
           ]}
-          onSubmit={saveEdit}
+          onSubmit={saveItems}
         />
       )}
     </Box>

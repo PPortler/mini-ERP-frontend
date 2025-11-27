@@ -1,5 +1,15 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import { mockStockTransactions } from "../mocks/mockStockTransaction";
+import { TYPE_STOCK_TRANSECTION } from "../constants/enum/enum";
+
+export type StockSummaryType = {
+  product_id: string;
+  stock?: number;
+};
+
+export type StockSummaryServiceResult =
+  | { ok: true; data: StockSummaryType }
+  | { ok: false; message: string };
 
 export type StockTransactionType = {
   stock_transaction_id: string;
@@ -61,6 +71,31 @@ export const StockService = {
     return AxiosUtil.createRequest<StockListResponse>({
       method: "DELETE",
       url: `/stock-transactions/${stock_transaction_id}`,
+    });
+  },
+
+  // for get summary
+  async get(product_id: string): Promise<StockSummaryServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      // คำนวณ mock summary
+      const transactions = mockStockTransactions.filter(t => t.product_id === product_id);
+      const stock =
+        transactions
+          .filter(t => t.type === TYPE_STOCK_TRANSECTION.IN)
+          .reduce((sum, t) => sum + t.quantity, 0) -
+        transactions
+          .filter(t => t.type === TYPE_STOCK_TRANSECTION.OUT)
+          .reduce((sum, t) => sum + t.quantity, 0) +
+        transactions
+          .filter(t => t.type === TYPE_STOCK_TRANSECTION.ADJUST)
+          .reduce((sum, t) => sum + t.quantity, 0);
+
+      return { ok: true, data: { product_id, stock } };
+    }
+
+    return AxiosUtil.createRequest<StockSummaryType>({
+      method: "GET",
+      url: `/products/${product_id}/stock-summary`,
     });
   },
 };

@@ -7,6 +7,7 @@ type Field = {
   label: string;
   type: string
   options?: { label: string; value: string }[];
+  disabled?: boolean;
 };
 
 type ReusableFormModalProps<T extends Record<string, any>> = {
@@ -29,7 +30,13 @@ const FormModel = <T extends Record<string, any>>({
   const form = useForm<T>({ initialValues });
 
   useEffect(() => {
-    form.setValues(initialValues);
+    const mappedValues = { ...initialValues } as Record<string, any>;
+    fields.forEach(f => {
+      if (f.type === "number" && mappedValues[f.name] === 0) {
+        mappedValues[f.name] = undefined;
+      }
+    });
+    form.setValues(mappedValues as T);
   }, [initialValues]);
 
   return (
@@ -59,7 +66,8 @@ const FormModel = <T extends Record<string, any>>({
               key={f.name}
               type={f.type}
               label={f.label}
-              {...form.getInputProps(f.name as keyof T)}
+              {...form.getInputProps(f.name as keyof T & string)}
+              disabled={f.disabled}
             />
           );
         })}

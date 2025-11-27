@@ -8,6 +8,11 @@ import { ROLES } from '../constants/enum/enum';
 import CatagoriesPage from '../pages/catagories';
 import AuditLogPage from '../pages/audit-log';
 import StockPage from '../pages/stock';
+import SupplierPage from '../pages/suppliers';
+import PoPage from '../pages/po';
+import PoProductPage from '../pages/po/product';
+import StockTransactionsPage from '../pages/stock/transactions';
+import ReportPage from '../pages/reports';
 
 export const router = createBrowserRouter([
     {
@@ -41,7 +46,7 @@ export const router = createBrowserRouter([
     {
         path: "/catagories",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
                 <GlobalLayout>
                     <CatagoriesPage />
                 </GlobalLayout>
@@ -64,6 +69,56 @@ export const router = createBrowserRouter([
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
                 <GlobalLayout>
                     <StockPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/suppliers",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+                <GlobalLayout>
+                    <SupplierPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/po",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+                <GlobalLayout>
+                    <PoPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "po/:id",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
+                <GlobalLayout>
+                    <PoProductPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/stock/transactions",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+                <GlobalLayout>
+                    <StockTransactionsPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "reports",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+                <GlobalLayout>
+                    <ReportPage />
                 </GlobalLayout>
             </ProtectedRoute>
         ),

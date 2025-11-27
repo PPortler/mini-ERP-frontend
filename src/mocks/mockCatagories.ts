@@ -41,4 +41,9 @@ export const mockCatagories: CatagoriesType[] = [
     name: "เครื่องปรุงรส",
     description: "ซอส น้ำปลา น้ำมันพืช เครื่องเทศและเครื่องปรุงรสต่าง ๆ",
   },
+  {
+    category_id: "9",
+    name: "ของใช้",
+    description: "ของใช้ ๆ",
+  },
 ];

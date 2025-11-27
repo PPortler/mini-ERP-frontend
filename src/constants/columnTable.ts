@@ -52,3 +52,10 @@ export const columnStock = [
     accessor: "created_at",
   }
 ];
+
+export const columnSupplier = [
+  { header: "ชื่อ", accessor: "name" },
+  { header: "เบอร์โทร", accessor: "phone" },
+  { header: "อีเมล", accessor: "email" },
+  { header: "ที่อยู่", accessor: "address" },
+];

@@ -10,6 +10,9 @@ export const menuItems: MenuItem[] = [
     { label: "Dashboard", path: "/dashboard", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Product", path: "/products", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Stock", path: "/stock", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
-    { label: "Catagories", path: "/catagories", roles: [ROLES.ADMIN, ROLES.STAFF] },
+    { label: "Catagories", path: "/catagories", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Suppliers", path: "/suppliers", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Purchase Order", path: "/po", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Report", path: "/reports", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "AuditLog", path: "/audit-log", roles: [ROLES.ADMIN] },
 ];

@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { ProductService } from "../../../services/ProductService";
 import type { ProductType } from "../../../types/product";
+import { LoadingProvider } from "../../../contexts/LoadingContext";
 
 export const useLoadInitialData = () => {
+    const { setOpenLoading } = LoadingProvider.useLoading()
+
     const [minStock, setMinStock] = useState<ProductType[]>([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                setLoading(true);
+                setOpenLoading(true);
 
                 const res = await ProductService.getAll();
 
@@ -22,12 +24,12 @@ export const useLoadInitialData = () => {
             } catch (err: any) {
                 setError(err.message || "Failed to load products");
             } finally {
-                setLoading(false);
+                setOpenLoading(false);
             }
         };
 
         fetchProducts();
     }, []);
 
-    return { minStock, loading, error };
+    return { minStock, error };
 };

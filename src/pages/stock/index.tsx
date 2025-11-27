@@ -1,35 +1,24 @@
 import { Box, Button, Card, Group, Title } from '@mantine/core';
-import DataTable from '../../components/Table/DataTable';
 import { useLoadInitialData } from './hooks/useLoadInitialData';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import type { ProductType } from '../../types/product';
 import type { StockTransactionType } from '../../types/stockTransection';
 import FormModel from '../../components/Models/FormModel';
-import { ROLES, TYPE_STOCK_TRANSECTION } from '../../constants/enum/enum';
-import { getRoleCurrent } from '../../utils/RoleUtil';
-import DownloadIcon from '@mui/icons-material/Download';
+import { TYPE_STOCK_TRANSECTION } from '../../constants/enum/enum';
+import { useNavigate } from 'react-router-dom';
+import { StockService } from '../../services/StockService';
+import { notify } from '../../utils/Notify';
+import StockTable from '../../components/Table/StockTable';
 
 function StockPage() {
-    const { products, stockTransactions } = useLoadInitialData(); // ต้องดึง transactions ด้วย
-    const roleCurrent = getRoleCurrent();
+    const { products, refetch } = useLoadInitialData(); // ต้องดึง transactions ด้วย
+    const navigate = useNavigate();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
     const [transactionType, setTransactionType] = useState<string>(TYPE_STOCK_TRANSECTION.IN);
 
-    // คำนวณ stock ปัจจุบันจาก transactions
-    const productsWithStock = useMemo(() => {
-        return products.map(product => {
-            const transactions = stockTransactions.filter(t => t.product_id === product.product_id);
-            const stock = transactions.reduce((acc, t) => {
-                if (t.type === TYPE_STOCK_TRANSECTION.IN) return acc + t.quantity;
-                if (t.type === TYPE_STOCK_TRANSECTION.OUT) return acc - t.quantity;
-                if (t.type === TYPE_STOCK_TRANSECTION.ABJUST) return acc + t.quantity;
-                return acc;
-            }, 0);
-            return { ...product, stock };
-        });
-    }, [products, stockTransactions]);
+    const productsWithStock = products;
 
     const handleTransaction = (product: ProductType, type: string) => {
         setSelectedProduct(product);
@@ -37,7 +26,7 @@ function StockPage() {
         setModalOpen(true);
     };
 
-    const saveTransaction = (values: StockTransactionType) => {
+    const saveTransaction = async (values: StockTransactionType) => {
         if (values.type === TYPE_STOCK_TRANSECTION.OUT) {
             const currentStock = productsWithStock.find(p => p.product_id === values.product_id)?.stock || 0;
             if (values.quantity > currentStock) {
@@ -45,42 +34,42 @@ function StockPage() {
                 return;
             }
         }
-
-        console.log('Save stock transaction', values);
+        const res = await StockService.create({
+            product_id: values.product_id,
+            type: values.type,
+            quantity: values.quantity,
+            reason: values.reason,
+            reference: values.reference,
+        });
+        if (res.ok) {
+            notify({
+                type: "success",
+                message: "ทำรายการสำเร็จ"
+            })
+            refetch();
+        } else {
+            notify({
+                type: "error",
+                message: "เกิดข้อผิดพลาด"
+            })
+        }
         setModalOpen(false);
         setSelectedProduct(null);
     };
-
-    const actionColumn = {
-        header: 'Action',
-        accessor: 'action',
-        cell: (row: ProductType) => (
-            <Group gap="xs">
-                <Button size="xs" onClick={() => handleTransaction(row, 'IN')}>รับเข้า</Button>
-                <Button size="xs" onClick={() => handleTransaction(row, 'OUT')}>เบิกออก</Button>
-                <Button size="xs" onClick={() => handleTransaction(row, 'ADJUST')}>ปรับยอด</Button>
-            </Group>
-        ),
-    };
-
-    const columnsWithAction = [
-        { header: 'รหัสสินค้า', accessor: 'product_id' },
-        { header: 'ชื่อสินค้า', accessor: 'name' },
-        { header: 'หน่วย', accessor: 'unit' },
-        { header: 'หมวดหมู่', accessor: 'category_id' },
-        { header: 'Stock ปัจจุบัน', accessor: 'stock' },
-        ...(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF ? [actionColumn] : [])
-    ];
 
     return (
         <Box>
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="sm">
                     <Title order={3}>สต็อกสินค้า</Title>
-                    <Button leftSection={<DownloadIcon />}>Export Excel</Button>
+                    <Button onClick={() => navigate("/stock/transactions")}>
+                        ดูประวัติรายการสต็อก
+                    </Button>
                 </Group>
-
-                <DataTable columns={columnsWithAction} data={productsWithStock} pageSize={10} />
+                <StockTable
+                    products={productsWithStock}
+                    onTransaction={handleTransaction} // ถ้าไม่ส่ง มันจะเป็น read-only
+                />
             </Card>
 
             {modalOpen && selectedProduct && (
@@ -101,9 +90,8 @@ function StockPage() {
 
                         { name: 'quantity', label: 'จำนวน', type: 'number' },
                         ...(transactionType === 'ADJUST'
-                            ? [{ name: 'reason', label: 'เหตุผล', type: 'textarea' }]
+                            ? [{ name: 'reason', label: 'สาเหตุ', type: 'textarea' }]
                             : []),
-                        { name: 'reference', label: 'อ้างอิง', type: 'text' },
                     ]}
                     onSubmit={saveTransaction}
                 />

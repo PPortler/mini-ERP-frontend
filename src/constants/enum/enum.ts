@@ -18,5 +18,12 @@ export const ACTIONS = {
 export const TYPE_STOCK_TRANSECTION = {
   IN: "IN",
   OUT: "OUT",
-  ABJUST: "ABJUST"
+  ADJUST: "ADJUST"
+}
+
+export const STATUS_PO = {
+  DRAFT: "Draft",
+  CONFIRMED: "Confirmed",
+  RECEIVED: "Received",
+  CANCELLED: "Cancelled"
 }

@@ -1,7 +1,6 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import { mockProducts } from "../mocks/mockProducts";
 import type { ProductType } from "../types/product";
-import { CatagoriesService } from "./CatagoriesService";
 
 export type ProductListResponse = ProductType[];
 
@@ -13,30 +12,19 @@ export const ProductService = {
   async getAll(): Promise<ProductServiceResult> {
     //mock
     if (import.meta.env.VITE_USE_MOCK === "true") {
-      const categoriesRes = await CatagoriesService.getAll();
-      const productsWithCategory = mockProducts.map(p => ({
-        ...p,
-        category_name: categoriesRes.ok
-          ? categoriesRes.data.find(c => c.category_id === p.category_id)?.name || "-"
-          : "-",
-      }));
-      return { ok: true, data: productsWithCategory };
+      return { ok: true, data: mockProducts };
     }
+
     const productsRes = await AxiosUtil.createRequest<ProductListResponse>({
       method: "GET",
       url: "/products",
     });
 
-    if (!productsRes.ok) return productsRes;
-    const categoriesRes = await CatagoriesService.getAll();
-    const productsWithCategory = productsRes.data.map(p => ({
-      ...p,
-      category_name: categoriesRes.ok
-        ? categoriesRes.data.find(c => c.category_id === p.category_id)?.name || "-"
-        : "-",
-    }));
+    if (!productsRes.ok) {
+      return { ok: false, message: productsRes.message };
+    }
 
-    return { ok: true, data: productsWithCategory };
+    return { ok: true, data: productsRes.data };
   },
 
   // ดึงสินค้าตาม ID

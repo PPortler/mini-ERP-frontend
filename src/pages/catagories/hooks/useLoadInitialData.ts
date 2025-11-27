@@ -1,17 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { CatagoriesType } from '../../../types/catagories';
 import { CatagoriesService } from '../../../services/CatagoriesService';
+import { LoadingProvider } from '../../../contexts/LoadingContext';
 
 export const useLoadInitialData = () => {
+  const { setOpenLoading } = LoadingProvider.useLoading()
+
   const [categories, setCategories] = useState<CatagoriesType[]>([]);
-  const [loading, setLoading] = useState(false);
 
   const fetchCategories = useCallback(async () => {
-    setLoading(true);
+    setOpenLoading(true);
     const res = await CatagoriesService.getAll();
     if (res.ok) setCategories(res.data);
-    setLoading(false);
-  }, []);
+    setOpenLoading(false);
+  }, [setOpenLoading]);
 
   useEffect(() => {
     (async () => {
@@ -19,5 +21,5 @@ export const useLoadInitialData = () => {
     })();
   }, [fetchCategories]);
 
-  return { categories, loading, refetch: fetchCategories };
+  return { categories, refetch: fetchCategories };
 };

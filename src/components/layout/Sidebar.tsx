@@ -30,7 +30,9 @@ export default function Sidebar() {
         {menuItems
           .filter((item) => roleCurrent && item.roles.includes(roleCurrent))
           .map((item) => {
-            const isActive = location.pathname === item.path
+            const isActive =
+              location.pathname === item.path ||
+              location.pathname.startsWith(item.path + "/");
             return (
               <Button
                 key={item.path}
@@ -42,7 +44,6 @@ export default function Sidebar() {
               </Button>
             )
           })}
-
       </Box>
     </Stack>
   );

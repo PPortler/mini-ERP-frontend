@@ -11,6 +11,7 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { CatagoriesService } from '../../services/CatagoriesService';
+import { notify } from '../../utils/Notify';
 
 function CatagoriesPage() {
     const { categories, refetch } = useLoadInitialData();
@@ -34,20 +35,66 @@ function CatagoriesPage() {
         setModalOpen(true);
     };
 
-    const saveCategory = async (updated: Partial<CatagoriesType>) => {
-        if (!selectedCategory) return;
-
-        await CatagoriesService.update(selectedCategory.category_id, updated);
-        await refetch(); // <-- reload ใหม่
-        setModalOpen(false);
-        setSelectedCategory(null);
+    const saveCategory = async (updated: CatagoriesType) => {
+        try {
+            let res;
+            if (selectedCategory) {
+                res = await CatagoriesService.update(
+                    selectedCategory.category_id,
+                    updated
+                );
+            }
+            else {
+                res = await CatagoriesService.create(updated);
+            }
+            if (res.ok) {
+                notify({
+                    type: "success",
+                    message: selectedCategory
+                        ? `แก้ไขหมวดหมู่ "${updated.name}" สำเร็จ`
+                        : `เพิ่มหมวดหมู่ "${updated.name}" สำเร็จ`,
+                });
+            } else {
+                notify({
+                    type: "error",
+                    message: res.message || "เกิดข้อผิดพลาด",
+                });
+            }
+            await refetch();
+            setModalOpen(false);
+            setSelectedCategory(null);
+        } catch (err: any) {
+            notify({
+                type: "error",
+                message: err.message || "เกิดข้อผิดพลาด",
+            });
+        }
     };
 
     const confirmDelete = async () => {
         if (!selectedCategory) return;
 
-        await CatagoriesService.delete(selectedCategory.category_id);
-        await refetch(); // <-- reload ใหม่
+        try {
+            const res = await CatagoriesService.delete(selectedCategory.category_id)
+
+            if (!res.ok) {
+                notify({
+                    type: 'error',
+                    message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+                });
+                return;
+            }
+            notify({
+                type: 'success',
+                message: 'ลบสำเร็จ',
+            });
+            refetch();
+        } catch (err: any) {
+            notify({
+                type: "error",
+                message: err.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+            })
+        }
         setModalOpen(false);
         setSelectedCategory(null);
     };
@@ -105,7 +152,7 @@ function CatagoriesPage() {
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
                     title={selectedCategory ? `แก้ไขหมวดหมู่ ${selectedCategory.name}` : 'เพิ่มหมวดหมู่'}
-                    initialValues={selectedCategory || { name: '', description: '' }}
+                    initialValues={selectedCategory || { category_id: '', name: '', description: '' }}
                     fields={[
                         { name: 'name', label: 'ชื่อหมวดหมู่', type: 'text' },
                         { name: 'description', label: 'คำอธิบาย', type: 'text' },

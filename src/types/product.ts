@@ -6,5 +6,5 @@ export type ProductType = {
     min_stock: number,
     unit: number,
     category_id: string,
-    stock?: number
+    stock?: number,
 }

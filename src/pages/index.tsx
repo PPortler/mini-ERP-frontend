@@ -5,10 +5,12 @@ import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 import { AuthService } from '../services/AuthService';
 import { useNavigate } from "react-router-dom";
 import { AuthProvider } from '../contexts/AuthContext';
+import { LoadingProvider } from '../contexts/LoadingContext';
 
 export default function LoginPage() {
     const navigate = useNavigate();
     const { setAuth } = AuthProvider.useAuth();
+    const { setOpenLoading } = LoadingProvider.useLoading();
 
     const form = useForm<LoginFormValues>({
         initialValues: {
@@ -21,9 +23,10 @@ export default function LoginPage() {
         e.preventDefault();
         const validateError = form.validate();
         if (validateError.hasErrors) return;
-
         const values = loginSchema.cast(form.values);
         const { username, password } = values;
+
+        setOpenLoading(true)
         try {
             const response = await AuthService.login(username, password);
 
@@ -47,6 +50,8 @@ export default function LoginPage() {
                 username: " ",
                 password: "Unexpected error, please try again",
             });
+        } finally {
+            setOpenLoading(false)
         }
     };
 
