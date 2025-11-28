@@ -4,13 +4,15 @@ import { useState } from 'react';
 import type { ProductType } from '../../types/product';
 import type { StockTransactionType } from '../../types/stockTransection';
 import FormModel from '../../components/Models/FormModel';
-import { TYPE_STOCK_TRANSECTION } from '../../constants/enum/enum';
+import { ROLES, TYPE_STOCK_TRANSECTION } from '../../constants/enum/enum';
 import { useNavigate } from 'react-router-dom';
 import { StockService } from '../../services/StockService';
 import { notify } from '../../utils/Notify';
-import StockTable from '../../components/Table/StockTable';
+import DataTable from '../../components/Table/DataTable';
+import { getRoleCurrent } from '../../utils/RoleUtil';
 
 function StockPage() {
+      const roleCurrent = getRoleCurrent();
     const { products, refetch } = useLoadInitialData(); // ต้องดึง transactions ด้วย
     const navigate = useNavigate();
 
@@ -30,7 +32,10 @@ function StockPage() {
         if (values.type === TYPE_STOCK_TRANSECTION.OUT) {
             const currentStock = productsWithStock.find(p => p.product_id === values.product_id)?.stock || 0;
             if (values.quantity > currentStock) {
-                alert('จำนวนเบิกเกินสต็อก');
+                notify({
+                    type: "error",
+                    message: "จำนวนเบิกเกินสต็อก"
+                })
                 return;
             }
         }
@@ -57,6 +62,29 @@ function StockPage() {
         setSelectedProduct(null);
     };
 
+
+    const actionColumn = {
+        header: "Action",
+        accessor: "action",
+        cell: (row: ProductType) =>
+            handleTransaction ? (
+                <Group gap="xs">
+                    <Button size="xs" onClick={() => handleTransaction(row, TYPE_STOCK_TRANSECTION.IN)}>รับเข้า</Button>
+                    <Button size="xs" onClick={() => handleTransaction(row, TYPE_STOCK_TRANSECTION.OUT)}>เบิกออก</Button>
+                    <Button size="xs" onClick={() => handleTransaction(row, TYPE_STOCK_TRANSECTION.ADJUST)}>ปรับยอด</Button>
+                </Group>
+            ) : null,
+    };
+
+    const columns = [
+        { header: "รหัสสินค้า", accessor: "product_id" },
+        { header: "ชื่อสินค้า", accessor: "name" },
+        { header: "หน่วย", accessor: "unit" },
+        // { header: "หมวดหมู่", accessor: "category_name" },
+        { header: "Stock ปัจจุบัน", accessor: "stock" },
+        ...(roleCurrent=== ROLES.ADMIN || roleCurrent === ROLES.STAFF ? [actionColumn] : []),
+    ];
+
     return (
         <Box>
             <Card shadow="sm" padding="lg">
@@ -66,10 +94,7 @@ function StockPage() {
                         ดูประวัติรายการสต็อก
                     </Button>
                 </Group>
-                <StockTable
-                    products={productsWithStock}
-                    onTransaction={handleTransaction} // ถ้าไม่ส่ง มันจะเป็น read-only
-                />
+                <DataTable columns={columns} data={productsWithStock} pageSize={10} />
             </Card>
 
             {modalOpen && selectedProduct && (
@@ -89,9 +114,10 @@ function StockPage() {
                     fields={[
 
                         { name: 'quantity', label: 'จำนวน', type: 'number' },
-                        ...(transactionType === 'ADJUST'
-                            ? [{ name: 'reason', label: 'สาเหตุ', type: 'textarea' }]
-                            : []),
+                        { name: 'reason', label: 'สาเหตุ', type: 'textarea' },
+                        // ...(transactionType === 'ADJUST'
+                        //     ? [{ name: 'reason', label: 'สาเหตุ', type: 'textarea' }]
+                        //     : []),
                     ]}
                     onSubmit={saveTransaction}
                 />

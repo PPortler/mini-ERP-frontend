@@ -1,4 +1,5 @@
 import type { ProductType } from "../types/product";
+import type { ProductResponse } from "../types/apiResponse";
 
 export const mockProducts: ProductType[] = [
   {
@@ -56,3 +57,31 @@ export const mockProducts: ProductType[] = [
     category_id: "5",
   },
 ];
+
+export const getMockProducts = (
+  page = 1,
+  pageSize = 10,
+  search: string = "",
+  categpry_id?: string
+): ProductResponse => {
+  let filtered = [...mockProducts];
+
+  // filter by search keyword
+  if (search.trim()) {
+    const lowerSearch = search.toLowerCase();
+    filtered = filtered.filter((p) => p.name.toLowerCase().includes(lowerSearch));
+  }
+
+  // filter by category_id
+  if (categpry_id) {
+    filtered = filtered.filter((p) => p.category_id === categpry_id);
+  }
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const products = filtered.slice(start, end);
+
+  return { data: products, total, page, pageSize, totalPages };
+};

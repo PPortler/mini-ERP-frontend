@@ -33,8 +33,8 @@ export default function LoginPage() {
             if (response.ok) {
                 console.log("Login success:", response.data);
 
-                const { access_token, user } = response.data;
-                setAuth(access_token, user);
+                const { user } = response.data;
+                setAuth(user.access_token, user.refresh_token, user);
                 const rolePath = "/dashboard";
                 navigate(rolePath, { replace: true });
 

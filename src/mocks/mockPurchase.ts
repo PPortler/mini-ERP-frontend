@@ -1,5 +1,6 @@
 import { STATUS_PO } from "../constants/enum/enum";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
+import { mockProducts } from "./mockProducts";
 
 export const mockPurchaseOrders: PurchaseOrderType[] = [
   {

@@ -1,4 +1,6 @@
+import type { ApiResponse } from "../types/apiResponse";
 import type { CatagoriesType } from "../types/catagories";
+export type CategoryResponse = ApiResponse<CatagoriesType[]>;
 
 export const mockCatagories: CatagoriesType[] = [
   {
@@ -47,3 +49,26 @@ export const mockCatagories: CatagoriesType[] = [
     description: "ของใช้ ๆ",
   },
 ];
+
+
+export const getMockCategory = (
+  page = 1,
+  pageSize = 10,
+  search: string = "",
+): CategoryResponse => {
+  let filtered = [...mockCatagories];
+
+  // filter by search keyword
+  if (search.trim()) {
+    const lowerSearch = search.toLowerCase();
+    filtered = filtered.filter((p) => p.name.toLowerCase().includes(lowerSearch));
+  }
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const catagories = filtered.slice(start, end);
+
+  return { data: catagories, total, page, pageSize, totalPages };
+};

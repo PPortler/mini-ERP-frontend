@@ -1,14 +1,14 @@
 import { Text, Stack, Button, Box } from "@mantine/core";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AuthProvider } from "../../contexts/AuthContext";
 import styles from "../layout/layout.module.css"
 import { menuItems } from "../../config/menuItems";
 import { getRoleCurrent } from "../../utils/RoleUtil";
+import { $authUser } from "../../stores/authUserStore";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = AuthProvider.useAuth();
+  const authUser = $authUser.get()
   const roleCurrent = getRoleCurrent();
 
   return (
@@ -19,7 +19,7 @@ export default function Sidebar() {
             fontWeight: 700,
             fontSize: "16px"
           }}>
-          {user?.first_name + ' ' + user?.last_name || "Name Test"}
+          {authUser?.first_name + ' ' + authUser?.last_name || "Name Test"}
         </Text>
         <Text color="dimmed">
           {roleCurrent}

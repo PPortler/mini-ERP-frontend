@@ -1,10 +1,9 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { mockStockTransactions } from "../mocks/mockStockTransaction";
-import { TYPE_STOCK_TRANSECTION } from "../constants/enum/enum";
+import { getMockStockSummary, mockStockTransactions } from "../mocks/mockStockTransaction";
 
 export type StockSummaryType = {
   product_id: string;
-  stock?: number;
+  current_stock?: number;
 };
 
 export type StockSummaryServiceResult =
@@ -75,27 +74,26 @@ export const StockService = {
   },
 
   // for get summary
-  async get(product_id: string): Promise<StockSummaryServiceResult> {
+  async getStockSummary(product_id: string): Promise<StockSummaryServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
-      // คำนวณ mock summary
-      const transactions = mockStockTransactions.filter(t => t.product_id === product_id);
-      const stock =
-        transactions
-          .filter(t => t.type === TYPE_STOCK_TRANSECTION.IN)
-          .reduce((sum, t) => sum + t.quantity, 0) -
-        transactions
-          .filter(t => t.type === TYPE_STOCK_TRANSECTION.OUT)
-          .reduce((sum, t) => sum + t.quantity, 0) +
-        transactions
-          .filter(t => t.type === TYPE_STOCK_TRANSECTION.ADJUST)
-          .reduce((sum, t) => sum + t.quantity, 0);
-
-      return { ok: true, data: { product_id, stock } };
+      const stockSummary = getMockStockSummary(product_id);
+      return { ok: true, data: stockSummary };
     }
 
-    return AxiosUtil.createRequest<StockSummaryType>({
-      method: "GET",
-      url: `/products/${product_id}/stock-summary`,
-    });
+    const params = {
+      product_id: product_id
+    }
+    try {
+      const res = await AxiosUtil.createRequest<StockSummaryType>({
+        method: "GET",
+        url: `/products/${product_id}/stock-summary`,
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+    } catch (err: any) {
+      return { ok: false, message: err.message };
+    }
+
   },
 };

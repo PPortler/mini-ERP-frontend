@@ -19,6 +19,7 @@
     "@mantine/notifications": "^8.3.9",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
+    "@nanostores/react": "^1.0.0",
     "axios": "^1.13.2",
     "js-cookie": "^3.0.5",
     "nanostores": "^1.1.0",

@@ -1,12 +1,12 @@
-import Cookies from "js-cookie";
+import { $authUser } from "../stores/authUserStore";
 
 export function getRoleCurrent(): string | null {
+ 
   try {
-    const userCookie = Cookies.get("user");
-    if (!userCookie) return null;
+     const authUser = $authUser.get()
+    if (!authUser) return null;
 
-    const user = JSON.parse(userCookie);
-    return user.role || null;
+    return authUser.role || null;
   } catch (err) {
     console.error("Failed to get current role:", err);
     return null;

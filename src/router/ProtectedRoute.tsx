@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { AuthProvider } from "../contexts/AuthContext";
 import { getRoleCurrent } from "../utils/RoleUtil";
+import { useStore } from "@nanostores/react";
+import { $authUser } from "../stores/authUserStore";
 
 type ProtectedRouteProps = {
     children: ReactNode;
@@ -16,14 +17,14 @@ export default function ProtectedRoute({
     redirectTo = "/",
     blockIfAuth = false,
 }: ProtectedRouteProps) {
-    const { accessToken, loading } = AuthProvider.useAuth();
+    const authUser = useStore($authUser);
     const roleCurrent = getRoleCurrent();
 
-    if (loading) {
-        return null; // หรือใส่ <Spinner /> / <Loader /> ของ Mantine
+    if (authUser === undefined) {
+        return null; 
     }
 
-    if (blockIfAuth && accessToken && roleCurrent) {
+    if (blockIfAuth && authUser?.access_token && roleCurrent) {
         return <Navigate to="/dashboard" replace />;
     }
 

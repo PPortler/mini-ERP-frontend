@@ -1,6 +1,7 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import type { CatagoriesType } from "../types/catagories";
-import { mockCatagories } from "../mocks/mockCatagories";
+import { getMockCategory, mockCatagories } from "../mocks/mockCatagories";
+import type { CategoryResponse } from "../types/apiResponse";
 
 export type CatagoriesListResponse = CatagoriesType[];
 
@@ -19,6 +20,34 @@ export const CatagoriesService = {
       method: "GET",
       url: "/categories",
     });
+  },
+
+  async getByPagination(
+    page = 1,
+    pageSize = 10,
+    search = "",
+  ): Promise<{ ok: true; data: CategoryResponse } | { ok: false; message: string }> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const data = getMockCategory(page, pageSize, search)
+      return { ok: true, data: data };
+    }
+
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      search: search,
+    }
+    try {
+      const res = await AxiosUtil.createRequest<CategoryResponse>({
+        method: "GET",
+        url: "/categories",
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+    } catch (err: any) {
+      return { ok: false, message: err.message };
+    }
   },
 
   // ดึงหมวดหมู่ตาม ID

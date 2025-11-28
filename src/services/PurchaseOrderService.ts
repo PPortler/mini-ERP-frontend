@@ -1,6 +1,8 @@
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
+import { mapPoOrderWithSupplier } from "../utils/mapPoOrderwithSupplier";
+import { SupplierService } from "./SupplierService";
 
 export type PurchaseOrderServiceResult =
   | { ok: true; data: PurchaseOrderType[] }
@@ -16,6 +18,28 @@ export const PurchaseOrderService = {
       method: "GET",
       url: "/purchase-orders",
     });
+  },
+
+  // GET PO + supplier_name
+  async getAllWithSupplier(): Promise<
+    | { ok: true; data: PurchaseOrderType[] }
+    | { ok: false; message: string }
+  > {
+    try {
+      const [poRes, supplierRes] = await Promise.all([
+        this.getAll(),
+        SupplierService.getAll(),
+      ]);
+
+      if (!poRes.ok) return { ok: false, message: poRes.message };
+      if (!supplierRes.ok) return { ok: false, message: supplierRes.message };
+
+      const mapped = mapPoOrderWithSupplier(poRes.data, supplierRes.data);
+
+      return { ok: true, data: mapped };
+    } catch (err: any) {
+      return { ok: false, message: err.message || "Failed to load purchase orders" };
+    }
   },
 
   // POST /purchase-orders
@@ -106,7 +130,7 @@ export const PurchaseOrderService = {
       data: item,
     });
   },
-  
+
   // แก้ไข item ของ PO
   async updateItem(
     purchase_order_id: string,

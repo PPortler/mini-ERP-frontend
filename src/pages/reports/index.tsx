@@ -1,32 +1,19 @@
 import { useState } from "react";
 import { Box, Card, Group, Title, Button, Tabs } from "@mantine/core";
-// import DataTable from "../../components/Table/DataTable";
-// import { mockCatagories } from "../../mocks/mockCatagories";
-import StockTable from "../../components/Table/StockTable";
-import {  useLoadInitialData as useLoadStocks } from "../stock/hooks/useLoadInitialData";
-import StockTransactionsTable from "../../components/Table/StockTransactionsTable";
-import PurchaseOrderTable from "../../components/Table/PurchaseOrderTable";
-import { useLoadInitialData as useLoadPo } from "../po/hooks/useLoadInitialData";
+import DataTable from "../../components/Table/DataTable";
+import { useLoadInitialData } from "./hooks/useLoadInitialData";
 
 function ReportPage() {
-    const { products, stockTransactions } = useLoadStocks();
-        const { purchaseOrders, suppliers } = useLoadPo();
-    
     const [activeTab, setActiveTab] = useState<string | null>("summary");
+    const {
+        stockSummary,
+        stockMovements,
+        purchaseSummary,
+    } = useLoadInitialData();
 
-    // ===================== Columns =====================
-    // const purchaseColumns = [
-    //     { header: "PO ID", accessor: "purchase_order_id" },
-    //     { header: "Status", accessor: "status" },
-    //     { header: "Supplier ID", accessor: "supplier_id" },
-    //     { header: "Total Amount", accessor: "total_amount" },
-    //     { header: "Create By", accessor: "create_by" },
-    // ];
-
-    // ===================== Export Handlers =====================
     const handleExportCSV = () => console.log("Export CSV");
     const handleExportExcel = () => console.log("Export Excel");
-
+    
     return (
         <Box>
             <Card shadow="sm" padding="lg">
@@ -47,21 +34,47 @@ function ReportPage() {
 
                     {activeTab === "summary" && (
                         <Box pt="md">
-                            <StockTable products={products} />
+                            <DataTable
+                                columns={[
+                                    { header: "สินค้า", accessor: "name" },
+                                    { header: "Stock ปัจจุบัน", accessor: "current_stock" },
+                                    { header: "มูลค่า Cost", accessor: "cost_value" },
+                                    { header: "มูลค่า Selling", accessor: "selling_value" },
+                                ]}
+                                data={stockSummary}
+                                pageSize={10}
+                            />
                         </Box>
                     )}
 
                     {activeTab === "movement" && (
                         <Box pt="md">
-                            <StockTransactionsTable transactions={stockTransactions} products={products} />
+                            <DataTable
+                                columns={[
+                                    { header: "วันที่", accessor: "created_at" },
+                                    { header: "สินค้า", accessor: "product_name" },
+                                    { header: "ประเภท", accessor: "type" },
+                                    { header: "จำนวน", accessor: "quantity" },
+                                    { header: "เหตุผล/หมายเหตุ", accessor: "reason" },
+                                ]}
+                                data={stockMovements}
+                                pageSize={10}
+                            />
                         </Box>
                     )}
 
                     {activeTab === "purchase" && (
                         <Box pt="md">
-                            <PurchaseOrderTable
-                                data={purchaseOrders}
-                                suppliers={suppliers}
+                            <DataTable
+                                columns={[
+                                    { header: "PO ID", accessor: "purchase_order_id" },
+                                    { header: "Supplier", accessor: "supplier_name" },
+                                    { header: "สถานะ", accessor: "status" },
+                                    { header: "จำนวนเงินรวม", accessor: "total_amount" },
+                                    { header: "วันที่สร้าง", accessor: "create_at" },
+                                ]}
+                                data={Array.isArray(purchaseSummary) ? purchaseSummary : []}
+                                pageSize={10}
                             />
                         </Box>
                     )}

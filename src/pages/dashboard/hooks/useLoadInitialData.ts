@@ -13,11 +13,10 @@ export const useLoadInitialData = () => {
         const fetchProducts = async () => {
             try {
                 setOpenLoading(true);
-
-                const res = await ProductService.getAll();
+                const res = await ProductService.getByPagination(1 ,10);
 
                 if (res.ok) {
-                    setMinStock(res.data);
+                    setMinStock(res.data.data);
                 } else {
                     setError(res.message || "Failed to load products");
                 }

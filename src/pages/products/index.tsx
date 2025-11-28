@@ -1,6 +1,5 @@
 import { ActionIcon, Box, Button, Card, Group, Title } from '@mantine/core'
 import DataTable from '../../components/Table/DataTable'
-import DownloadIcon from '@mui/icons-material/Download';
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { columnMinStock } from '../../constants/columnTable';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,9 +12,28 @@ import FormModel from '../../components/Models/FormModel';
 import ConfirmModal from '../../components/Models/ConfirmModel';
 import { ProductService } from '../../services/ProductService';
 import { notify } from '../../utils/Notify';
+import FilterInputs from '../../components/Filters/FilterSearch';
 
 function ProductPage() {
-  const { products, categories, refetch } = useLoadInitialData();
+  const {
+    products,
+    categories,
+    total,
+    page,
+    pageSize,
+    setPage,
+    setPageSize,
+    search,
+    categoryId,
+    setSearch,
+    setCategoryId,
+    refetch,
+  } = useLoadInitialData({
+    initialPage: 1,
+    initialPageSize: 5,
+    initialSearch: "",
+    initialCategoryId: "",
+  });
   const roleCurrent = getRoleCurrent();
 
   // State สำหรับ modal
@@ -59,11 +77,13 @@ function ProductPage() {
         message: 'ลบสินค้าสำเร็จ',
       });
       refetch();
-    } catch (err: any) {
-      notify({
-        type: "error",
-        message: err.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
-      })
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        notify({
+          type: "error",
+          message: err.message || "เกิดข้อผิดพลาด",
+        });
+      }
     }
     setModalOpen(false);
     setSelectedProduct(null);
@@ -97,16 +117,18 @@ function ProductPage() {
       } else {
         notify({
           type: 'error',
-          message: result.message || 'เกิดข้อผิดพลาดในการบันทึกสินค้า',
+          message: 'เกิดข้อผิดพลาดในการบันทึกสินค้า',
         });
       }
       setModalOpen(false);
       setSelectedProduct(null);
-    } catch (error: any) {
-      notify({
-        type: 'error',
-        message: error.message || 'เกิดข้อผิดพลาดในการบันทึกสินค้า',
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        notify({
+          type: "error",
+          message: err.message || "เกิดข้อผิดพลาด",
+        });
+      }
     }
   };
 
@@ -148,10 +170,35 @@ function ProductPage() {
                 }}
               >เพิ่มสินค้า</Button>
             )}
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
           </Box>
         </Group>
-        <DataTable columns={columnsWithAction} data={products} pageSize={10} />
+        <FilterInputs
+          fields={[
+            {
+              key: "search",
+              label: "ค้นหา",
+              type: "text",
+              value: search,
+              onChange: setSearch,
+            },
+            {
+              key: "categoryId",
+              label: "หมวดหมู่",
+              type: "select",
+              value: categoryId,
+              options: categories.map((c) => ({ label: c.name, value: c.category_id })),
+              onChange: setCategoryId,
+            },
+          ]}
+        />
+        <DataTable
+          columns={columnsWithAction}
+          data={products}
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize} />
       </Card>
 
       {modalType === 'confirm' && (

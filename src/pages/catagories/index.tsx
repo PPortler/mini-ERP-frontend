@@ -12,10 +12,24 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { CatagoriesService } from '../../services/CatagoriesService';
 import { notify } from '../../utils/Notify';
+import FilterInputs from '../../components/Filters/FilterSearch';
 
 function CatagoriesPage() {
-    const { categories, refetch } = useLoadInitialData();
-
+    const {
+        categories,
+        refetch,
+        page,
+        setPage,
+        setPageSize,
+        pageSize,
+        setSearch,
+        search,
+        total
+    } = useLoadInitialData({
+        initialPage: 1,
+        initialPageSize: 5,
+        initialSearch: "",
+    });
     const roleCurrent = getRoleCurrent();
 
     // Modal states
@@ -63,17 +77,18 @@ function CatagoriesPage() {
             await refetch();
             setModalOpen(false);
             setSelectedCategory(null);
-        } catch (err: any) {
-            notify({
-                type: "error",
-                message: err.message || "เกิดข้อผิดพลาด",
-            });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                notify({
+                    type: "error",
+                    message: err.message || "เกิดข้อผิดพลาด",
+                });
+            }
         }
     };
 
     const confirmDelete = async () => {
         if (!selectedCategory) return;
-
         try {
             const res = await CatagoriesService.delete(selectedCategory.category_id)
 
@@ -89,11 +104,13 @@ function CatagoriesPage() {
                 message: 'ลบสำเร็จ',
             });
             refetch();
-        } catch (err: any) {
-            notify({
-                type: "error",
-                message: err.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
-            })
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                notify({
+                    type: "error",
+                    message: err.message || "เกิดข้อผิดพลาด",
+                });
+            }
         }
         setModalOpen(false);
         setSelectedCategory(null);
@@ -142,8 +159,25 @@ function CatagoriesPage() {
                         </Button>
                     )}
                 </Group>
-
-                <DataTable columns={columnsWithAction} data={categories} pageSize={10} />
+                <FilterInputs
+                    fields={[
+                        {
+                            key: "search",
+                            label: "ค้นหา",
+                            type: "text",
+                            value: search,
+                            onChange: setSearch,
+                        },
+                    ]}
+                />
+                <DataTable
+                    columns={columnsWithAction}
+                    data={categories}
+                    page={page}
+                    pageSize={pageSize}
+                    total={total}
+                    onPageChange={setPage}
+                    onPageSizeChange={setPageSize} />
             </Card>
 
             {/* Form */}

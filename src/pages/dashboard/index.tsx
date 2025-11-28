@@ -1,5 +1,4 @@
-import { Card, Grid, Text, Group, Title, Button } from "@mantine/core";
-import DownloadIcon from '@mui/icons-material/Download';
+import { Card, Grid, Text, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { columnMinStock, poColumns, receivingColumns, withdrawColumns } from "../../constants/columnTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";

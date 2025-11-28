@@ -11,17 +11,25 @@ export type SupplierServiceResult =
 export const SupplierService = {
   // ดึงทั้งหมด
   async getAll(): Promise<SupplierServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      return { ok: true, data: mockSuppliers };
+    try {
+      if (import.meta.env.VITE_USE_MOCK === "true") {
+        return { ok: true, data: mockSuppliers };
+      }
+
+      const res = await AxiosUtil.createRequest<SupplierListResponse>({
+        method: "GET",
+        url: "/suppliers",
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
-
-    const res = await AxiosUtil.createRequest<SupplierListResponse>({
-      method: "GET",
-      url: "/suppliers",
-    });
-
-    if (!res.ok) return { ok: false, message: res.message };
-    return { ok: true, data: res.data };
   },
 
   // ดึงตาม ID

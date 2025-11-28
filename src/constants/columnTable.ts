@@ -3,7 +3,7 @@ export const columnMinStock = [
   { header: "หน่วย", accessor: "unit" },
   { header: "ราคาทุน", accessor: "cost_price" },
   { header: "ราคาขาย", accessor: "selling_price" },
-  { header: "หมวดหมู่", accessor: "category_name" },
+  // { header: "หมวดหมู่", accessor: "category_name" },
   { header: "Min Stock", accessor: "min_stock" },
 ];
 

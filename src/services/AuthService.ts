@@ -3,7 +3,6 @@ import { findMockUser } from "../mocks/mockAuth";
 import type { UserInfoType } from "../types/user";
 
 export type LoginResponse = {
-    access_token: string;
     user: UserInfoType;
 };
 
@@ -19,13 +18,14 @@ export const AuthService = {
                 return {
                     ok: true,
                     data: {
-                        access_token: `mock_token_${user.username}_123456`,
                         user: {
                             user_id: user.user_id,
                             username: user.username,
                             first_name: user.first_name,
                             last_name: user.last_name,
                             role: user.role,
+                            access_token: `mock_access_${user.username}`,
+                            refresh_token: `mock_refresh_${user.username}`,
                         }
                     },
                 };

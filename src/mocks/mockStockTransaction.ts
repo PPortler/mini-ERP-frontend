@@ -1,4 +1,5 @@
 import type { StockTransactionType } from "../services/StockService";
+import { calcStockSummary } from "./utils/calcStockSummary";
 
 export const mockStockTransactions: StockTransactionType[] = [
   {
@@ -47,3 +48,15 @@ export const mockStockTransactions: StockTransactionType[] = [
     reference: "INV-002",
   },
 ];
+
+
+export const getMockStockSummary = (productId: string) => {
+  const transactions = mockStockTransactions.filter(t => t.product_id === productId);
+
+  const summary = calcStockSummary(transactions);
+
+  return {
+    product_id: productId,
+    ...summary,
+  };
+};

@@ -13,7 +13,7 @@ export const mockUsers: UserInfoType[] = [
     user_id: "1",
     username: "admin",
     password: "1234",
-    role: ROLES.ADMIN, // Admin
+    role: ROLES.ADMIN, 
     first_name: "Harry",
     last_name: "Kane",
     phone: "0812345678",

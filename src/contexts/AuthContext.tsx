@@ -1,48 +1,64 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
-import Cookies from "js-cookie";
 import type { UserInfoType } from "../types/user";
-import { LoadingProvider } from "./LoadingContext";
+import { $authUser } from "../stores/authUserStore";
 
 type AuthContextType = {
-    accessToken: string | null;
-    user: UserInfoType | null;
-    setAuth: (token: string, user: UserInfoType) => void;
+    setAuth: (access_token: string, refresh_token: string, user: UserInfoType) => void;
     logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [user, setUser] = useState<UserInfoType | null>(null);
 
     useEffect(() => {
-        const token = Cookies.get("access_token") || null;
-        const storedUser = Cookies.get("user") ? JSON.parse(Cookies.get("user")!) : null;
-        setTimeout(() => {
-            setAccessToken(token);
-            setUser(storedUser);
-        }, 0)
+        const access_token = localStorage.getItem("access_token") || undefined;
+        const refresh_token = localStorage.getItem("refresh_token") || undefined;
+        const userInfoRaw = localStorage.getItem("userInfo");
+
+        if (userInfoRaw) {
+            try {
+                const userInfo = JSON.parse(userInfoRaw);
+                const userTemp = {
+                    access_token,
+                    refresh_token,
+                    ...userInfo,
+                };
+                $authUser.set(userTemp);
+            } catch (err) {
+                console.error("Failed to parse userInfo from localStorage:", err);
+                $authUser.set(null);
+            }
+        } else {
+            $authUser.set(null);
+        }
     }, []);
 
-    const setAuth = (token: string, user: UserInfoType) => {
-        localStorage.setItem("access_token", token);
-        Cookies.set("access_token", token, { expires: 1 });
-        Cookies.set("user", JSON.stringify(user), { expires: 1 });
-        setAccessToken(token);
-        setUser(user);
+    const setAuth = (access_token: string, refresh_token: string, user: UserInfoType) => {
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token || "");
+        localStorage.setItem(
+            "userInfo",
+            JSON.stringify({
+                first_name: user.first_name,
+                last_name: user.last_name,
+                role: user.role,
+                username: user.username
+            })
+        );
+        $authUser.set(user);
     };
 
     const logout = () => {
-        Cookies.remove("access_token");
-        Cookies.remove("user");
-        setAccessToken(null);
-        setUser(null);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("userInfo");
+        $authUser.set(null);
     };
 
     return (
-        <AuthContext.Provider value={{ accessToken, user, setAuth, logout }}>
+        <AuthContext.Provider value={{ setAuth, logout }}>
             {children}
         </AuthContext.Provider>
     );

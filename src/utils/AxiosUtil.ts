@@ -13,6 +13,7 @@ type RequestParams = {
   method: "GET" | "POST" | "PUT" | "DELETE";
   url: string;
   data?: unknown;
+  params?: Record<string, any>; 
 };
 
 // type ของ return
@@ -22,14 +23,13 @@ type RequestReturn<T> = Promise<{ ok: true; data: T } | { ok: false; message: st
 async function createRequest<T>(params: RequestParams): RequestReturn<T> {
   try {
     let response: AxiosResponse<T>;
-    if (params.method === "GET") {
-      response = await baseAxios.get<T>(params.url);
-    } else if (params.method === "POST") {
-      response = await baseAxios.post<T>(params.url, params.data);
+  if (params.method === "GET") {
+      response = await baseAxios.get<T>(params.url, { params: params.params }); 
+      response = await baseAxios.post<T>(params.url, params.data, { params: params.params });
     } else if (params.method === "PUT") {
-      response = await baseAxios.put<T>(params.url, params.data);
+      response = await baseAxios.put<T>(params.url, params.data, { params: params.params });
     } else if (params.method === "DELETE") {
-      response = await baseAxios.delete<T>(params.url);
+      response = await baseAxios.delete<T>(params.url, { params: params.params });
     } else {
       throw new Error("Invalid method");
     }

@@ -138,7 +138,6 @@ function SupplierPage() {
                 }}
               >เพิ่มผู้จัดหา</Button>
             )}
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
           </Box>
         </Group>
         <DataTable columns={columnsWithAction} data={data} pageSize={10} />

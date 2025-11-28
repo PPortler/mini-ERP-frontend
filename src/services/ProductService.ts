@@ -1,6 +1,9 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { mockProducts } from "../mocks/mockProducts";
+import { getMockProducts, mockProducts } from "../mocks/mockProducts";
 import type { ProductType } from "../types/product";
+import type { ProductResponse } from "../types/apiResponse";
+// import { CatagoriesService } from "./CatagoriesService";
+// import { mapProductsWithCategory } from "../utils/mapProductWithCategory";
 
 export type ProductListResponse = ProductType[];
 
@@ -10,22 +13,67 @@ export type ProductServiceResult =
 
 export const ProductService = {
   async getAll(): Promise<ProductServiceResult> {
-    //mock
     if (import.meta.env.VITE_USE_MOCK === "true") {
       return { ok: true, data: mockProducts };
     }
 
-    const productsRes = await AxiosUtil.createRequest<ProductListResponse>({
+    return AxiosUtil.createRequest<ProductListResponse>({
       method: "GET",
-      url: "/products",
+      url: "/categories",
     });
+  },
 
-    if (!productsRes.ok) {
-      return { ok: false, message: productsRes.message };
+  async getByPagination(
+    page = 1,
+    pageSize = 10,
+    search = "",
+    categoryId?: string
+  ): Promise<{ ok: true; data: ProductResponse } | { ok: false; message: string }> {
+    // ใช้ mock
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const data = getMockProducts(page, pageSize, search, categoryId);
+      // simulate network delay 300-500ms
+      // await new Promise((resolve) => setTimeout(resolve, 300 + Math.random() * 200));
+      return { ok: true, data };
     }
 
-    return { ok: true, data: productsRes.data };
+    // เรียก backend จริง
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      search: search,
+      categpry_id: categoryId
+    }
+    try {
+      const res = await AxiosUtil.createRequest<ProductResponse>({
+        method: "GET",
+        url: "/products",
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+    } catch (err: any) {
+      return { ok: false, message: err.message };
+    }
   },
+
+  // //get with category
+  // async getAllWithCategory(): Promise<
+  //   | { ok: true; data: ProductType[] }
+  //   | { ok: false; message: string }
+  // > {
+  //   const [productRes, categoryRes] = await Promise.all([
+  //     ProductService.getAll(1, 10),
+  //     CatagoriesService.getAll(),
+  //   ]);
+
+  //   if (!productRes.ok) return { ok: false, message: productRes.message };
+  //   if (!categoryRes.ok) return { ok: false, message: categoryRes.message };
+
+  //   const mapped = mapProductsWithCategory(productRes.data.products, categoryRes.data);
+
+  //   return { ok: true, data: mapped };
+  // },
 
   // ดึงสินค้าตาม ID
   async getById(product_id: string): Promise<ProductServiceResult> {
