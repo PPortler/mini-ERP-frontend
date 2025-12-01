@@ -9,7 +9,7 @@ export type MenuItem = {
 export const menuItems: MenuItem[] = [
     { label: "Dashboard", path: "/dashboard", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Product", path: "/products", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
-    { label: "Stock", path: "/stock", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Stock Transaction", path: "/stock-transaction", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Catagories", path: "/catagories", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Suppliers", path: "/suppliers", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Purchase Order", path: "/po", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },

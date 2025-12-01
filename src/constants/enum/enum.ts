@@ -1,7 +1,7 @@
 export const ROLES = {
-  ADMIN: "Admin",
-  STAFF: "Staff",
-  VIEWER: "Viewer",
+  ADMIN: "admin",
+  STAFF: "staff",
+  VIEWER: "viewer",
 } as const;
 
 export const ACTIONS = {

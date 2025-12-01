@@ -1,4 +1,4 @@
-import { Box, Button, Card, Group, Title, ActionIcon } from '@mantine/core';
+import { Box, Card, Group, Title, ActionIcon } from '@mantine/core';
 import { useState } from 'react';
 import DataTable from '../../components/Table/DataTable';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,6 +13,9 @@ import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { CatagoriesService } from '../../services/CatagoriesService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
+import AppButton from '../../components/Form/AppButton';
+import { LoadingProvider } from '../../contexts/LoadingContext';
+import { categorySchema } from '../../schemas/categorySchema';
 
 function CatagoriesPage() {
     const {
@@ -24,12 +27,14 @@ function CatagoriesPage() {
         pageSize,
         setSearch,
         search,
-        total
+        total,
+        loading
     } = useLoadInitialData({
         initialPage: 1,
-        initialPageSize: 5,
+        initialPageSize: 10,
         initialSearch: "",
     });
+    const { setOpenLoading } = LoadingProvider.useLoading();
     const roleCurrent = getRoleCurrent();
 
     // Modal states
@@ -50,23 +55,26 @@ function CatagoriesPage() {
     };
 
     const saveCategory = async (updated: CatagoriesType) => {
+        setOpenLoading(true)
         try {
+            const values = await categorySchema.validate(updated, { abortEarly: false });
+
             let res;
             if (selectedCategory) {
                 res = await CatagoriesService.update(
                     selectedCategory.category_id,
-                    updated
+                    values
                 );
             }
             else {
-                res = await CatagoriesService.create(updated);
+                res = await CatagoriesService.create(values);
             }
             if (res.ok) {
                 notify({
                     type: "success",
                     message: selectedCategory
-                        ? `แก้ไขหมวดหมู่ "${updated.name}" สำเร็จ`
-                        : `เพิ่มหมวดหมู่ "${updated.name}" สำเร็จ`,
+                        ? `แก้ไขหมวดหมู่ "${values.name}" สำเร็จ`
+                        : `เพิ่มหมวดหมู่ "${values.name}" สำเร็จ`,
                 });
             } else {
                 notify({
@@ -74,9 +82,10 @@ function CatagoriesPage() {
                     message: res.message || "เกิดข้อผิดพลาด",
                 });
             }
-            await refetch();
             setModalOpen(false);
             setSelectedCategory(null);
+            await refetch();
+
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({
@@ -84,14 +93,18 @@ function CatagoriesPage() {
                     message: err.message || "เกิดข้อผิดพลาด",
                 });
             }
+        } finally {
+            setOpenLoading(false)
         }
     };
 
     const confirmDelete = async () => {
+        setOpenLoading(true)
         if (!selectedCategory) return;
         try {
             const res = await CatagoriesService.delete(selectedCategory.category_id)
 
+            console.log(res)
             if (!res.ok) {
                 notify({
                     type: 'error',
@@ -103,6 +116,8 @@ function CatagoriesPage() {
                 type: 'success',
                 message: 'ลบสำเร็จ',
             });
+            setModalOpen(false);
+            setSelectedCategory(null);
             refetch();
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -111,9 +126,10 @@ function CatagoriesPage() {
                     message: err.message || "เกิดข้อผิดพลาด",
                 });
             }
+        } finally {
+            setOpenLoading(false)
         }
-        setModalOpen(false);
-        setSelectedCategory(null);
+
     };
 
     const columns = [
@@ -149,27 +165,33 @@ function CatagoriesPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="sm">
                     <Title order={3}>หมวดหมู่สินค้า</Title>
+                </Group>
+                <Group justify='space-between'>
+                    <FilterInputs
+                        fields={[
+                            {
+                                key: "search",
+                                label: "ค้นหา",
+                                type: "text",
+                                value: search,
+                                onChange: setSearch,
+                            },
+                        ]}
+                    />
                     {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
-                        <Button onClick={() => {
-                            setSelectedCategory(null);
-                            setModalType('form');
-                            setModalOpen(true);
-                        }}>
+                        <AppButton
+                            loading={loading}
+                            onClick={() => {
+                                setSelectedCategory(null);
+                                setModalType("form");
+                                setModalOpen(true);
+                            }}
+                            disabled={loading} // ป้องกันคลิกตอน loading
+                        >
                             เพิ่มหมวดหมู่
-                        </Button>
+                        </AppButton>
                     )}
                 </Group>
-                <FilterInputs
-                    fields={[
-                        {
-                            key: "search",
-                            label: "ค้นหา",
-                            type: "text",
-                            value: search,
-                            onChange: setSearch,
-                        },
-                    ]}
-                />
                 <DataTable
                     columns={columnsWithAction}
                     data={categories}
@@ -177,19 +199,22 @@ function CatagoriesPage() {
                     pageSize={pageSize}
                     total={total}
                     onPageChange={setPage}
-                    onPageSizeChange={setPageSize} />
+                    onPageSizeChange={setPageSize}
+                    loading={loading}
+                />
             </Card>
 
             {/* Form */}
             {modalType === 'form' && (
                 <FormModel
+                    validationSchema={categorySchema}
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
                     title={selectedCategory ? `แก้ไขหมวดหมู่ ${selectedCategory.name}` : 'เพิ่มหมวดหมู่'}
                     initialValues={selectedCategory || { category_id: '', name: '', description: '' }}
                     fields={[
-                        { name: 'name', label: 'ชื่อหมวดหมู่', type: 'text' },
-                        { name: 'description', label: 'คำอธิบาย', type: 'text' },
+                        { name: 'name', label: 'ชื่อหมวดหมู่', type: 'text', required: true },
+                        { name: 'description', label: 'คำอธิบาย', type: 'text', required: true },
                     ]}
                     onSubmit={saveCategory}
                 />

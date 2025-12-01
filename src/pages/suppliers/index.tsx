@@ -12,8 +12,11 @@ import FormModel from '../../components/Models/FormModel';
 import ConfirmModal from '../../components/Models/ConfirmModel';
 import { SupplierService } from '../../services/SupplierService';
 import { notify } from '../../utils/Notify';
+import { LoadingProvider } from '../../contexts/LoadingContext';
+import { supplierSchema, type SupplierFormValue } from '../../schemas/supplierSchema';
 
 function SupplierPage() {
+  const { setOpenLoading } = LoadingProvider.useLoading();
   const { data, refetch } = useLoadInitialData();
   const roleCurrent = getRoleCurrent();
 
@@ -64,14 +67,18 @@ function SupplierPage() {
   };
 
   const saveItems = async (updatedItems: SupplierType) => {
+    setOpenLoading(true);
+
     try {
+      const values: SupplierFormValue = await supplierSchema.validate(updatedItems, { abortEarly: false });
+
       let result;
       if (!updatedItems.supplier_id) {
         result = await SupplierService.create({
-          name: updatedItems.name,
-          phone: updatedItems.phone,
-          email: updatedItems.email,
-          address: updatedItems.address
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          address: values.address
         });
       } else {
         result = await SupplierService.update(updatedItems.supplier_id, updatedItems);
@@ -97,6 +104,8 @@ function SupplierPage() {
         type: 'error',
         message: error.message || 'เกิดข้อผิดพลาดในการบันทึก',
       });
+    } finally {
+      setOpenLoading(false)
     }
   };
 
@@ -155,6 +164,7 @@ function SupplierPage() {
 
       {modalType === 'form' && (
         <FormModel<SupplierType>
+          validationSchema={supplierSchema}
           opened={modalOpen}
           onClose={() => setModalOpen(false)}
           title={
@@ -172,10 +182,10 @@ function SupplierPage() {
             }
           }
           fields={[
-            { name: 'name', label: 'ชื่อผู้จัดหา', type: 'text' },
-            { name: 'phone', label: 'เบอร์โทร', type: 'text' },
-            { name: 'email', label: 'อีเมล', type: 'text' },
-            { name: 'address', label: 'ที่อยู่', type: 'text' },
+            { name: 'name', label: 'ชื่อผู้จัดหา', type: 'text', required: true},
+            { name: 'phone', label: 'เบอร์โทร', type: 'text', required: true },
+            { name: 'email', label: 'อีเมล', type: 'text', required: true },
+            { name: 'address', label: 'ที่อยู่', type: 'text', required: true },
           ]}
           onSubmit={saveItems}
         />

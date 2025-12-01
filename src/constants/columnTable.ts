@@ -1,9 +1,12 @@
-export const columnMinStock = [
+export const columnProducts = [
+  { header: "รหัสสินค้า", accessor: "product_code" },
   { header: "สินค้า", accessor: "name" },
   { header: "หน่วย", accessor: "unit" },
   { header: "ราคาทุน", accessor: "cost_price" },
   { header: "ราคาขาย", accessor: "selling_price" },
-  // { header: "หมวดหมู่", accessor: "category_name" },
+  {
+    header: "หมวดหมู่", accessor: "category_name",
+  },
   { header: "Min Stock", accessor: "min_stock" },
 ];
 

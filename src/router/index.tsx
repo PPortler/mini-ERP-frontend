@@ -7,12 +7,12 @@ import ProductPage from '../pages/products';
 import { ROLES } from '../constants/enum/enum';
 import CatagoriesPage from '../pages/catagories';
 import AuditLogPage from '../pages/audit-log';
-import StockPage from '../pages/stock';
 import SupplierPage from '../pages/suppliers';
 import PoPage from '../pages/po';
 import PoProductPage from '../pages/po/product';
-import StockTransactionsPage from '../pages/stock/transactions';
+import StockTransactionsPage from '../pages/stock-transaction';
 import ReportPage from '../pages/reports';
+// import StockPage from '../pages/products/stock';
 
 export const router = createBrowserRouter([
     {
@@ -43,6 +43,16 @@ export const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
+    // {
+    //     path: "products/:id",
+    //     element: (
+    //         <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
+    //             <GlobalLayout>
+    //                 <StockPage />
+    //             </GlobalLayout>
+    //         </ProtectedRoute>
+    //     ),
+    // },
     {
         path: "/catagories",
         element: (
@@ -64,11 +74,11 @@ export const router = createBrowserRouter([
         ),
     },
     {
-        path: "/stock",
+        path: "/stock-transaction",
         element: (
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
                 <GlobalLayout>
-                    <StockPage />
+                    <StockTransactionsPage />
                 </GlobalLayout>
             </ProtectedRoute>
         ),

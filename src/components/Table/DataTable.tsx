@@ -1,4 +1,4 @@
-import { Table, Pagination, Box, Text, Center, Select, Group } from "@mantine/core";
+import { Table, Pagination, Box, Text, Center, Select, Group, Skeleton } from "@mantine/core";
 import { useState } from "react";
 
 export type Column<T> = {
@@ -10,23 +10,25 @@ export type Column<T> = {
 type DataTableProps<T> = {
   columns: Column<T>[];
   data: T[];
-  page?: number; // page ปัจจุบันจากภายนอก
+  page?: number;
   pageSize?: number;
-  total?: number; // total items จาก backend
+  total?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   emptyText?: string;
+  loading?: boolean; // เพิ่ม props loading
 };
 
 export default function DataTable<T>({
   columns,
-  data,
+  data = [],
   page = 1,
   pageSize = 5,
   total,
   onPageChange,
   onPageSizeChange,
   emptyText = "ไม่พบข้อมูล",
+  loading = false, // default false
 }: DataTableProps<T>) {
   const [internalPage, setInternalPage] = useState(page);
   const [internalPageSize, setInternalPageSize] = useState(pageSize);
@@ -42,9 +44,12 @@ export default function DataTable<T>({
 
   const handlePageSizeChange = (size: number) => {
     setInternalPageSize(size);
-    setInternalPage(1); // reset page
+    setInternalPage(1);
     onPageSizeChange?.(size);
   };
+
+  // จำนวน skeleton row ตาม pageSize
+  const skeletonRows = Array.from({ length: internalPageSize });
 
   return (
     <Box>
@@ -58,33 +63,44 @@ export default function DataTable<T>({
         </Table.Thead>
 
         <Table.Tbody>
-          {isEmpty ? (
-            <Table.Tr>
-              <Table.Td colSpan={columns.length}>
-                <Center py="xl">
-                  <Box style={{ width: "100%", textAlign: "center", padding: "24px 16px", borderRadius: "8px" }}>
-                    <Text c="dimmed" fw={500} fz="sm">{emptyText}</Text>
-                  </Box>
-                </Center>
-              </Table.Td>
-            </Table.Tr>
-          ) : (
-            paginatedData.map((row, i) => (
-              <Table.Tr key={i}>
-                {columns.map((col) => (
-                  <Table.Td key={col.accessor}>
-                    {col.cell ? col.cell(row) : String(row[col.accessor] ?? "-")}
-                  </Table.Td>
-                ))}
+          {loading
+            ? skeletonRows.map((_, i) => (
+                <Table.Tr key={i}>
+                  {columns.map((col) => (
+                    <Table.Td key={col.accessor}>
+                      <Skeleton height={26} radius="sm" />
+                    </Table.Td>
+                  ))}
+                </Table.Tr>
+              ))
+            : isEmpty
+            ? (
+              <Table.Tr>
+                <Table.Td colSpan={columns.length}>
+                  <Center py="xl">
+                    <Box style={{ width: "100%", textAlign: "center", padding: "24px 16px", borderRadius: "8px" }}>
+                      <Text c="dimmed" fw={500} fz="sm">{emptyText}</Text>
+                    </Box>
+                  </Center>
+                </Table.Td>
               </Table.Tr>
-            ))
-          )}
+            )
+            : paginatedData.map((row, i) => (
+                <Table.Tr key={i}>
+                  {columns.map((col) => (
+                    <Table.Td key={col.accessor}>
+                      {col.cell ? col.cell(row) : String(row[col.accessor] ?? "-")}
+                    </Table.Td>
+                  ))}
+                </Table.Tr>
+              ))
+          }
         </Table.Tbody>
       </Table>
 
       <Group gap="apart" mt="md" align="center" justify="space-between">
         {!isEmpty && totalPages > 1 && (
-          <Box >
+          <Box>
             <Pagination
               total={totalPages}
               value={internalPage}
@@ -94,7 +110,7 @@ export default function DataTable<T>({
           </Box>
         )}
         <Box />
-        <Group >
+        <Group>
           <Text size="sm" color="dimmed">
             รวมทั้งหมด: {total ?? data.length} รายการ
           </Text>
@@ -103,6 +119,7 @@ export default function DataTable<T>({
             onChange={(val) => handlePageSizeChange(Number(val))}
             data={["5", "10", "20", "50"]}
             style={{ width: 80 }}
+            disabled={loading} // ปิด select ตอน loading
           />
         </Group>
       </Group>

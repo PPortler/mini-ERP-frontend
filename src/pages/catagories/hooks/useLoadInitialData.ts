@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { CatagoriesType } from '../../../types/catagories';
 import { CatagoriesService } from '../../../services/CatagoriesService';
-import { LoadingProvider } from '../../../contexts/LoadingContext';
 import { useDebouncedValue } from '@mantine/hooks';
 
 export const useLoadInitialData = ({
@@ -9,7 +8,6 @@ export const useLoadInitialData = ({
   initialPageSize = 10,
   initialSearch = "",
 }) => {
-  const { setOpenLoading } = LoadingProvider.useLoading()
 
   const [categories, setCategories] = useState<CatagoriesType[]>([]);
   const [total, setTotal] = useState(0);
@@ -17,12 +15,14 @@ export const useLoadInitialData = ({
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [search, setSearch] = useState(initialSearch);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // เพิ่ม loading state
 
   const [debouncedSearch] = useDebouncedValue(search, 500);
 
   const fetchData = useCallback(async () => {
     try {
-      setOpenLoading(true);
+      setLoading(true);
+
       const [categoryRes] = await Promise.all([
         CatagoriesService.getByPagination(page, pageSize, debouncedSearch),
       ]);
@@ -39,9 +39,9 @@ export const useLoadInitialData = ({
         setError("Failed to load data");
       }
     } finally {
-      setOpenLoading(false);
+      setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch, setOpenLoading]);
+  }, [page, pageSize, debouncedSearch]);
 
   useEffect(() => {
     (async () => {
@@ -59,6 +59,7 @@ export const useLoadInitialData = ({
     search,
     setSearch,
     error,
-    setPageSize
+    setPageSize,
+    loading
   };
 };

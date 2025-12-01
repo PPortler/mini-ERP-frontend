@@ -1,6 +1,6 @@
-import type { ApiResponse } from "../types/apiResponse";
+import type { CategoryResponse } from "../types/api";
 import type { CatagoriesType } from "../types/catagories";
-export type CategoryResponse = ApiResponse<CatagoriesType[]>;
+
 
 export const mockCatagories: CatagoriesType[] = [
   {

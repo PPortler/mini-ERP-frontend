@@ -17,19 +17,19 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
     onConfirm,
 }) => {
     return (
-        <Modal opened={opened} onClose={onClose} title={title}>
+        <Modal opened={opened} onClose={onClose} title={title} centered>
             <p>{message}</p>
-            <Group mt="md"
+            <Group mt="lg" 
                 style={{
                     display: "flex",
                     flexDirection: "row-reverse"
                 }}
             >
-                <Button color="red" onClick={onConfirm}>
-                    ยืนยัน
-                </Button>
                 <Button variant="outline" onClick={onClose}>
                     ยกเลิก
+                </Button>
+                <Button color="red" onClick={onConfirm}>
+                    ยืนยัน
                 </Button>
             </Group>
         </Modal>

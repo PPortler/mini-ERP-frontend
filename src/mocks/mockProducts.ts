@@ -1,60 +1,78 @@
 import type { ProductType } from "../types/product";
-import type { ProductResponse } from "../types/apiResponse";
+import type { ProductResponse } from "../types/api";
+import { mockCatagories } from "./mockCatagories";
+
+
+// ฟังก์ชันช่วยหา category ตาม id
+const findCategory = (id: string) =>
+  mockCatagories.find(c => c.category_id === id) || null;
 
 export const mockProducts: ProductType[] = [
   {
+    product_code: "S006",
     product_id: "1a2b3c4d-0001",
     name: "กาวร้อน 12ml",
     cost_price: 15,
     selling_price: 25,
     min_stock: 10,
-    unit: 1,
+    unit: "Ozn",
     category_id: "9",
+    category: findCategory("9"),
   },
   {
+    product_code: "S005",
     product_id: "1a2b3c4d-0002",
     name: "เครื่องเขียน A4",
     cost_price: 5,
     selling_price: 10,
     min_stock: 20,
-    unit: 1,
+    unit: "Ozn",
     category_id: "9",
+    category: findCategory("9"),
   },
   {
+    product_code: "S004",
     product_id: "1a2b3c4d-0003",
     name: "น้ำเปล่า",
     cost_price: 20,
     selling_price: 35,
     min_stock: 10,
-    unit: 1,
+    unit: "Ozn",
     category_id: "3",
+    category: findCategory("3"),
   },
   {
+    product_code: "S003",
     product_id: "1a2b3c4d-0004",
     name: "น้ำหวาน",
     cost_price: 2,
     selling_price: 5,
     min_stock: 10,
-    unit: 1,
+    unit: "Ozn",
     category_id: "3",
+    category: findCategory("3"),
   },
   {
+    product_code: "S002",
     product_id: "1a2b3c4d-0005",
     name: "มะม่วง",
     cost_price: 10,
     selling_price: 18,
     min_stock: 12,
-    unit: 1,
+    unit: "Ozn",
     category_id: "1",
+    category: findCategory("1"),
   },
   {
+    product_code: "S001",
     product_id: "1a2b3c4d-0006",
     name: "มาม่า",
     cost_price: 8,
     selling_price: 15,
     min_stock: 10,
-    unit: 1,
+    unit: "Ozn",
     category_id: "5",
+    category: findCategory("5"),
   },
 ];
 

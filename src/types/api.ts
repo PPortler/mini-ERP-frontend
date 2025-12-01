@@ -9,5 +9,9 @@ export interface ApiPaginationResponse<T> {
   totalPages: number;
 }
 
-export type ProductResponse = ApiPaginationResponse<ProductType[]>;
-export type CategoryResponse = ApiPaginationResponse<CatagoriesType[]>;
+export type ProductResponse = ApiPaginationResponse<ProductType[]> & {
+  products?: ProductType[]
+};
+export type CategoryResponse = ApiPaginationResponse<CatagoriesType[]> & {
+  categories?: CatagoriesType[];
+};

@@ -23,7 +23,7 @@ export default function Breadcrumb() {
           <Text
             key={idx}
             fw={500}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer !important" }}
             onClick={() => navigate(cumulativePaths[idx])}
           >
             {pathName}

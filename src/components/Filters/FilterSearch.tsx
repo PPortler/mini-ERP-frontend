@@ -1,4 +1,4 @@
-import { Group, TextInput, Select } from "@mantine/core";
+import { Group, TextInput, Select, Skeleton, Stack } from "@mantine/core";
 
 type OptionType = { label: string; value: string | number };
 
@@ -13,12 +13,35 @@ interface FilterField {
 
 interface TableFilterInputProps {
   fields: FilterField[];
+  loading?: boolean;
 }
 
-export default function FilterInputs({ fields }: TableFilterInputProps) {
+export default function FilterInputs({ fields, loading = false }: TableFilterInputProps) {
   return (
     <Group gap="sm" align="flex-end" mb="md" wrap="wrap">
       {fields.map((f) => {
+        if (loading) {
+          // แสดง Skeleton แทน input
+          return (
+            <Stack gap="xs" key={f.key}>
+              <Skeleton
+                key={f.key + "-label"}
+                height={16}
+                width={50}
+                radius="sm"
+                animate
+              />
+              <Skeleton
+                key={f.key + "-input"}
+                height={30}
+                width={200}
+                radius="sm"
+                animate
+              />
+            </Stack>
+          );
+        }
+
         if (f.type === "text") {
           return (
             <TextInput
@@ -29,9 +52,12 @@ export default function FilterInputs({ fields }: TableFilterInputProps) {
             />
           );
         } else if (f.type === "select") {
-          const optionsWithAll: OptionType[] = [
+          const optionsWithAll = [
             { label: "ทั้งหมด", value: "" },
-            ...(f.options || []),
+            ...(f.options || []).map(opt => ({
+              label: opt.label,
+              value: String(opt.value),
+            })),
           ];
           return (
             <Select

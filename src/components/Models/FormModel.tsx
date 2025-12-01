@@ -5,9 +5,10 @@ import { useEffect } from "react";
 type Field = {
   name: string;
   label: string;
-  type: string
+  type: string;
   options?: { label: string; value: string }[];
   disabled?: boolean;
+  required?: boolean;
 };
 
 type ReusableFormModalProps<T extends Record<string, any>> = {
@@ -17,6 +18,7 @@ type ReusableFormModalProps<T extends Record<string, any>> = {
   fields: Field[];
   initialValues: T;
   onSubmit: (values: T) => void;
+  validationSchema?: any; // เพิ่ม schema ของ yup
 };
 
 const FormModel = <T extends Record<string, any>>({
@@ -26,8 +28,27 @@ const FormModel = <T extends Record<string, any>>({
   fields,
   initialValues,
   onSubmit,
+  validationSchema,
 }: ReusableFormModalProps<T>) => {
-  const form = useForm<T>({ initialValues });
+  const form = useForm<T>({
+    initialValues,
+    validate: validationSchema
+      ? (values) => {
+        try {
+          validationSchema.validateSync(values, { abortEarly: false });
+          return {};
+        } catch (err: any) {
+          const errors: Record<string, string> = {};
+          if (err.inner) {
+            err.inner.forEach((e: any) => {
+              if (e.path) errors[e.path] = e.message;
+            });
+          }
+          return errors;
+        }
+      }
+      : undefined,
+  });
 
   useEffect(() => {
     const mappedValues = { ...initialValues } as Record<string, any>;
@@ -40,48 +61,55 @@ const FormModel = <T extends Record<string, any>>({
   }, [initialValues]);
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title}>
+    <Modal opened={opened} onClose={onClose} title={title} centered>
       <form
         onSubmit={form.onSubmit((values) => {
           onSubmit(values);
         })}
       >
         {fields.map((f) => {
-          if (f.type === "select") {
-            return (
-              <Select
-                key={f.name}
-                label={f.label}
-                data={f.options || []}
-                value={form.values[f.name]}
-                onChange={(val) => form.setFieldValue(f.name, val)}
-                error={form.errors[f.name]}
-                onBlur={() => form.validateField(f.name)}
-              />
-            );
-          }
 
-          return (
+          return f.type === "select" ? (
+            <Select
+              mb="sm"
+              key={f.name}
+              value={form.values[f.name]}
+              onChange={(val) =>
+                form.setFieldValue(f.name as keyof T, (val ?? '') as T[keyof T])
+              }
+              onBlur={() => form.validateField(f.name)}
+              error={form.errors[f.name]}
+              data={f.options || []}
+              label={
+                <span>
+                  {f.label}{" "}
+                  {f.required && <span style={{ color: 'red' }}>*</span>}
+                </span>
+              }
+            />
+          ) : (
             <TextInput
+              mb="sm"
               key={f.name}
               type={f.type}
-              label={f.label}
               {...form.getInputProps(f.name as keyof T & string)}
               disabled={f.disabled}
+              error={form.errors[f.name]}
+              label={
+                <span>
+                  {f.label}{" "}
+                  {f.required && <span style={{ color: 'red' }}>*</span>}
+                </span>
+              }
             />
           );
         })}
 
-        <Group mt="md"
-          style={{
-            display: "flex",
-            flexDirection: "row-reverse"
-          }}
-        >
-          <Button type="submit">บันทึก</Button>
+        <Group mt="xl" style={{ display: "flex", flexDirection: "row-reverse" }}>
           <Button variant="outline" onClick={onClose}>
             ยกเลิก
           </Button>
+          <Button type="submit">บันทึก</Button>
         </Group>
       </form>
     </Modal>

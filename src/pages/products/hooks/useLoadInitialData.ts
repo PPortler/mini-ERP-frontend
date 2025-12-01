@@ -3,7 +3,6 @@ import { ProductService } from "../../../services/ProductService";
 import { CatagoriesService } from "../../../services/CatagoriesService";
 import type { ProductType } from "../../../types/product";
 import type { CatagoriesType } from "../../../types/catagories";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
 import { useDebouncedValue } from "@mantine/hooks";
 
 export const useLoadInitialData = ({
@@ -12,7 +11,6 @@ export const useLoadInitialData = ({
   initialSearch = "",
   initialCategoryId = "",
 }) => {
-  const { setOpenLoading } = LoadingProvider.useLoading()
 
   const [products, setProducts] = useState<ProductType[]>([]);
   const [categories, setCategories] = useState<CatagoriesType[]>([]);
@@ -22,12 +20,13 @@ export const useLoadInitialData = ({
   const [search, setSearch] = useState(initialSearch);
   const [categoryId, setCategoryId] = useState(initialCategoryId);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [debouncedSearch] = useDebouncedValue(search, 500);
 
   const fetchData = useCallback(async () => {
     try {
-      setOpenLoading(true);
+      setLoading(true);
       const [productRes, categoryRes] = await Promise.all([
         ProductService.getByPagination(page, pageSize, debouncedSearch, categoryId),
         CatagoriesService.getAll(),
@@ -35,7 +34,7 @@ export const useLoadInitialData = ({
 
       if (!productRes.ok) throw new Error(productRes.message || "Failed to load");
       if (!categoryRes.ok) throw new Error(categoryRes.message || "Failed to load");
-
+      
       setProducts(productRes.data.data);
       setCategories(categoryRes.data);
       setTotal(productRes.data.total);
@@ -47,9 +46,9 @@ export const useLoadInitialData = ({
         setError("Failed to load data");
       }
     } finally {
-      setOpenLoading(false);
+      setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch, categoryId, setOpenLoading]);
+  }, [page, pageSize, debouncedSearch, categoryId]);
 
   useEffect(() => {
     fetchData();
@@ -69,5 +68,6 @@ export const useLoadInitialData = ({
     setCategoryId,
     error,
     refetch: fetchData,
+    loading
   };
 };

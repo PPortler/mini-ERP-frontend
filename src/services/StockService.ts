@@ -1,9 +1,20 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { getMockStockSummary, mockStockTransactions } from "../mocks/mockStockTransaction";
+import { mockStockTransactions } from "../mocks/mockStockTransaction";
+
+export interface StockInPayload {
+  product_id: string;
+  quantity: number;
+  reason?: string;
+  reference_id?: string;
+  created_by: string;
+}
 
 export type StockSummaryType = {
   product_id: string;
   current_stock?: number;
+  total_in?: number,
+  total_out?: number,
+  total_adjust?: number,
 };
 
 export type StockSummaryServiceResult =
@@ -75,10 +86,10 @@ export const StockService = {
 
   // for get summary
   async getStockSummary(product_id: string): Promise<StockSummaryServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const stockSummary = getMockStockSummary(product_id);
-      return { ok: true, data: stockSummary };
-    }
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const stockSummary = getMockStockSummary(product_id);
+    //   return { ok: true, data: stockSummary };
+    // }
 
     const params = {
       product_id: product_id
@@ -95,5 +106,20 @@ export const StockService = {
       return { ok: false, message: err.message };
     }
 
+  },
+  async stockIn(payload: StockInPayload): Promise<StockServiceResult> {
+    try {
+      const res = await AxiosUtil.createRequest({
+        method: 'POST',
+        url: '/stocks/in',
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+
+      return { ok: true, data: res.data };
+    } catch (err: any) {
+      return { ok: false, message: err.message || 'Failed to stock in' };
+    }
   },
 };

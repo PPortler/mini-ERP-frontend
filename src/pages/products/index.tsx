@@ -1,8 +1,9 @@
-import { ActionIcon, Box, Button, Card, Group, Title } from '@mantine/core'
+import { ActionIcon, Box, Card, Group, Title } from '@mantine/core'
 import DataTable from '../../components/Table/DataTable'
 import { useLoadInitialData } from './hooks/useLoadInitialData';
-import { columnMinStock } from '../../constants/columnTable';
+import { columnProducts } from '../../constants/columnTable';
 import EditIcon from '@mui/icons-material/Edit';
+// import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getRoleCurrent } from '../../utils/RoleUtil';
 import { ROLES } from '../../constants/enum/enum';
@@ -13,6 +14,10 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 import { ProductService } from '../../services/ProductService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
+import AppButton from '../../components/Form/AppButton';
+import { LoadingProvider } from '../../contexts/LoadingContext';
+import { productSchema } from '../../schemas/productSchema';
+// import { useNavigate } from 'react-router-dom';
 
 function ProductPage() {
   const {
@@ -28,12 +33,15 @@ function ProductPage() {
     setSearch,
     setCategoryId,
     refetch,
+    loading
   } = useLoadInitialData({
     initialPage: 1,
-    initialPageSize: 5,
+    initialPageSize: 10,
     initialSearch: "",
     initialCategoryId: "",
   });
+  // const navigate = useNavigate();
+  const { setOpenLoading } = LoadingProvider.useLoading();
   const roleCurrent = getRoleCurrent();
 
   // State สำหรับ modal
@@ -60,7 +68,14 @@ function ProductPage() {
     setModalOpen(true);
   };
 
+  //view
+  // const handleView = (product: ProductType) => {
+  //   navigate(`/products/stock?id=${product.product_id}`)
+  // };
+
   const confirmDelete = async () => {
+    setOpenLoading(true)
+
     if (!selectedProduct?.product_id) return;
     try {
       const res = await ProductService.delete(selectedProduct.product_id)
@@ -76,6 +91,8 @@ function ProductPage() {
         type: 'success',
         message: 'ลบสินค้าสำเร็จ',
       });
+      setSelectedProduct(null);
+      setModalOpen(false);
       refetch();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -84,44 +101,50 @@ function ProductPage() {
           message: err.message || "เกิดข้อผิดพลาด",
         });
       }
+    } finally {
+      setOpenLoading(false)
     }
-    setModalOpen(false);
-    setSelectedProduct(null);
   };
 
   const saveItems = async (updatedProduct: ProductType) => {
+    setOpenLoading(true)
+
     try {
+      const values = await productSchema.validate(updatedProduct, { abortEarly: false });
+
       let result;
       if (!updatedProduct.product_id) {
         result = await ProductService.create({
-          name: updatedProduct.name,
-          cost_price: updatedProduct.cost_price,
-          selling_price: updatedProduct.selling_price,
-          min_stock: updatedProduct.min_stock,
-          unit: updatedProduct.unit,
-          category_id: updatedProduct.category_id,
-          stock: updatedProduct.stock,
+          product_code: values.product_code,
+          name: values.name,
+          cost_price: values.cost_price,
+          selling_price: values.selling_price,
+          min_stock: values.min_stock,
+          unit: values.unit,
+          category_id: values.category_id,
+          stock: values.stock,
         });
       } else {
         result = await ProductService.update(updatedProduct.product_id, updatedProduct);
       }
 
-      if (result.ok && result.data.length > 0) {
+      if (result.ok) {
         notify({
           type: 'success',
           message: updatedProduct.product_id
             ? `แก้ไขสินค้า "${updatedProduct.name}" สำเร็จ`
             : `เพิ่มสินค้า "${updatedProduct.name}" สำเร็จ`,
         });
+        setModalOpen(false);
+        setSelectedProduct(null);
         refetch();
       } else {
         notify({
           type: 'error',
-          message: 'เกิดข้อผิดพลาดในการบันทึกสินค้า',
+          message: result.message || "เกิดข้อผิดพลาด",
         });
       }
-      setModalOpen(false);
-      setSelectedProduct(null);
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         notify({
@@ -129,68 +152,73 @@ function ProductPage() {
           message: err.message || "เกิดข้อผิดพลาด",
         });
       }
+    } finally {
+      setOpenLoading(false)
     }
   };
 
   const actionColumn = {
     header: 'Action',
     accessor: 'action',
-    cell: (row: any) => (
+    cell: (row: ProductType) => (
       <Group gap="xs">
+        {/* <ActionIcon color="green" onClick={() => handleView(row)}>
+          <VisibilityIcon fontSize="small" />
+        </ActionIcon> */}
         <ActionIcon color="blue" onClick={() => handleEdit(row)}>
           <EditIcon fontSize="small" />
         </ActionIcon>
-
         <ActionIcon color="red" onClick={() => handleDelete(row)}>
           <DeleteIcon fontSize="small" />
         </ActionIcon>
       </Group>
     ),
   };
+
   const columnsWithAction =
     roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
-      ? [...columnMinStock]
-      : [...columnMinStock, actionColumn];
+      ? [...columnProducts]
+      : [...columnProducts, actionColumn];
 
   return (
     <Box>
       <Card shadow="sm" padding="lg">
         <Group justify="space-between" mb="sm">
           <Title order={3}>สินค้าทั้งหมด</Title>
-          <Box style={{
-            display: "flex",
-            gap: "10px"
-          }}>
-            {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
-              <Button
-                onClick={() => {
-                  setSelectedProduct(null);
-                  setModalType('form');
-                  setModalOpen(true);
-                }}
-              >เพิ่มสินค้า</Button>
-            )}
-          </Box>
         </Group>
-        <FilterInputs
-          fields={[
-            {
-              key: "search",
-              label: "ค้นหา",
-              type: "text",
-              value: search,
-              onChange: setSearch,
-            },
-            {
-              key: "categoryId",
-              label: "หมวดหมู่",
-              type: "select",
-              value: categoryId,
-              options: categories.map((c) => ({ label: c.name, value: c.category_id })),
-              onChange: setCategoryId,
-            },
-          ]}
-        />
+        <Group justify="space-between">
+          <FilterInputs
+            fields={[
+              {
+                key: "search",
+                label: "ค้นหา",
+                type: "text",
+                value: search,
+                onChange: setSearch,
+              },
+              {
+                key: "categoryId",
+                label: "หมวดหมู่",
+                type: "select",
+                value: categoryId,
+                options: categories.map((c) => ({ label: c.name, value: c.category_id })),
+                onChange: setCategoryId,
+              },
+            ]}
+          />
+          {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
+            <AppButton
+              loading={loading}
+              onClick={() => {
+                setSelectedProduct(null);
+                setModalType('form');
+                setModalOpen(true);
+              }}
+            >
+              เพิ่มสินค้า
+            </AppButton>
+          )}
+        </Group>
         <DataTable
           columns={columnsWithAction}
           data={products}
@@ -198,7 +226,9 @@ function ProductPage() {
           pageSize={pageSize}
           total={total}
           onPageChange={setPage}
-          onPageSizeChange={setPageSize} />
+          onPageSizeChange={setPageSize}
+          loading={loading}
+        />
       </Card>
 
       {modalType === 'confirm' && (
@@ -213,6 +243,7 @@ function ProductPage() {
 
       {modalType === 'form' && (
         <FormModel<ProductType>
+          validationSchema={productSchema}
           opened={modalOpen}
           onClose={() => setModalOpen(false)}
           title={
@@ -223,26 +254,30 @@ function ProductPage() {
           initialValues={
             selectedProduct || {
               product_id: '',
+              product_code: '',
               name: '',
               cost_price: 0,
               selling_price: 0,
               min_stock: 0,
-              unit: 0,
+              unit: '',
               category_id: '',
               stock: 0,
             }
           }
           fields={[
-            { name: 'name', label: 'ชื่อสินค้า', type: 'text' },
-            { name: 'cost_price', label: 'ราคาทุน', type: 'number' },
-            { name: 'selling_price', label: 'ราคาขาย', type: 'number' },
-            { name: 'min_stock', label: 'Min Stock', type: 'number' },
-            { name: 'unit', label: 'หน่วย', type: 'number' },
+            { name: 'product_code', label: 'รหัสสินค้า', type: 'text', required: true, disabled: !!selectedProduct },
+            { name: 'name', label: 'ชื่อสินค้า', type: 'text', required: true },
+            { name: 'cost_price', label: 'ราคาทุน', type: 'number', required: true },
+            { name: 'selling_price', label: 'ราคาขาย', type: 'number', required: true },
+            { name: 'min_stock', label: 'Min Stock', type: 'number', required: true },
+            { name: 'unit', label: 'หน่วย', type: 'string', required: true },
             {
               name: "category_id",
               label: "หมวดหมู่",
               type: "select",
+              disabled: !!selectedProduct,
               options: categoryOptions,
+              required: true
             },
           ]}
           onSubmit={saveItems}
