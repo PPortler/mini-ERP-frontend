@@ -1,40 +1,30 @@
 import { ROLES } from "../constants/enum/enum";
-import type { UserInfoType } from "../types/user";
+import type { UserResponse } from "../services/AuthService";
 
-export type MockUserType = {
-  username: string;
-  password: string;
-  name: string;
-  role: number;
-};
-
-export const mockUsers: UserInfoType[] = [
+export const mockUsers: UserResponse[] = [
   {
-    user_id: "1",
+    id: "1",
     username: "admin",
     password: "1234",
     role: ROLES.ADMIN, 
     first_name: "Harry",
     last_name: "Kane",
-    phone: "0812345678",
   },
   {
-    user_id: "2",
+    id: "2",
     username: "staff",
     password: "1234",
     role: ROLES.STAFF, // Staff
     first_name: "John",
     last_name: "Doe",
-    phone: "0898765432",
   },
   {
-    user_id: "3",
+    id: "3",
     username: "viewer",
     password: "1234",
     role: ROLES.VIEWER, // Viewer
     first_name: "Jane",
     last_name: "Smith",
-    phone: "0823456789",
   },
 ];
 

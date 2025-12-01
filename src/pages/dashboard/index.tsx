@@ -1,27 +1,24 @@
 import { Card, Grid, Text, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
-import { columnMinStock, poColumns, receivingColumns, withdrawColumns } from "../../constants/columnTable";
+import { columnMinStock } from "../../constants/columnTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
+import Chart from "react-apexcharts";
+import type { ApexOptions } from "apexcharts";
 
 export default function Dashboard() {
+  const { minStock, stockMovement, purchaseTrend } = useLoadInitialData();
 
-  const { minStock } = useLoadInitialData();
-
-  const receivingData = [
-    { month: "มกราคม 2025", received_count: 18, total_amount: 42500 },
-    { month: "กุมภาพันธ์ 2025", received_count: 22, total_amount: 51300 },
-    { month: "มีนาคม 2025", received_count: 15, total_amount: 36900 },
-  ];
-
-  const withdrawData = [
-    { date: "2025-11-24", created_by: "สมชาย", item: "กล่อง 20x20", quantity: 12 },
-    { date: "2025-11-23", created_by: "มานี", item: "ปากกาเจล", quantity: 20 },
-  ];
-
-  const poData = [
-    { po_number: "PO-00123", vendor: "ABC Supplies", total_amount: 24000 },
-    { po_number: "PO-00121", vendor: "XYZ Trading", total_amount: 12500 },
-  ];
+  // Chart options
+  const stockMovementOptions: ApexOptions = {
+    chart: { id: "stock-movement", toolbar: { show: false } },
+    xaxis: { categories: stockMovement.map((item) => item.productName) },
+    title: { text: "Stock Movement", align: "center" },
+  };
+  const purchaseTrendOptions: ApexOptions = {
+    chart: { id: "purchase-trend", toolbar: { show: false } },
+    xaxis: { categories: purchaseTrend.map((item) => item.date), },
+    title: { text: "Purchase Trend", align: "center" },
+  };
 
   return (
     <Grid gutter="lg">
@@ -38,7 +35,7 @@ export default function Dashboard() {
       <Grid.Col span={{ base: 12, md: 4 }}>
         <Card shadow="sm" padding="lg">
           <Text size="sm" c="dimmed">สินค้าใกล้หมด</Text>
-          <Title order={2}>8 รายการ</Title>
+          <Title order={2}>{minStock.length} รายการ</Title>
         </Card>
       </Grid.Col>
 
@@ -50,69 +47,45 @@ export default function Dashboard() {
       </Grid.Col>
 
       {/* ----------------------------------------------------
-          2) สินค้าใกล้หมด
+          2) Charts
+      ---------------------------------------------------- */}
+      <Grid.Col span={{ base: 12, sm: 6, md: 6 }}>
+        <Card shadow="sm" padding="lg">
+          <Group justify="space-between" mb="sm">
+            <Title order={3}>Stock Movement</Title>
+          </Group>
+          <Chart
+            options={stockMovementOptions}
+            series={[{ name: "Stock", data: stockMovement.map((i) => i.quantity) }]}
+            type="bar"
+            height={300}
+          />
+        </Card>
+      </Grid.Col>
+
+      <Grid.Col span={{ base: 12, sm: 6, md: 6 }}>
+        <Card shadow="sm" padding="lg">
+          <Group justify="space-between" mb="sm">
+            <Title order={3}>Purchase Trend</Title>
+          </Group>
+          <Chart
+            options={purchaseTrendOptions}
+            series={[{ name: "PO", data: purchaseTrend.map((i) => i.count) }]}
+            type="line"
+            height={300}
+          />
+        </Card>
+      </Grid.Col>
+
+      {/* ----------------------------------------------------
+          3) Low Stock Warning Table
       ---------------------------------------------------- */}
       <Grid.Col span={12}>
         <Card shadow="sm" padding="lg">
           <Group justify="space-between" mb="sm">
             <Title order={3}>สินค้าใกล้หมด (ต่ำกว่า Min Stock)</Title>
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
           </Group>
           <DataTable columns={columnMinStock} data={minStock} pageSize={5} />
-        </Card>
-      </Grid.Col>
-
-      {/* ----------------------------------------------------
-          3) รายงานการรับสินค้า (รายเดือน / Chart)
-      ---------------------------------------------------- */}
-      <Grid.Col span={12}>
-        <Card shadow="sm" padding="lg">
-          <Group justify="space-between" mb="sm">
-            <Title order={3}>รายงานการรับสินค้า (รายเดือน)</Title>
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
-          </Group>
-
-          <DataTable
-            columns={receivingColumns}
-            data={receivingData}
-            pageSize={5}
-          />
-        </Card>
-      </Grid.Col>
-
-      {/* ----------------------------------------------------
-          4) ประวัติการเบิกสินค้า
-      ---------------------------------------------------- */}
-      <Grid.Col span={12}>
-        <Card shadow="sm" padding="lg">
-          <Group justify="space-between" mb="sm">
-            <Title order={3}>ประวัติการเบิกสินค้า</Title>
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
-          </Group>
-
-          <DataTable
-            columns={withdrawColumns}
-            data={withdrawData}
-            pageSize={5}
-          />
-        </Card>
-      </Grid.Col>
-
-      {/* ----------------------------------------------------
-          5) สรุปยอด PO
-      ---------------------------------------------------- */}
-      <Grid.Col span={12}>
-        <Card shadow="sm" padding="lg">
-          <Group justify="space-between" mb="sm">
-            <Title order={3}>สรุปยอด PO</Title>
-            {/* <Button leftSection={<DownloadIcon />}>Export Excel</Button> */}
-          </Group>
-
-          <DataTable
-            columns={poColumns}
-            data={poData}
-            pageSize={5}
-          />
         </Card>
       </Grid.Col>
     </Grid>

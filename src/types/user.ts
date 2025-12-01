@@ -8,8 +8,8 @@ export type UserInfoType = {
   role: string;
   create_at?: Date
   updated_at?: Date
-  access_token?: string;
-  access_token_exp?: number;
-  refresh_token?: string;
-  refresh_token_exp?: number;
+  access_token: string;
+  access_token_exp: number;
+  refresh_token: string;
+  refresh_token_exp: number;
 };
