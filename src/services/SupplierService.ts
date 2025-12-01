@@ -5,7 +5,7 @@ import type { SupplierType } from "../types/suppliers";
 export type SupplierListResponse = SupplierType[];
 
 export type SupplierServiceResult =
-  | { ok: true; data: SupplierListResponse }
+  | { ok: true; data: SupplierListResponse; message?: string }
   | { ok: false; message: string };
 
 export const SupplierService = {

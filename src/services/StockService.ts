@@ -1,5 +1,6 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { mockStockTransactions } from "../mocks/mockStockTransaction";
+import { getMockStockSummary, mockStockTransactions } from "../mocks/mockStockTransaction";
+import type { StockTransactionType } from "../types/stockTransection";
 
 export interface StockInPayload {
   product_id: string;
@@ -21,15 +22,6 @@ export type StockSummaryServiceResult =
   | { ok: true; data: StockSummaryType }
   | { ok: false; message: string };
 
-export type StockTransactionType = {
-  stock_transaction_id: string;
-  product_id: string;
-  type: string;
-  quantity: number;
-  reason?: string;
-  reference?: string;
-  created_at?: string;
-};
 
 export type StockListResponse = StockTransactionType[];
 
@@ -86,10 +78,10 @@ export const StockService = {
 
   // for get summary
   async getStockSummary(product_id: string): Promise<StockSummaryServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const stockSummary = getMockStockSummary(product_id);
-    //   return { ok: true, data: stockSummary };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const stockSummary = getMockStockSummary(product_id);
+      return { ok: true, data: stockSummary };
+    }
 
     const params = {
       product_id: product_id
@@ -102,8 +94,14 @@ export const StockService = {
       });
       if (!res.ok) return { ok: false, message: res.message };
       return { ok: true, data: res.data };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาด";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      return { ok: false, message };
     }
 
   },
@@ -117,9 +115,15 @@ export const StockService = {
 
       if (!res.ok) return { ok: false, message: res.message };
 
-      return { ok: true, data: res.data };
-    } catch (err: any) {
-      return { ok: false, message: err.message || 'Failed to stock in' };
+      return { ok: true, data: res.data as StockListResponse };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาด";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      return { ok: false, message };
     }
   },
 };

@@ -37,8 +37,14 @@ export const PurchaseOrderService = {
       const mapped = mapPoOrderWithSupplier(poRes.data, supplierRes.data);
 
       return { ok: true, data: mapped };
-    } catch (err: any) {
-      return { ok: false, message: err.message || "Failed to load purchase orders" };
+    } catch (err: unknown) {
+      let message = "Failed to load purchase orders";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      return { ok: false, message };
     }
   },
 

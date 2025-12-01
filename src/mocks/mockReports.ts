@@ -9,7 +9,7 @@ export const getMockStockMovements = (from?: string, to?: string) => {
   const toDate = to ? new Date(to) : null;
 
   return mockStockTransactions.filter((t) => {
-    const created = new Date(t.created_at);
+    const created = new Date(t.created_at ?? "");
 
     if (fromDate && created < fromDate) return false;
     if (toDate && created > toDate) return false;
@@ -26,7 +26,7 @@ export const getMockStockSummaryReport = (from?: string, to?: string) => {
     const tx = mockStockTransactions.filter((t) => {
       if (t.product_id !== p.product_id) return false;
 
-      const created = new Date(t.created_at);
+ const created = new Date(t.created_at ?? "");
       if (fromDate && created < fromDate) return false;
       if (toDate && created > toDate) return false;
 
@@ -49,7 +49,7 @@ export const getMockPurchaseSummary = (month?: string) => {
 
   const poInMonth = mockPurchaseOrders.filter((po) => {
     if (!month) return true; // เอาทุก PO
-    return po.create_at.slice(0, 7) === month;
+    return po.create_at?.slice(0, 7) === month;
   });
 
   // สร้าง row สำหรับ DataTable

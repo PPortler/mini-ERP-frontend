@@ -1,4 +1,5 @@
-import type { StockTransactionType } from "../services/StockService";
+
+import type { StockTransactionType } from "../types/stockTransection";
 import { calcStockSummary } from "./utils/calcStockSummary";
 
 export const mockStockTransactions: StockTransactionType[] = [

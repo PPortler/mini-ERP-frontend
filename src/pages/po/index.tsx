@@ -9,6 +9,7 @@ import { ROLES, STATUS_PO } from "../../constants/enum/enum";
 import { useNavigate } from "react-router-dom";
 import { getRoleCurrent } from "../../utils/RoleUtil";
 import DataTable from "../../components/Table/DataTable";
+import { columnPoOrder } from "../../constants/columnTable";
 
 export default function PoPage() {
     const { purchaseOrders, suppliers, refetch } = useLoadInitialData();
@@ -35,7 +36,7 @@ export default function PoPage() {
         navigate(`/po/${po.purchase_order_id}`);
     };
 
-    const savePO = async (values: any) => {
+    const savePO = async (values: PurchaseOrderType) => {
         try {
             const payload = { ...values };
 
@@ -57,11 +58,14 @@ export default function PoPage() {
             } else {
                 notify({ type: "error", message: result.message || "เกิดข้อผิดพลาด" });
             }
-        } catch (err: any) {
-            notify({ type: "error", message: err.message || "เกิดข้อผิดพลาด" });
+        } catch (err: unknown) {
+            notify({
+                type: "error",
+                message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
+            });
         }
     };
-    
+
     const actionColumn = {
         header: "Action",
         accessor: "action",
@@ -73,21 +77,12 @@ export default function PoPage() {
         ),
     };
 
-    const columns = [
-        { header: "PO ID", accessor: "purchase_order_id" },
-        {
-            header: "Supplier",
-            accessor: "supplier_id",
-            cell: (row: PurchaseOrderType) => {
-                const supplier = suppliers.find((s) => s.supplier_id === row.supplier_id);
-                return supplier?.name || "-";
-            },
-        },
-        { header: "Status", accessor: "status" },
-        { header: "Total", accessor: "total_amount" },
-        { header: "Created At", accessor: "create_at" },
-        ...(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF ? [actionColumn] : []),
-    ];
+
+    const columnsWithAction =
+        roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
+            ? [...columnPoOrder]
+            : [...columnPoOrder, actionColumn];
+
     return (
         <Box>
             <Card shadow="sm" padding="lg">
@@ -98,8 +93,8 @@ export default function PoPage() {
                     )}
 
                 </Group>
-                 <DataTable columns={columns} data={purchaseOrders} pageSize={10} />
-             
+                <DataTable columns={columnsWithAction} data={purchaseOrders} pageSize={10} />
+
             </Card>
 
             {/* Form Modal สำหรับสร้าง/แก้ไข PO */}
@@ -110,6 +105,7 @@ export default function PoPage() {
                     title={!selectedPO ? "สร้าง PO" : `แก้ไข PO ${selectedPO.purchase_order_id}`}
                     initialValues={
                         selectedPO || {
+                            purchase_order_id: "",
                             supplier_id: "",
                             status: STATUS_PO.DRAFT,
                             total_amount: 0,
@@ -121,9 +117,11 @@ export default function PoPage() {
                             name: "status",
                             label: "Status",
                             type: "select",
-                            options: Object.entries(STATUS_PO).map(([key, value]) => ({ label: value, value }))
+                            options: Object.entries(STATUS_PO).map(([, value]) => ({
+                                label: value,
+                                value,
+                            }))
                         },
-                        // { name: "total_amount", label: "Total Amount", type: "number", disabled: true},
                     ]}
                     onSubmit={savePO}
                 />

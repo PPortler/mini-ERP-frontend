@@ -1,4 +1,10 @@
-export const columnProducts = [
+import type { Column } from "../components/Table/DataTable";
+import type { AuditLogType } from "../types/auditLog";
+import type { CatagoriesType } from "../types/catagories";
+import type { ProductType } from "../types/product";
+import type { SupplierType } from "../types/suppliers";
+
+export const columnProducts: Column<ProductType>[] = [
   { header: "รหัสสินค้า", accessor: "product_code" },
   { header: "สินค้า", accessor: "name" },
   { header: "หน่วย", accessor: "unit" },
@@ -10,55 +16,39 @@ export const columnProducts = [
   { header: "Min Stock", accessor: "min_stock" },
 ];
 
-export const receivingColumns = [
-  { header: "เดือน", accessor: "month" },
-  { header: "จำนวนรายการรับสินค้า", accessor: "received_count" },
-  { header: "ยอดรวมมูลค่า", accessor: "total_amount" },
-];
-
-export const withdrawColumns = [
-  { header: "วันที่", accessor: "date" },
-  { header: "ผู้เบิก", accessor: "created_by" },
-  { header: "สินค้า", accessor: "item" },
-  { header: "จำนวน", accessor: "quantity" },
-];
-
-export const poColumns = [
-  { header: "PO No.", accessor: "po_number" },
-  { header: "Vendor", accessor: "vendor" },
-  { header: "Total", accessor: "total_amount" },
-];
-
-export const columnStock = [
+export const columnAuditLogs: Column<AuditLogType>[] = [
+  { header: "Audit ID", accessor: "audit_log_id" },
+  { header: "User ID", accessor: "user_id" },
+  { header: "Action", accessor: "action" },
   {
-    header: "รหัสสินค้า",
-    accessor: "product_id",
+    header: "Detail",
+    accessor: "detail",
   },
   {
-    header: "ประเภท",
-    accessor: "type",
-  },
-  {
-    header: "จำนวน",
-    accessor: "quantity",
-  },
-  {
-    header: "เหตุผล",
-    accessor: "reason",
-  },
-  {
-    header: "เอกสารอ้างอิง",
-    accessor: "reference",
-  },
-  {
-    header: "วันที่ทำรายการ",
+    header: "Created At",
     accessor: "created_at",
   }
 ];
 
-export const columnSupplier = [
+export const columnPoOrder = [
+  { header: "PO ID", accessor: "purchase_order_id" },
+  {
+    header: "Supplier",
+    accessor: "supplier_id",
+  },
+  { header: "Status", accessor: "status" },
+  { header: "Total", accessor: "total_amount" },
+  { header: "Created At", accessor: "create_at" },
+];
+
+export const columnSupplier: Column<SupplierType>[] = [
   { header: "ชื่อ", accessor: "name" },
   { header: "เบอร์โทร", accessor: "phone" },
   { header: "อีเมล", accessor: "email" },
   { header: "ที่อยู่", accessor: "address" },
+];
+
+export const columnCategory: Column<CatagoriesType>[] = [
+  { header: 'ชื่อหมวดหมู่', accessor: 'name' },
+  { header: 'คำอธิบาย', accessor: 'description' },
 ];

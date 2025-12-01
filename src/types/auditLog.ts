@@ -10,5 +10,5 @@ export type AuditLogType = {
     },
     description?: string,
     created_at?: Date,
-    detail?: Record<string, any>;
+    detail?: Record<string, unknown>;
 }

@@ -1,6 +1,7 @@
 import { Modal, Button, Group, TextInput, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
+import { ValidationError, type ObjectSchema } from "yup";
 
 type Field = {
   name: string;
@@ -11,17 +12,18 @@ type Field = {
   required?: boolean;
 };
 
-type ReusableFormModalProps<T extends Record<string, any>> = {
+type ReusableFormModalProps<T extends Record<string, unknown>> = {
   opened: boolean;
   onClose: () => void;
   title: string;
   fields: Field[];
   initialValues: T;
   onSubmit: (values: T) => void;
-  validationSchema?: any; // เพิ่ม schema ของ yup
+  validationSchema?: ObjectSchema<Partial<T>>; // <-- เปลี่ยนเป็น Partial<T>
+
 };
 
-const FormModel = <T extends Record<string, any>>({
+const FormModel = <T extends Record<string, unknown>>({
   opened,
   onClose,
   title,
@@ -37,24 +39,28 @@ const FormModel = <T extends Record<string, any>>({
         try {
           validationSchema.validateSync(values, { abortEarly: false });
           return {};
-        } catch (err: any) {
-          const errors: Record<string, string> = {};
-          if (err.inner) {
-            err.inner.forEach((e: any) => {
+        } catch (err) {
+          // เช็กว่า err เป็น Yup ValidationError หรือไม่
+          if (err instanceof ValidationError) {
+            const errors: Record<string, string> = {};
+            err.inner.forEach((e) => {
               if (e.path) errors[e.path] = e.message;
             });
+            return errors;
           }
-          return errors;
+          // fallback สำหรับ error อื่น ๆ
+          return {};
         }
       }
       : undefined,
   });
 
   useEffect(() => {
-    const mappedValues = { ...initialValues } as Record<string, any>;
+    const mappedValues: Partial<T> = { ...initialValues }; // ใช้ Partial<T> แทน any
     fields.forEach(f => {
-      if (f.type === "number" && mappedValues[f.name] === 0) {
-        mappedValues[f.name] = undefined;
+      const key = f.name as keyof T;
+      if (f.type === "number" && mappedValues[key] === 0) {
+        mappedValues[key] = undefined;
       }
     });
     form.setValues(mappedValues as T);
@@ -73,7 +79,7 @@ const FormModel = <T extends Record<string, any>>({
             <Select
               mb="sm"
               key={f.name}
-              value={form.values[f.name]}
+              value={String(form.values[f.name] ?? '')}
               onChange={(val) =>
                 form.setFieldValue(f.name as keyof T, (val ?? '') as T[keyof T])
               }

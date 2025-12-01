@@ -1,6 +1,7 @@
 import { Box, Card, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
+import type { StockTransactionType } from "../../types/stockTransection";
 
 export default function StockTransactionsPage() {
     const { stockTransactions } = useLoadInitialData();
@@ -13,7 +14,7 @@ export default function StockTransactionsPage() {
         { header: "จำนวน", accessor: "quantity" },
         { header: "สาเหตุ", accessor: "reason" },
         // { header: "อ้างอิง", accessor: "reference" },
-        { header: "วันที่", accessor: "created_at", cell: (row: any) => new Date(row.created_at).toLocaleString() },
+        { header: "วันที่", accessor: "created_at", cell: (row: StockTransactionType) => new Date(row.created_at ?? "").toLocaleString() },
     ];
 
     return (

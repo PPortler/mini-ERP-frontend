@@ -20,17 +20,15 @@ export const useLoadInitialData = () => {
             try {
                 setOpenLoading(true);
 
-                // 1) ดึงสินค้าจาก backend
                 const res = await ProductService.getAll();
                 if (!res.ok) {
                     setError(res.message || "Failed to load products");
                     return;
                 }
                 const products = res.data;
-                setMinStock(products);
+                setMinStock(products ?? []);
 
-                // 2) ดึง stock summary สำหรับแต่ละสินค้า
-                const stockPromises = products.map(async (product) => {
+                const stockPromises = products?.map(async (product) => {
                     const stockRes = await StockService.getStockSummary(product.product_id);
                     if (stockRes.ok) {
                         return {
@@ -45,7 +43,7 @@ export const useLoadInitialData = () => {
                     }
                 });
 
-                const stockResults = await Promise.all(stockPromises);
+                const stockResults = await Promise.all(stockPromises ?? []);
                 setStockMovement(stockResults);
 
                 // 3) สร้าง purchaseTrend mock

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Card, Group, Title, Button } from "@mantine/core";
 import DataTable from "../../../components/Table/DataTable";
@@ -30,9 +30,14 @@ export default function PoProductPage() {
             try {
                 setOpenLoading(true);
                 const res = await ProductService.getAll();
-                if (res.ok) setProducts(res.data);
-            } catch (err: any) {
-                notify({ type: "error", message: err.message || "Failed to load products" });
+                if (res.ok) setProducts(res.data ?? []);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    notify({ type: "error", message: err.message });
+                } else {
+                    // fallback สำหรับค่าอื่น ๆ ที่ไม่ใช่ Error
+                    notify({ type: "error", message: "Failed to load products" });
+                }
             } finally {
                 setOpenLoading(false);
             }
@@ -55,8 +60,12 @@ export default function PoProductPage() {
             await PurchaseOrderService.deleteItem(purchase_order_id!, itemId);
             notify({ type: "success", message: "ลบ item สำเร็จ" });
             refetch();
-        } catch (err: any) {
-            notify({ type: "error", message: err.message || "เกิดข้อผิดพลาด" });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                notify({ type: "error", message: err.message });
+            } else {
+                notify({ type: "error", message: "เกิดข้อผิดพลาด" });
+            }
         }
     };
 
@@ -77,8 +86,12 @@ export default function PoProductPage() {
             refetch();
             setModalOpen(false);
             setSelectedItem(null);
-        } catch (err: any) {
-            notify({ type: "error", message: err.message || "เกิดข้อผิดพลาด" });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                notify({ type: "error", message: err.message });
+            } else {
+                notify({ type: "error", message: "เกิดข้อผิดพลาด" });
+            }
         }
     };
 

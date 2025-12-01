@@ -1,6 +1,6 @@
 import { Card, Grid, Text, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
-import { columnMinStock } from "../../constants/columnTable";
+import { columnProducts } from "../../constants/columnTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
@@ -85,7 +85,7 @@ export default function Dashboard() {
           <Group justify="space-between" mb="sm">
             <Title order={3}>สินค้าใกล้หมด (ต่ำกว่า Min Stock)</Title>
           </Group>
-          <DataTable columns={columnMinStock} data={minStock} pageSize={5} />
+          <DataTable columns={columnProducts} data={minStock} pageSize={5} />
         </Card>
       </Grid.Col>
     </Grid>

@@ -14,8 +14,12 @@ export const useLoadInitialData = (purchase_order_id: string) => {
       setOpenLoading(true);
       const data = await PurchaseOrderService.getItemsByPOId(purchase_order_id);
       setPoItems(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to load PO items");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load PO items");
+      }
     } finally {
       setOpenLoading(false);
     }

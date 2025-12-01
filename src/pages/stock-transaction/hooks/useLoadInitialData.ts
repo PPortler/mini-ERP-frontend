@@ -19,8 +19,12 @@ export const useLoadInitialData = () => {
 
       setTransactions(resTransactions.data);
       setError(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to load stock data");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load stock data");
+      }
     } finally {
       setOpenLoading(false);
     }

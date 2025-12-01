@@ -36,7 +36,7 @@ export const useLoadInitialData = ({
       if (!categoryRes.ok) throw new Error(categoryRes.message || "Failed to load");
       
       setProducts(productRes.data.data);
-      setCategories(categoryRes.data);
+      setCategories(categoryRes.data ?? []);
       setTotal(productRes.data.total);
       setError(null);
     } catch (err: unknown) {

@@ -8,7 +8,6 @@ import { ROLES } from '../../constants/enum/enum';
 import type { CatagoriesType } from '../../types/catagories';
 import FormModel from '../../components/Models/FormModel';
 import ConfirmModal from '../../components/Models/ConfirmModel';
-
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { CatagoriesService } from '../../services/CatagoriesService';
 import { notify } from '../../utils/Notify';
@@ -16,6 +15,7 @@ import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
 import { LoadingProvider } from '../../contexts/LoadingContext';
 import { categorySchema } from '../../schemas/categorySchema';
+import { columnCategory } from '../../constants/columnTable';
 
 function CatagoriesPage() {
     const {
@@ -132,10 +132,6 @@ function CatagoriesPage() {
 
     };
 
-    const columns = [
-        { header: 'ชื่อหมวดหมู่', accessor: 'name' },
-        { header: 'คำอธิบาย', accessor: 'description' },
-    ];
 
     const actionColumn = {
         header: 'Action',
@@ -157,8 +153,8 @@ function CatagoriesPage() {
 
     const columnsWithAction =
         roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF
-            ? [...columns, actionColumn]
-            : [...columns];
+            ? [...columnCategory, actionColumn]
+            : [...columnCategory];
 
     return (
         <Box>

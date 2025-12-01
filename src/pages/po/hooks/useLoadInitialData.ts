@@ -30,8 +30,12 @@ export const useLoadInitialData = () => {
             setPurchaseOrders(poRes.data);
             setSuppliers(supplierRes.data);
 
-        } catch (err: any) {
-            setError(err.message || "Failed to load data");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Failed to load data");
+            }
         } finally {
             setOpenLoading(false);
         }
@@ -45,6 +49,6 @@ export const useLoadInitialData = () => {
         purchaseOrders,
         suppliers,
         error,
-        refetch: fetchData, 
+        refetch: fetchData,
     };
 };

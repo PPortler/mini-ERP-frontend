@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export type Column<T> = {
   header: string;
-  accessor: string;
+  accessor: keyof T | string; 
   cell?: (row: T) => React.ReactNode;
 };
 
@@ -57,7 +57,7 @@ export default function DataTable<T>({
         <Table.Thead>
           <Table.Tr>
             {columns.map((col) => (
-              <Table.Th key={col.accessor}>{col.header}</Table.Th>
+              <Table.Th key={String(col.accessor)}>{col.header}</Table.Th>
             ))}
           </Table.Tr>
         </Table.Thead>
@@ -67,7 +67,7 @@ export default function DataTable<T>({
             ? skeletonRows.map((_, i) => (
                 <Table.Tr key={i}>
                   {columns.map((col) => (
-                    <Table.Td key={col.accessor}>
+                    <Table.Td key={String(col.accessor)}>
                       <Skeleton height={26} radius="sm" />
                     </Table.Td>
                   ))}
@@ -88,7 +88,7 @@ export default function DataTable<T>({
             : paginatedData.map((row, i) => (
                 <Table.Tr key={i}>
                   {columns.map((col) => (
-                    <Table.Td key={col.accessor}>
+                    <Table.Td key={String(col.accessor)}>
                       {col.cell ? col.cell(row) : String(row[col.accessor] ?? "-")}
                     </Table.Td>
                   ))}

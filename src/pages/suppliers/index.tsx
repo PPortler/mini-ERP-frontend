@@ -56,11 +56,16 @@ function SupplierPage() {
         message: 'ลบสำเร็จ',
       });
       refetch();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'เกิดข้อผิดพลาดลบไม่สำเร็จ';
+
       notify({
         type: "error",
-        message: err.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
-      })
+        message,
+      });
     }
     setModalOpen(false);
     setSelectedItem(null);
@@ -99,10 +104,15 @@ function SupplierPage() {
       }
       setModalOpen(false);
       setSelectedItem(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'เกิดข้อผิดพลาดในการบันทึก';
+
       notify({
         type: 'error',
-        message: error.message || 'เกิดข้อผิดพลาดในการบันทึก',
+        message,
       });
     } finally {
       setOpenLoading(false)
@@ -112,7 +122,7 @@ function SupplierPage() {
   const actionColumn = {
     header: 'Action',
     accessor: 'action',
-    cell: (row: any) => (
+    cell: (row: SupplierType) => (
       <Group gap="xs">
         <ActionIcon color="blue" onClick={() => handleEdit(row)}>
           <EditIcon fontSize="small" />
@@ -182,7 +192,7 @@ function SupplierPage() {
             }
           }
           fields={[
-            { name: 'name', label: 'ชื่อผู้จัดหา', type: 'text', required: true},
+            { name: 'name', label: 'ชื่อผู้จัดหา', type: 'text', required: true },
             { name: 'phone', label: 'เบอร์โทร', type: 'text', required: true },
             { name: 'email', label: 'อีเมล', type: 'text', required: true },
             { name: 'address', label: 'ที่อยู่', type: 'text', required: true },

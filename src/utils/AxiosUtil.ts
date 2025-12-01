@@ -20,7 +20,7 @@ type RequestParams = {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   url: string;
   data?: unknown;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 };
 
 // type ของ return

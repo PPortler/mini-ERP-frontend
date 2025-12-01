@@ -8,7 +8,7 @@ const mergeProductToMovements = async (movements: any[]) => {
         movements.map(async (t) => {
             try {
                 const resProduct = await ProductService.getById(t.product_id);
-                const product = resProduct.ok && resProduct.data.length > 0 ? resProduct.data[0] : null;
+                const product = resProduct.ok && resProduct.length > 0 ? resProduct.data[0] : null;
                 return {
                     ...t,
                     product_name: product?.name || "Unknown",

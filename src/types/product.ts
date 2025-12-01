@@ -11,4 +11,5 @@ export type ProductType = {
     category_id: string,
     stock?: number,
     category?: CatagoriesType | null;
+    category_name?: CatagoriesType | null;
 }
