@@ -1,49 +1,27 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Box, Card, Group, Title, Button } from "@mantine/core";
+import { useState } from "react";
+import { Box, Card, Group, Title, Button, ActionIcon } from "@mantine/core";
 import DataTable from "../../../components/Table/DataTable";
 import FormModel from "../../../components/Models/FormModel";
 import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
-import { ProductService } from "../../../services/ProductService";
 import { notify } from "../../../utils/Notify";
 import type { PurchaseOrderItemType } from "../../../types/purchaes";
-import type { ProductType } from "../../../types/product";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { LoadingProvider } from "../../../contexts/LoadingContext";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useLocation } from "react-router-dom";
+import { poOrderItemsSchema } from "../../../schemas/poOrderItemSchema";
 
 export default function PoProductPage() {
-    const { setOpenLoading, openLoading } = LoadingProvider.useLoading()
-    const { id: purchase_order_id } = useParams<{ id: string }>();
-    const { poItems, error, refetch } = useLoadInitialData(purchase_order_id!);
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const purchase_order_id = searchParams.get("po"); const { poItems, error, refetch, products } = useLoadInitialData(purchase_order_id!);
     const navigate = useNavigate();
-
-    const [products, setProducts] = useState<ProductType[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
-
-    // Load products
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                setOpenLoading(true);
-                const res = await ProductService.getAll();
-                if (res.ok) setProducts(res.data ?? []);
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    notify({ type: "error", message: err.message });
-                } else {
-                    // fallback สำหรับค่าอื่น ๆ ที่ไม่ใช่ Error
-                    notify({ type: "error", message: "Failed to load products" });
-                }
-            } finally {
-                setOpenLoading(false);
-            }
-        };
-        fetchProducts();
-    }, []);
+    const [selectedProduct, setSelectedProduct] = useState<{ label: string; value: string } | null>(null);
 
     const handleAddItem = () => {
         setSelectedItem(null);
@@ -52,6 +30,10 @@ export default function PoProductPage() {
 
     const handleEditItem = (item: PurchaseOrderItemType) => {
         setSelectedItem(item);
+        setSelectedProduct({
+            label: item.products?.name || "",
+            value: item.product_id
+        })
         setModalOpen(true);
     };
 
@@ -86,6 +68,7 @@ export default function PoProductPage() {
             refetch();
             setModalOpen(false);
             setSelectedItem(null);
+            setSelectedProduct(null)
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
@@ -118,12 +101,20 @@ export default function PoProductPage() {
             accessor: "action",
             cell: (row: PurchaseOrderItemType) => (
                 <Group gap="xs">
-                    <Button size="xs" onClick={() => handleEditItem(row)}>Edit</Button>
-                    <Button size="xs" color="red" onClick={() => handleDeleteItem(row.purchase_order_item_id)}>Delete</Button>
+                    <ActionIcon color="blue" onClick={() => handleEditItem(row)}>
+                        <EditIcon fontSize="small" />
+                    </ActionIcon>
+                    <ActionIcon color="red" onClick={() => handleDeleteItem(row.product_id)}>
+                        <DeleteIcon fontSize="small" />
+                    </ActionIcon>
                 </Group>
             ),
         },
     ];
+
+    const selectedProdDetail = selectedProduct
+        ? products.find(p => p.product_id === selectedProduct.value)
+        : null;
 
     return (
         <Box>
@@ -140,7 +131,7 @@ export default function PoProductPage() {
                         </IconButton>
                         <Title order={3}>PO Items for {purchase_order_id}</Title>
                     </Group>
-                    <Button onClick={handleAddItem} disabled={openLoading}>
+                    <Button onClick={handleAddItem}>
                         Add Item
                     </Button>
                 </Group>
@@ -152,15 +143,44 @@ export default function PoProductPage() {
             {modalOpen && (
                 <FormModel
                     opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
+                    onClose={() => {
+                        setModalOpen(false)
+                        setSelectedProduct(null)
+                    }}
                     title={!selectedItem ? "Add PO Item" : "Edit PO Item"}
-                    initialValues={selectedItem || { purchase_order_item_id: "", purchase_order_id: purchase_order_id, product_id: "", quantity: 1, price: 0 }}
+                    initialValues={selectedItem ||
+                    {
+                        purchase_order_item_id: "",
+                        purchase_order_id: purchase_order_id ?? "",
+                        product_id: "",
+                        quantity: 1,
+                        price: 0
+                    }}
                     fields={[
-                        { name: "product_id", label: "Product", type: "select", options: productOptions },
-                        { name: "quantity", label: "Quantity", type: "number" },
-                        { name: "price", label: "Price", type: "number" },
+                        {
+                            name: "product_id",
+                            label: "Product",
+                            type: "select",
+                            required: true,
+                            options: productOptions,
+                            onChange: (val) => {
+                                const prod = productOptions.find(p => p.value === val as string);
+                                setSelectedProduct(prod ?? null);
+                            }
+                        },
+                        { name: "quantity", label: "Quantity", type: "number", required: true, },
+                        {
+                            name: "price",
+                            label: "Price",
+                            type: "number",
+                            required: true,
+                            helperText: selectedProdDetail
+                                ? `ราคาต้นทุน: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
+                                : ''
+                        },
                     ]}
                     onSubmit={saveItem}
+                    validationSchema={poOrderItemsSchema}
                 />
             )}
         </Box>

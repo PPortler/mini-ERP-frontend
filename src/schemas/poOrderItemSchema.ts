@@ -1,0 +1,19 @@
+import * as yup from "yup";
+
+export const poOrderItemsSchema = yup.object().shape({
+  product_id: yup
+    .string()
+    .required("กรุณาเลือก Product"),
+
+  quantity: yup
+    .number()
+    .required("กรุณาใส่จำนวน")
+    .min(1, "จำนวนต้องไม่น้อยกว่า 1"),
+
+  price: yup
+    .number()
+    .required("กรุณาใส่ราคา")
+    .min(0, "ราคาต้องไม่น้อยกว่า 0"),
+});
+
+export type PoOrderItemsFormValue = yup.InferType<typeof poOrderItemsSchema>;

@@ -1,11 +1,11 @@
-import { Modal, Button, Group } from "@mantine/core";
+import { Modal, Button, Group, Stack, Title, Box } from "@mantine/core";
 import type { FC } from "react";
 
 type ConfirmModalProps = {
     opened: boolean;
     onClose: () => void;
     title: string;
-    message: string;
+    message: React.ReactNode;
     onConfirm: () => void;
 };
 
@@ -17,21 +17,32 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
     onConfirm,
 }) => {
     return (
-        <Modal opened={opened} onClose={onClose} title={title} centered>
-            <p>{message}</p>
-            <Group mt="lg" 
-                style={{
-                    display: "flex",
-                    flexDirection: "row-reverse"
-                }}
-            >
-                <Button variant="outline" onClick={onClose}>
-                    ยกเลิก
-                </Button>
-                <Button color="red" onClick={onConfirm}>
-                    ยืนยัน
-                </Button>
-            </Group>
+        <Modal
+            opened={opened}
+            onClose={onClose}
+            centered
+            withCloseButton={false}
+            size="sm"
+            padding="lg"
+        >
+            <Stack gap="md">
+                {/* Title */}
+                <Title order={4}>{title}</Title>
+
+                {/* Message */}
+                <Box component="span" style={{ color: 'var(--mantine-color-dimmed)', fontSize: '0.875rem' }}>
+                    {message}
+                </Box>
+                {/* Action Buttons */}
+                <Group justify="end" mt="md">
+                    <Button variant="outline" color="gray" onClick={onClose}>
+                        ยกเลิก
+                    </Button>
+                    <Button color="blue" onClick={onConfirm}>
+                        ยืนยัน
+                    </Button>
+                </Group>
+            </Stack>
         </Modal>
     );
 };

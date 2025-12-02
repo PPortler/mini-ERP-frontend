@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosResponse } from "axios";
+import { $authUser } from "../stores/authUserStore";
 
 const baseAxios: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API_URL,
@@ -10,7 +11,7 @@ const baseAxios: AxiosInstance = axios.create({
 });
 
 baseAxios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  const token = $authUser.get()?.access_token;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

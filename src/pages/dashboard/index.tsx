@@ -6,7 +6,7 @@ import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 
 export default function Dashboard() {
-  const { minStock, stockMovement, purchaseTrend } = useLoadInitialData();
+  const { minStock, stockMovement, purchaseTrend, loading } = useLoadInitialData();
 
   // Chart options
   const stockMovementOptions: ApexOptions = {
@@ -85,7 +85,7 @@ export default function Dashboard() {
           <Group justify="space-between" mb="sm">
             <Title order={3}>สินค้าใกล้หมด (ต่ำกว่า Min Stock)</Title>
           </Group>
-          <DataTable columns={columnProducts} data={minStock} pageSize={5} />
+          <DataTable loading={loading} columns={columnProducts} data={minStock} pageSize={5} />
         </Card>
       </Grid.Col>
     </Grid>

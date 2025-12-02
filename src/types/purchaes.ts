@@ -1,3 +1,6 @@
+import type { ProductType } from "./product";
+import type { SupplierType } from "./suppliers";
+
 export type PurchaseOrderType = {
   purchase_order_id: string;
   supplier_id: string;
@@ -6,12 +9,15 @@ export type PurchaseOrderType = {
   create_at?: string;
   create_by?: string;
   supplier_name?: string
+  suppliers?: SupplierType
+  products?: ProductType[]
 };
 
 export type PurchaseOrderItemType = {
-    purchase_order_item_id: string;
-    purchase_order_id?: string;
-    product_id: string;
-    quantity: number;
-    price: number;
+  purchase_order_item_id: string;
+  purchase_order_id?: string;
+  product_id: string;
+  quantity: number;
+  products?: ProductType
+  price: number;
 }

@@ -104,7 +104,7 @@ export const router = createBrowserRouter([
         ),
     },
     {
-        path: "po/:id",
+        path: "po/products",
         element: (
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
                 <GlobalLayout>

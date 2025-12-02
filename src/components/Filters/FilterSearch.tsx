@@ -8,6 +8,7 @@ interface FilterField {
   type: "text" | "select";
   value?: string | number;
   options?: OptionType[];
+  placeholder?: string;
   onChange: (value: string) => void;
 }
 
@@ -47,6 +48,7 @@ export default function FilterInputs({ fields, loading = false }: TableFilterInp
             <TextInput
               key={f.key}
               label={f.label}
+              placeholder={f.placeholder || `${f.label}`}
               value={f.value ?? ""}
               onChange={(e) => f.onChange(e.target.value)}
             />

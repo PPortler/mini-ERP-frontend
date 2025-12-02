@@ -17,11 +17,22 @@ export const ProductService = {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       return { ok: true, data: mockProducts };
     }
+    try {
+      const res = await AxiosUtil.createRequest<ProductResponse>({
+        method: "GET",
+        url: "/products",
+      });
+      if (!res.ok) {
+        return { ok: false, message: res.message };
+      }
+      return {
+        ok: true,
+        data: res.data.products,
+      };
+    } catch (err: any) {
+      return { ok: false, message: err.message || "Request error" };
 
-    return AxiosUtil.createRequest<ProductListResponse>({
-      method: "GET",
-      url: "/categories",
-    });
+    }
   },
 
   async getByPagination(
@@ -61,7 +72,7 @@ export const ProductService = {
         ...res.data,
         data: mappedProducts,
       };
-      
+
       return { ok: true, data: mappedData };
     } catch (err: any) {
       return { ok: false, message: err.message };
@@ -134,7 +145,7 @@ export const ProductService = {
       };
 
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
-        method: "PATCH",
+        method: "PUT",
         url: `/products/${product_id}`,
         data: payload,
       });

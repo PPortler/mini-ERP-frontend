@@ -57,35 +57,34 @@ function CatagoriesPage() {
     const saveCategory = async (updated: CatagoriesType) => {
         setOpenLoading(true)
         try {
-            const values = await categorySchema.validate(updated, { abortEarly: false });
 
             let res;
             if (selectedCategory) {
                 res = await CatagoriesService.update(
                     selectedCategory.category_id,
-                    values
+                    updated
                 );
             }
             else {
-                res = await CatagoriesService.create(values);
+                res = await CatagoriesService.create(updated);
             }
-            if (res.ok) {
-                notify({
-                    type: "success",
-                    message: selectedCategory
-                        ? `แก้ไขหมวดหมู่ "${values.name}" สำเร็จ`
-                        : `เพิ่มหมวดหมู่ "${values.name}" สำเร็จ`,
-                });
-            } else {
+            if (!res.ok) {
                 notify({
                     type: "error",
                     message: res.message || "เกิดข้อผิดพลาด",
                 });
+                return;
             }
+            notify({
+                type: "success",
+                message: selectedCategory
+                    ? `แก้ไขหมวดหมู่ "${updated.name}" สำเร็จ`
+                    : `เพิ่มหมวดหมู่ "${updated.name}" สำเร็จ`,
+            });
+            
             setModalOpen(false);
             setSelectedCategory(null);
             await refetch();
-
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({

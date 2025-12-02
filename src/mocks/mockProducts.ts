@@ -7,6 +7,14 @@ import { mockCatagories } from "./mockCatagories";
 const findCategory = (id: string) =>
   mockCatagories.find(c => c.category_id === id) || null;
 
+export const getMockProductsByIds = (product_ids: string[]): ProductType[] => {
+  return mockProducts.filter(p => product_ids.includes(p.product_id));
+};
+
+export const getMockProductById = (product_id: string): ProductType | undefined => {
+  return mockProducts.find(p => p.product_id === product_id);
+};
+
 export const mockProducts: ProductType[] = [
   {
     product_code: "S006",

@@ -110,19 +110,17 @@ function ProductPage() {
     setOpenLoading(true)
 
     try {
-      const values = await productSchema.validate(updatedProduct, { abortEarly: false });
-
       let result;
       if (!updatedProduct.product_id) {
         result = await ProductService.create({
-          product_code: values.product_code,
-          name: values.name,
-          cost_price: values.cost_price,
-          selling_price: values.selling_price,
-          min_stock: values.min_stock,
-          unit: values.unit,
-          category_id: values.category_id,
-          stock: values.stock,
+          product_code: updatedProduct.product_code,
+          name: updatedProduct.name,
+          cost_price: updatedProduct.cost_price,
+          selling_price: updatedProduct.selling_price,
+          min_stock: updatedProduct.min_stock,
+          unit: updatedProduct.unit,
+          category_id: updatedProduct.category_id,
+          stock: updatedProduct.stock,
         });
       } else {
         result = await ProductService.update(updatedProduct.product_id, updatedProduct);

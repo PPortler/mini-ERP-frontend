@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { ProductService } from "../../../services/ProductService";
 import type { ProductType } from "../../../types/product";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
 import { StockService } from "../../../services/StockService";
 
 type StockMovementType = { productName: string; quantity: number };
 type PurchaseTrendType = { date: string; count: number };
 
 export const useLoadInitialData = () => {
-    const { setOpenLoading } = LoadingProvider.useLoading();
 
+    const [loading, setLoading] = useState<boolean>(false)
     const [minStock, setMinStock] = useState<ProductType[]>([]);
     const [stockMovement, setStockMovement] = useState<StockMovementType[]>([]);
     const [purchaseTrend, setPurchaseTrend] = useState<PurchaseTrendType[]>([]);
@@ -18,7 +17,7 @@ export const useLoadInitialData = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setOpenLoading(true);
+                setLoading(true);
 
                 const res = await ProductService.getAll();
                 if (!res.ok) {
@@ -57,12 +56,12 @@ export const useLoadInitialData = () => {
                 if (err instanceof Error) setError(err.message);
                 else setError("Failed to load data");
             } finally {
-                setOpenLoading(false);
+                setLoading(false);
             }
         };
 
         fetchData();
     }, []);
 
-    return { minStock, stockMovement, purchaseTrend, error };
+    return { minStock, stockMovement, purchaseTrend, error, loading };
 };

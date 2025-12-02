@@ -126,7 +126,7 @@ export const CatagoriesService = {
         description: category.description
       }
       const res = await AxiosUtil.createRequest<{ category: CatagoriesType }>({
-        method: "PATCH",
+        method: "PUT",
         url: `/categories/${category_id}`,
         data: payload,
       });

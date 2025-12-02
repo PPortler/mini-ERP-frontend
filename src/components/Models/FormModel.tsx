@@ -10,6 +10,9 @@ type Field = {
   options?: { label: string; value: string }[];
   disabled?: boolean;
   required?: boolean;
+  placeholder?: string;
+  helperText?: string;
+  onChange?: (value: unknown, values: Record<string, unknown>) => void;
 };
 
 type ReusableFormModalProps<T extends Record<string, unknown>> = {
@@ -19,8 +22,7 @@ type ReusableFormModalProps<T extends Record<string, unknown>> = {
   fields: Field[];
   initialValues: T;
   onSubmit: (values: T) => void;
-  validationSchema?: ObjectSchema<Partial<T>>; // <-- เปลี่ยนเป็น Partial<T>
-
+  validationSchema?: ObjectSchema<Record<string, unknown>>;
 };
 
 const FormModel = <T extends Record<string, unknown>>({
@@ -74,24 +76,28 @@ const FormModel = <T extends Record<string, unknown>>({
         })}
       >
         {fields.map((f) => {
+          const handleChange = (val: unknown) => {
+            form.setFieldValue(f.name as keyof T, val as T[keyof T]);
+            if (f.onChange) f.onChange(val, form.values); // เรียก callback ออกไป
+          };
 
           return f.type === "select" ? (
             <Select
               mb="sm"
               key={f.name}
               value={String(form.values[f.name] ?? '')}
-              onChange={(val) =>
-                form.setFieldValue(f.name as keyof T, (val ?? '') as T[keyof T])
-              }
+              onChange={handleChange}
               onBlur={() => form.validateField(f.name)}
               error={form.errors[f.name]}
               data={f.options || []}
+              placeholder={f.placeholder || `เลือก${f.label}`}
+              disabled={f.disabled}
               label={
                 <span>
-                  {f.label}{" "}
-                  {f.required && <span style={{ color: 'red' }}>*</span>}
+                  {f.label} {f.required && <span style={{ color: 'red' }}>*</span>}
                 </span>
               }
+              description={f.helperText}
             />
           ) : (
             <TextInput
@@ -99,23 +105,26 @@ const FormModel = <T extends Record<string, unknown>>({
               key={f.name}
               type={f.type}
               {...form.getInputProps(f.name as keyof T & string)}
+              value={String(form.values[f.name] ?? "")}
               disabled={f.disabled}
+              placeholder={f.placeholder || `${f.label}`}
               error={form.errors[f.name]}
               label={
                 <span>
-                  {f.label}{" "}
-                  {f.required && <span style={{ color: 'red' }}>*</span>}
+                  {f.label} {f.required && <span style={{ color: 'red' }}>*</span>}
                 </span>
               }
+              description={f.helperText}
+              onChange={(e) => handleChange(e.currentTarget.value)}
             />
           );
         })}
 
         <Group mt="xl" style={{ display: "flex", flexDirection: "row-reverse" }}>
+          <Button type="submit">บันทึก</Button>
           <Button variant="outline" onClick={onClose}>
             ยกเลิก
           </Button>
-          <Button type="submit">บันทึก</Button>
         </Group>
       </form>
     </Modal>

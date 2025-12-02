@@ -1,68 +1,116 @@
+import { STATUS_PO } from "../constants/enum/enum";
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
+import { mockSuppliers } from "../mocks/mockSuppliers";
+import type { PurchaseOrderResponse } from "../types/api";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { mapPoOrderWithSupplier } from "../utils/mapPoOrderwithSupplier";
-import { SupplierService } from "./SupplierService";
 
 export type PurchaseOrderServiceResult =
   | { ok: true; data: PurchaseOrderType[] }
   | { ok: false; message: string };
 
+export type PurchaseOrderItemService =
+  | { ok: true; data: PurchaseOrderItemType[] }
+  | { ok: false; message: string };
+
 export const PurchaseOrderService = {
-  // GET /purchase-orders
   async getAll(): Promise<PurchaseOrderServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
-      return { ok: true, data: mockPurchaseOrders };
+      const dataWithSupplierName = mockPurchaseOrders.map(po => {
+        const supplier = mockSuppliers.find(s => s.supplier_id === po.supplier_id);
+        return {
+          ...po,
+          supplier_name: supplier?.name || "-",
+        };
+      });
+      return { ok: true, data: dataWithSupplierName };
     }
-    return AxiosUtil.createRequest<PurchaseOrderType[]>({
-      method: "GET",
-      url: "/purchase-orders",
-    });
-  },
 
-  // GET PO + supplier_name
-  async getAllWithSupplier(): Promise<
-    | { ok: true; data: PurchaseOrderType[] }
-    | { ok: false; message: string }
-  > {
     try {
-      const [poRes, supplierRes] = await Promise.all([
-        this.getAll(),
-        SupplierService.getAll(),
-      ]);
+      const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
+        method: "GET",
+        url: "/purchase-orders",
+      });
+      if (!res.ok) return { ok: false, message: res.message };
 
-      if (!poRes.ok) return { ok: false, message: poRes.message };
-      if (!supplierRes.ok) return { ok: false, message: supplierRes.message };
+      const mappedSupplier: PurchaseOrderType[] = (res.data.purchaseOrders ?? []).map((po) => ({
+        ...po,
+        supplier_name: po.suppliers?.name || "-",
+      }));
 
-      const mapped = mapPoOrderWithSupplier(poRes.data, supplierRes.data);
-
-      return { ok: true, data: mapped };
+      return { ok: true, data: mappedSupplier };
     } catch (err: unknown) {
-      let message = "Failed to load purchase orders";
-
-      if (err instanceof Error) {
-        message = err.message;
-      }
-
+      const message = err instanceof Error ? err.message : "Request error";
       return { ok: false, message };
     }
   },
 
-  // POST /purchase-orders
   async create(po: Omit<PurchaseOrderType, "purchase_order_id">): Promise<PurchaseOrderServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const newPO = { ...po, purchase_order_id: crypto.randomUUID() };
       mockPurchaseOrders.push(newPO);
       return { ok: true, data: [newPO] };
     }
-    return AxiosUtil.createRequest<PurchaseOrderType[]>({
-      method: "POST",
-      url: "/purchase-orders",
-      data: po,
-    });
+    try {
+      const payload = {
+        supplier_id: po.supplier_id,
+        status: STATUS_PO.DRAFT
+      }
+
+      const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
+        method: "POST",
+        url: "/purchase-orders",
+        data: payload,
+      });
+
+      if (!res.ok) {
+        return { ok: false, message: res.message };
+      }
+
+      const list = Array.isArray(res.data.purchaseOrders) ? res.data.purchaseOrders : [];
+      return {
+        ok: true,
+        data: list,
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Request error";
+      return { ok: false, message };
+    }
   },
 
-  // PUT /purchase-orders/:id
+  async updateStatus(
+    purchase_order_id: string,
+    status: typeof STATUS_PO.CONFIRMED | typeof STATUS_PO.RECEIVED | typeof STATUS_PO.CANCELLED
+  ): Promise<PurchaseOrderServiceResult> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockPurchaseOrders.findIndex(p => p.purchase_order_id === purchase_order_id);
+      if (idx === -1) return { ok: false, message: "PO not found (mock)" };
+
+      mockPurchaseOrders[idx].status = status;
+      return { ok: true, data: [mockPurchaseOrders[idx]] };
+    }
+
+    try {
+      const payload = {
+        status: status
+      }
+
+      const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
+        method: "PATCH",
+        url: `/purchase-orders/${purchase_order_id}/status`,
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message || "Failed to update PO status" };
+
+      return { ok: true, data: res.data };
+    } catch (err: unknown) {
+      let message = "Failed to update PO status";
+      if (err instanceof Error) message = err.message;
+      return { ok: false, message };
+    }
+  },
+
   async update(purchase_order_id: string, po: Partial<PurchaseOrderType>): Promise<PurchaseOrderServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrders.findIndex(p => p.purchase_order_id === purchase_order_id);
@@ -70,11 +118,23 @@ export const PurchaseOrderService = {
       mockPurchaseOrders[idx] = { ...mockPurchaseOrders[idx], ...po };
       return { ok: true, data: [mockPurchaseOrders[idx]] };
     }
-    return AxiosUtil.createRequest<PurchaseOrderType[]>({
-      method: "PUT",
-      url: `/purchase-orders/${purchase_order_id}`,
-      data: po,
-    });
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
+        method: "PATCH",
+        url: `/purchase-orders/${purchase_order_id}`,
+        data: po,
+      });
+      if (!res.ok) return { ok: false, message: res.message || "Failed to update PO status" };
+
+      return {
+        ok: true,
+        data: res.data
+      }
+    } catch (err: unknown) {
+      let message = "Failed to update PO";
+      if (err instanceof Error) message = err.message;
+      return { ok: false, message };
+    }
   },
 
   // DELETE /purchase-orders/:id
@@ -92,49 +152,60 @@ export const PurchaseOrderService = {
   },
 
   // GET items by PO ID
-  async getItemsByPOId(purchase_order_id: string): Promise<PurchaseOrderItemType[]> {
+  async getItemsByPOId(purchase_order_id: string): Promise<PurchaseOrderItemService> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
-      return mockPurchaseOrderItems.filter(item => item.purchase_order_id === purchase_order_id);
+      const items = mockPurchaseOrderItems.filter(
+        (item) => item.purchase_order_id === purchase_order_id
+      );
+      return { ok: true, data: items };
     }
-    return AxiosUtil.createRequest<PurchaseOrderItemType[]>({
-      method: "GET",
-      url: `/purchase-orders/${purchase_order_id}/items`,
-    });
+
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderItemType[]>({
+        method: "GET",
+        url: `/purchase-orders/${purchase_order_id}/items`,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+
+      return { ok: true, data: res.data };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Request error";
+      return { ok: false, message };
+    }
   },
 
-  // PUT /purchase-orders/:id/status → เปลี่ยนสถานะ PO
-  async updateStatus(purchase_order_id: string, status: string): Promise<PurchaseOrderServiceResult> {
+  async addItem(
+    purchase_order_id: string,
+    item: Omit<PurchaseOrderItemType, "purchase_order_item_id">
+  ): Promise<PurchaseOrderItemType> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
-      const idx = mockPurchaseOrders.findIndex(p => p.purchase_order_id === purchase_order_id);
-      if (idx === -1) return { ok: false, message: "PO not found (mock)" };
-      mockPurchaseOrders[idx].status = status;
-
-      // ถ้า status = RECEIVED → trigger stock IN mock logic
-      if (status === "Received") {
-        console.log(`[MOCK] Trigger Stock IN for PO ${purchase_order_id}`);
-      }
-
-      return { ok: true, data: [mockPurchaseOrders[idx]] };
-    }
-    return AxiosUtil.createRequest<PurchaseOrderType[]>({
-      method: "PUT",
-      url: `/purchase-orders/${purchase_order_id}/status`,
-      data: { status },
-    });
-  },
-
-  // เพิ่ม item ให้ PO ใหม่ (mock)
-  async addItem(purchase_order_id: string, item: Omit<PurchaseOrderItemType, "purchase_order_item_id">): Promise<PurchaseOrderItemType> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const newItem: PurchaseOrderItemType = { ...item, purchase_order_item_id: crypto.randomUUID() };
+      const newItem: PurchaseOrderItemType = {
+        ...item,
+        purchase_order_item_id: crypto.randomUUID(),
+      };
       mockPurchaseOrderItems.push(newItem);
       return newItem;
     }
-    return AxiosUtil.createRequest<PurchaseOrderItemType>({
-      method: "POST",
-      url: `/purchase-orders/${purchase_order_id}/items`,
-      data: item,
-    });
+
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
+        method: "POST",
+        url: `/purchase-orders/${purchase_order_id}/items`,
+        data: item,
+      });
+
+      if (!res.ok) {
+        throw new Error(res.message || "Failed to add PO item");
+      }
+
+      return res.data;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw err;
+      }
+      throw new Error("เกิดข้อผิดพลาด");
+    }
   },
 
   // แก้ไข item ของ PO
@@ -145,17 +216,31 @@ export const PurchaseOrderService = {
   ): Promise<PurchaseOrderItemType | null> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrderItems.findIndex(
-        (i) => i.purchase_order_item_id === purchase_order_item_id && i.purchase_order_id === purchase_order_id
+        (i) =>
+          i.purchase_order_item_id === purchase_order_item_id &&
+          i.purchase_order_id === purchase_order_id
       );
       if (idx === -1) return null;
       mockPurchaseOrderItems[idx] = { ...mockPurchaseOrderItems[idx], ...item };
       return mockPurchaseOrderItems[idx];
     }
-    return AxiosUtil.createRequest<PurchaseOrderItemType>({
-      method: "PUT",
-      url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
-      data: item,
-    });
+
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
+        method: "PUT",
+        url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
+        data: item,
+      });
+
+      if (!res.ok) {
+        throw new Error(res.message || "Failed to update PO item");
+      }
+
+      return res.data;
+    } catch (err: unknown) {
+      if (err instanceof Error) throw err;
+      throw new Error("เกิดข้อผิดพลาด");
+    }
   },
 
   // ลบ item ของ PO
@@ -165,16 +250,29 @@ export const PurchaseOrderService = {
   ): Promise<boolean> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrderItems.findIndex(
-        (i) => i.purchase_order_item_id === purchase_order_item_id && i.purchase_order_id === purchase_order_id
+        (i) =>
+          i.purchase_order_item_id === purchase_order_item_id &&
+          i.purchase_order_id === purchase_order_id
       );
       if (idx === -1) return false;
       mockPurchaseOrderItems.splice(idx, 1);
       return true;
     }
-    const res = await AxiosUtil.createRequest<{ success: boolean }>({
-      method: "DELETE",
-      url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
-    });
-    return res.ok ? true : false;
-  },
+
+    try {
+      const res = await AxiosUtil.createRequest<{ success: boolean }>({
+        method: "DELETE",
+        url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
+      });
+
+      if (!res.ok) {
+        throw new Error(res.message || "Failed to delete PO item");
+      }
+
+      return true;
+    } catch (err: unknown) {
+      console.error(err);
+      return false; // หรือ throw err ขึ้นไปแล้วให้ caller handle
+    }
+  }
 };

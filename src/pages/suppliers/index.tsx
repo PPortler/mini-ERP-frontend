@@ -13,7 +13,7 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 import { SupplierService } from '../../services/SupplierService';
 import { notify } from '../../utils/Notify';
 import { LoadingProvider } from '../../contexts/LoadingContext';
-import { supplierSchema, type SupplierFormValue } from '../../schemas/supplierSchema';
+import { supplierSchema } from '../../schemas/supplierSchema';
 
 function SupplierPage() {
   const { setOpenLoading } = LoadingProvider.useLoading();
@@ -75,15 +75,14 @@ function SupplierPage() {
     setOpenLoading(true);
 
     try {
-      const values: SupplierFormValue = await supplierSchema.validate(updatedItems, { abortEarly: false });
-
       let result;
+
       if (!updatedItems.supplier_id) {
         result = await SupplierService.create({
-          name: values.name,
-          phone: values.phone,
-          email: values.email,
-          address: values.address
+          name: updatedItems.name,
+          phone: updatedItems.phone,
+          email: updatedItems.email,
+          address: updatedItems.address
         });
       } else {
         result = await SupplierService.update(updatedItems.supplier_id, updatedItems);

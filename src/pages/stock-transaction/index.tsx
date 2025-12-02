@@ -1,21 +1,10 @@
 import { Box, Card, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
-import type { StockTransactionType } from "../../types/stockTransection";
+import { columnStockTransaction } from "../../constants/columnTable";
 
 export default function StockTransactionsPage() {
-    const { stockTransactions } = useLoadInitialData();
-
-    const columns = [
-        { header: "รหัส Transaction", accessor: "stock_transaction_id" },
-        { header: "รหัสสินค้า", accessor: "product_id" },
-        { header: "ชื่อสินค้า", accessor: "product_name" },
-        { header: "ประเภท", accessor: "type" },
-        { header: "จำนวน", accessor: "quantity" },
-        { header: "สาเหตุ", accessor: "reason" },
-        // { header: "อ้างอิง", accessor: "reference" },
-        { header: "วันที่", accessor: "created_at", cell: (row: StockTransactionType) => new Date(row.created_at ?? "").toLocaleString() },
-    ];
+    const { stockTransactions, loading } = useLoadInitialData();
 
     return (
         <Box>
@@ -33,7 +22,7 @@ export default function StockTransactionsPage() {
                         <Title order={3}>Stock Transaction</Title>
                     </Group>
                 </Group>
-                <DataTable columns={columns} data={stockTransactions} pageSize={10} />
+                <DataTable loading={loading} columns={columnStockTransaction} data={stockTransactions} pageSize={10} />
             </Card>
         </Box>
     );

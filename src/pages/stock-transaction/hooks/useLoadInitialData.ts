@@ -1,16 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import type { StockTransactionType } from "../../../types/stockTransection";
 import { StockService } from "../../../services/StockService";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
 
 export const useLoadInitialData = () => {
-  const { setOpenLoading } = LoadingProvider.useLoading();
-
+  const [ loading, setLoading ] = useState<boolean>(false)
   const [stockTransactions, setTransactions] = useState<StockTransactionType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
-    setOpenLoading(true);
+    setLoading(true);
     try {
       // ดึง transactions
       const resTransactions = await StockService.getAll();
@@ -26,13 +24,13 @@ export const useLoadInitialData = () => {
         setError("Failed to load stock data");
       }
     } finally {
-      setOpenLoading(false);
+      setLoading(false);
     }
-  }, [setOpenLoading]);
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  return { stockTransactions, error, refetch: fetchData };
+  return { stockTransactions, error, refetch: fetchData, loading };
 };

@@ -3,22 +3,20 @@ import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
 import { ProductService } from "../../../services/ProductService";
 import { SupplierService } from "../../../services/SupplierService";
 import type { PurchaseOrderType } from "../../../types/purchaes";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
 import type { SupplierType } from "../../../types/suppliers";
 
 export const useLoadInitialData = () => {
-    const { setOpenLoading } = LoadingProvider.useLoading()
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrderType[]>([]);
     const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const fetchData = useCallback(async () => {
         try {
-            setOpenLoading(true);
+            setLoading(true);
 
             const [poRes, supplierRes, productRes] = await Promise.all([
-                PurchaseOrderService.getAllWithSupplier(),
+                PurchaseOrderService.getAll(),
                 SupplierService.getAll(),
                 ProductService.getAll(),
             ]);
@@ -37,7 +35,7 @@ export const useLoadInitialData = () => {
                 setError("Failed to load data");
             }
         } finally {
-            setOpenLoading(false);
+            setLoading(false);
         }
     }, []);
 
@@ -50,5 +48,6 @@ export const useLoadInitialData = () => {
         suppliers,
         error,
         refetch: fetchData,
+        loading
     };
 };
