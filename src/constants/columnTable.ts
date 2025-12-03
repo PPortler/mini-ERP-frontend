@@ -2,7 +2,6 @@ import type { Column } from "../components/Table/DataTable";
 import type { AuditLogType } from "../types/auditLog";
 import type { CatagoriesType } from "../types/catagories";
 import type { ProductType } from "../types/product";
-import type { StockTransactionType } from "../types/stockTransection";
 import type { SupplierType } from "../types/suppliers";
 
 export const columnProducts: Column<ProductType>[] = [
@@ -43,13 +42,3 @@ export const columnCategory: Column<CatagoriesType>[] = [
   { header: 'คำอธิบาย', accessor: 'description' },
 ];
 
-export const columnStockTransaction: Column<StockTransactionType>[] = [
-  { header: "รหัส Transaction", accessor: "stock_transaction_id" },
-  { header: "รหัสสินค้า", accessor: "product_id" },
-  { header: "ชื่อสินค้า", accessor: "product_name" },
-  { header: "ประเภท", accessor: "type" },
-  { header: "จำนวน", accessor: "quantity" },
-  { header: "สาเหตุ", accessor: "reason" },
-  { header: "reference", accessor: "reference" },
-  { header: "วันที่", accessor: "created_at" },
-]

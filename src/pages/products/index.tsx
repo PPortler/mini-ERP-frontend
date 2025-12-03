@@ -17,7 +17,6 @@ import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
 import { LoadingProvider } from '../../contexts/LoadingContext';
 import { productSchema } from '../../schemas/productSchema';
-// import { useNavigate } from 'react-router-dom';
 
 function ProductPage() {
   const {
@@ -33,18 +32,21 @@ function ProductPage() {
     setSearch,
     setCategoryId,
     refetch,
-    loading
+    loading,
+    setSortOrder,
+    setSortField,
+    sortField,
+    sortOrder
   } = useLoadInitialData({
     initialPage: 1,
     initialPageSize: 10,
     initialSearch: "",
     initialCategoryId: "",
   });
-  // const navigate = useNavigate();
+
   const { setOpenLoading } = LoadingProvider.useLoading();
   const roleCurrent = getRoleCurrent();
 
-  // State สำหรับ modal
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'confirm' | 'form'>('confirm');
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
@@ -67,11 +69,6 @@ function ProductPage() {
     setModalType('form');
     setModalOpen(true);
   };
-
-  //view
-  // const handleView = (product: ProductType) => {
-  //   navigate(`/products/stock?id=${product.product_id}`)
-  // };
 
   const confirmDelete = async () => {
     setOpenLoading(true)
@@ -127,6 +124,7 @@ function ProductPage() {
       }
 
       if (result.ok) {
+        setSelectedProduct(null);
         notify({
           type: 'success',
           message: updatedProduct.product_id
@@ -134,7 +132,6 @@ function ProductPage() {
             : `เพิ่มสินค้า "${updatedProduct.name}" สำเร็จ`,
         });
         setModalOpen(false);
-        setSelectedProduct(null);
         refetch();
       } else {
         notify({
@@ -160,9 +157,6 @@ function ProductPage() {
     accessor: 'action',
     cell: (row: ProductType) => (
       <Group gap="xs">
-        {/* <ActionIcon color="green" onClick={() => handleView(row)}>
-          <VisibilityIcon fontSize="small" />
-        </ActionIcon> */}
         <ActionIcon color="blue" onClick={() => handleEdit(row)}>
           <EditIcon fontSize="small" />
         </ActionIcon>
@@ -199,7 +193,7 @@ function ProductPage() {
                 label: "หมวดหมู่",
                 type: "select",
                 value: categoryId,
-                options: categories.map((c) => ({ label: c.name, value: c.category_id })),
+                options: categoryOptions,
                 onChange: setCategoryId,
               },
             ]}
@@ -217,6 +211,7 @@ function ProductPage() {
             </AppButton>
           )}
         </Group>
+
         <DataTable
           columns={columnsWithAction}
           data={products}
@@ -226,6 +221,10 @@ function ProductPage() {
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
           loading={loading}
+          setSortOrder={setSortOrder}
+          setSortField={setSortField}
+          sortField={sortField}
+          sortOrder={sortOrder}
         />
       </Card>
 

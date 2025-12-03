@@ -1,5 +1,5 @@
 import type { ProductType } from "../types/product";
-import type { ProductResponse } from "../types/api";
+import type { ProductResponse } from "../types/apiResponse";
 import { mockCatagories } from "./mockCatagories";
 
 

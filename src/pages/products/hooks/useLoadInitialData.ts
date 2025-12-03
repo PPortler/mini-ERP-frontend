@@ -12,6 +12,8 @@ export const useLoadInitialData = ({
   initialCategoryId = "",
 }) => {
 
+  const [sortField, setSortField] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
   const [products, setProducts] = useState<ProductType[]>([]);
   const [categories, setCategories] = useState<CatagoriesType[]>([]);
   const [total, setTotal] = useState(0);
@@ -22,19 +24,19 @@ export const useLoadInitialData = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  const [debouncedSearch] = useDebouncedValue(search);
 
   const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const [productRes, categoryRes] = await Promise.all([
-        ProductService.getByPagination(page, pageSize, debouncedSearch, categoryId),
+        ProductService.getByPagination(page, pageSize, debouncedSearch, categoryId, sortField, sortOrder),
         CatagoriesService.getAll(),
       ]);
 
       if (!productRes.ok) throw new Error(productRes.message || "Failed to load");
       if (!categoryRes.ok) throw new Error(categoryRes.message || "Failed to load");
-      
+
       setProducts(productRes.data.data);
       setCategories(categoryRes.data ?? []);
       setTotal(productRes.data.total);
@@ -48,7 +50,7 @@ export const useLoadInitialData = ({
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch, categoryId]);
+  }, [page, pageSize, debouncedSearch, categoryId, sortField, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -68,6 +70,10 @@ export const useLoadInitialData = ({
     setCategoryId,
     error,
     refetch: fetchData,
-    loading
+    loading,
+    setSortOrder,
+    setSortField,
+    sortField,
+    sortOrder
   };
 };

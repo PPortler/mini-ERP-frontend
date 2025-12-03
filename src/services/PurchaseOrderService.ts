@@ -1,7 +1,7 @@
 import { STATUS_PO } from "../constants/enum/enum";
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
 import { mockSuppliers } from "../mocks/mockSuppliers";
-import type { PurchaseOrderResponse } from "../types/api";
+import type { PurchaseOrderResponse } from "../types/apiResponse";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
 

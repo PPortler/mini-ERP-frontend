@@ -1,6 +1,7 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import { getMockStockSummary, mockStockTransactions } from "../mocks/mockStockTransaction";
 import type { StockTransactionType } from "../types/stockTransection";
+import type { StockTransactionResponse } from "../types/apiResponse";
 
 export interface StockInPayload {
   product_id: string;
@@ -19,7 +20,7 @@ export type StockSummaryType = {
 };
 
 export type StockSummaryServiceResult =
-  | { ok: true; data: StockSummaryType }
+  | { ok: true; data: StockSummaryType, message?: string }
   | { ok: false; message: string };
 
 
@@ -30,35 +31,49 @@ export type StockServiceResult =
   | { ok: false; message: string };
 
 export const StockService = {
-  // ดึง stock transactions ทั้งหมด
-  async getAll(): Promise<StockServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      return { ok: true, data: mockStockTransactions };
+  async getByPagination(
+    page = 1,
+    pageSize = 10,
+    search = "",
+    productId?: string,
+    sortBy?: string,
+    sortOrder?: string
+  ): Promise<{ ok: true; data: StockTransactionResponse } | { ok: false; message: string }> {
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      search: search,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+      ...(productId ? { productId } : {})
     }
+    try {
+      const res = await AxiosUtil.createRequest<StockTransactionResponse>({
+        method: "GET",
+        url: "/stocks",
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
 
-    return AxiosUtil.createRequest<StockListResponse>({
-      method: "GET",
-      url: "/stock-transactions",
-    });
-  },
+      const mappedStocks = (res.data.stocks ?? []).map((p) => ({
+        ...p,
+        product_name: p.product?.name || "-",
+        product_code: p.product?.product_code || "-"
+      }));
 
-  // สร้าง transaction ใหม่
-  async create(transaction: Omit<StockTransactionType, "stock_transaction_id" | "created_at">): Promise<StockServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const newTransaction = {
-        ...transaction,
-        stock_transaction_id: crypto.randomUUID(),
-        created_at: new Date().toISOString(),
+      const mappedData: StockTransactionResponse = {
+        ...res.data,
+        data: mappedStocks,
       };
-      mockStockTransactions.push(newTransaction);
-      return { ok: true, data: [newTransaction] };
-    }
 
-    return AxiosUtil.createRequest<StockListResponse>({
-      method: "POST",
-      url: "/stock-transactions",
-      data: transaction,
-    });
+      return { ok: true, data: mappedData };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
+    }
   },
 
   // ลบ transaction (option)
@@ -105,11 +120,20 @@ export const StockService = {
     }
 
   },
-  async stockIn(payload: StockInPayload): Promise<StockServiceResult> {
+
+  async stockIn(pd: StockTransactionType): Promise<StockServiceResult> {
     try {
+      const payload = {
+        created_by: pd.created_by,
+        product_id: pd.product_id,
+        quantity: pd.quantity,
+        reason: pd.reason,
+        reference_id: pd.reference_id
+      }
+
       const res = await AxiosUtil.createRequest({
         method: 'POST',
-        url: '/stocks/in',
+        url: '/stock/in',
         data: payload,
       });
 
@@ -122,7 +146,62 @@ export const StockService = {
       if (err instanceof Error) {
         message = err.message;
       }
+      return { ok: false, message };
+    }
+  },
 
+  async stockOut(pd: StockTransactionType): Promise<StockServiceResult> {
+    try {
+      const payload = {
+        created_by: pd.created_by,
+        product_id: pd.product_id,
+        quantity: pd.quantity,
+        reason: pd.reason,
+      }
+
+      const res = await AxiosUtil.createRequest({
+        method: 'POST',
+        url: '/stock/out',
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+
+      return { ok: true, data: res.data as StockListResponse };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาด";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
+    }
+  },
+
+  async stockAdjust(pd: StockTransactionType): Promise<StockServiceResult> {
+    try {
+      const payload = {
+        created_by: pd.created_by,
+        product_id: pd.product_id,
+        quantity: pd.quantity,
+        reason: pd.reason,
+      }
+
+      const res = await AxiosUtil.createRequest({
+        method: 'POST',
+        url: '/stock/adjust',
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+
+      return { ok: true, data: res.data as StockListResponse };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาด";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       return { ok: false, message };
     }
   },

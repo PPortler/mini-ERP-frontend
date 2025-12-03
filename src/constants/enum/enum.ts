@@ -22,8 +22,13 @@ export const TYPE_STOCK_TRANSECTION = {
 }
 
 export const STATUS_PO = {
-  DRAFT: "Draft",
-  CONFIRMED: "Confirmed",
-  RECEIVED: "Received",
-  CANCELLED: "Cancelled"
+  DRAFT: "DRAFT",
+  CONFIRMED: "CONFIRMED",
+  RECEIVED: "RECEIVED",
+  CANCELLED: "CANCELLED"
+}
+
+export const SORT_BY_TYPE = {
+  ASC: "asc",
+  DESC: "desc"
 }

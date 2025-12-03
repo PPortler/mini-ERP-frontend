@@ -19,9 +19,9 @@ export const parseDate = (isoString: string) => {
     minutes,
     seconds,
     // สำหรับแสดงผล
-    dateString: `${day.toString().padStart(2, "0")}/${month
+    dateString: `${day.toString().padStart(2, "0")}-${month
       .toString()
-      .padStart(2, "0")}/${year}`,
+      .padStart(2, "0")}-${year}`,
     timeString: `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
       .padStart(2, "0")}`,

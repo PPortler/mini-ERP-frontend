@@ -1,8 +1,8 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import type { CatagoriesType } from "../types/catagories";
-import { getMockCategory, mockCatagories } from "../mocks/mockCatagories";
-import type { CategoryResponse } from "../types/api";
-import { delay } from "../utils/delay";
+import { mockCatagories } from "../mocks/mockCatagories";
+import type { CategoryResponse } from "../types/apiResponse";
+// import { delay } from "../utils/delay";
 
 export type CatagoriesListResponse = CatagoriesType[];
 
@@ -33,8 +33,12 @@ export const CatagoriesService = {
         ok: true,
         data: list,
       };
-    } catch (err: any) {
-      return { ok: false, message: err.message || "Request error" };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -42,12 +46,16 @@ export const CatagoriesService = {
     page = 1,
     pageSize = 10,
     search = "",
+    sortField?: string,
+    sortOrder?: string
   ): Promise<{ ok: true; data: CategoryResponse } | { ok: false; message: string }> {
-  
+
     const params = {
       page: page,
       pageSize: pageSize,
       search: search,
+      sortField: sortField,
+      sortOrder: sortOrder
     }
     try {
       const res = await AxiosUtil.createRequest<CategoryResponse>({
@@ -65,8 +73,12 @@ export const CatagoriesService = {
       return {
         ok: true, data: mappedData,
       };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -106,9 +118,13 @@ export const CatagoriesService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
-    };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
+    }
   },
 
   // แก้ไขหมวดหมู่
@@ -134,8 +150,12 @@ export const CatagoriesService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -157,8 +177,12 @@ export const CatagoriesService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 };

@@ -1,8 +1,8 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { getMockProducts, mockProducts } from "../mocks/mockProducts";
+import { mockProducts } from "../mocks/mockProducts";
 import type { ProductType } from "../types/product";
-import type { ProductResponse } from "../types/api";
-import { delay } from "../utils/delay";
+import type { ProductResponse } from "../types/apiResponse";
+// import { delay } from "../utils/delay";
 // import { CatagoriesService } from "./CatagoriesService";
 // import { mapProductsWithCategory } from "../utils/mapProductWithCategory";
 
@@ -14,9 +14,10 @@ export type ProductServiceResult =
 
 export const ProductService = {
   async getAll(): Promise<ProductServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      return { ok: true, data: mockProducts };
-    }
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   return { ok: true, data: mockProducts };
+    // }
+
     try {
       const res = await AxiosUtil.createRequest<ProductResponse>({
         method: "GET",
@@ -25,13 +26,17 @@ export const ProductService = {
       if (!res.ok) {
         return { ok: false, message: res.message };
       }
+    
       return {
         ok: true,
         data: res.data.products,
       };
-    } catch (err: any) {
-      return { ok: false, message: err.message || "Request error" };
-
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -39,7 +44,9 @@ export const ProductService = {
     page = 1,
     pageSize = 10,
     search = "",
-    categoryId?: string
+    categoryId?: string,
+    sortBy?: string,
+    sortOrder?: string
   ): Promise<{ ok: true; data: ProductResponse } | { ok: false; message: string }> {
     // ใช้ mock
     // if (import.meta.env.VITE_USE_MOCK === "true") {
@@ -53,7 +60,9 @@ export const ProductService = {
       page: page,
       pageSize: pageSize,
       search: search,
-      category_id: categoryId
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+      ...(categoryId ? { categoryId } : {})
     }
     try {
       const res = await AxiosUtil.createRequest<ProductResponse>({
@@ -74,8 +83,12 @@ export const ProductService = {
       };
 
       return { ok: true, data: mappedData };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -105,10 +118,10 @@ export const ProductService = {
       const payload = {
         product_code: product.product_code,
         name: product.name,
-        cost_price: product.cost_price,
-        selling_price: product.selling_price,
+        cost_price: Number(product.cost_price),
+        selling_price: Number(product.selling_price),
         unit: product.unit,
-        min_stock: product.min_stock,
+        min_stock: Number(product.min_stock),
         category_id: product.category_id
       };
 
@@ -121,8 +134,12 @@ export const ProductService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -153,8 +170,12 @@ export const ProductService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 
@@ -175,8 +196,12 @@ export const ProductService = {
       if (!res.ok) return { ok: false, message: res.message };
 
       return { ok: true };
-    } catch (err: any) {
-      return { ok: false, message: err.message };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
   },
 };

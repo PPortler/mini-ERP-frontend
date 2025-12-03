@@ -14,17 +14,19 @@ export const useLoadInitialData = ({
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [search, setSearch] = useState(initialSearch);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false); // เพิ่ม loading state
 
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  const [debouncedSearch] = useDebouncedValue(search);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
 
       const [categoryRes] = await Promise.all([
-        CatagoriesService.getByPagination(page, pageSize, debouncedSearch),
+        CatagoriesService.getByPagination(page, pageSize, debouncedSearch, sortField, sortOrder),
       ]);
 
       if (!categoryRes.ok) throw new Error(categoryRes.message || "Failed to load");
@@ -41,7 +43,7 @@ export const useLoadInitialData = ({
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch]);
+  }, [page, pageSize, debouncedSearch, sortField, sortOrder]);
 
   useEffect(() => {
     (async () => {
@@ -60,6 +62,10 @@ export const useLoadInitialData = ({
     setSearch,
     error,
     setPageSize,
-    loading
+    loading,
+    setSortOrder,
+    setSortField,
+    sortField,
+    sortOrder
   };
 };

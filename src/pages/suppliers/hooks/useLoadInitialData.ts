@@ -1,17 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { SupplierService } from "../../../services/SupplierService";
 import type { SupplierType } from "../../../types/suppliers";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
 
 export const useLoadInitialData = () => {
-    const { setOpenLoading } = LoadingProvider.useLoading()
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<SupplierType[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const loadData = useCallback(async () => {
         try {
-            setOpenLoading(true);
+            setLoading(true);
             const res = await SupplierService.getAll();
 
             if (res.ok) {
@@ -20,7 +18,7 @@ export const useLoadInitialData = () => {
                 setError(res.message || "เกิดข้อผิดพลาด");
             }
         } finally {
-            setOpenLoading(false);
+            setLoading(false);
         }
     }, []);
 
@@ -31,6 +29,7 @@ export const useLoadInitialData = () => {
     return {
         data,
         error,
+        loading,
         refetch: loadData,
     };
 };

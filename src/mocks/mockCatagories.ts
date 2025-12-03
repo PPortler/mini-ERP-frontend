@@ -1,4 +1,4 @@
-import type { CategoryResponse } from "../types/api";
+import type { CategoryResponse } from "../types/apiResponse";
 import type { CatagoriesType } from "../types/catagories";
 
 

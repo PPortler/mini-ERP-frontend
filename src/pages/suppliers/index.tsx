@@ -17,7 +17,7 @@ import { supplierSchema } from '../../schemas/supplierSchema';
 
 function SupplierPage() {
   const { setOpenLoading } = LoadingProvider.useLoading();
-  const { data, refetch } = useLoadInitialData();
+  const { data, refetch, loading } = useLoadInitialData();
   const roleCurrent = getRoleCurrent();
 
   // State สำหรับ modal
@@ -40,6 +40,7 @@ function SupplierPage() {
   };
 
   const confirmDelete = async () => {
+    setOpenLoading(true)
     if (!selectedItem) return;
     try {
       const res = await SupplierService.delete(selectedItem.supplier_id)
@@ -66,6 +67,8 @@ function SupplierPage() {
         type: "error",
         message,
       });
+    } finally {
+      setOpenLoading(true)
     }
     setModalOpen(false);
     setSelectedItem(null);
@@ -78,31 +81,28 @@ function SupplierPage() {
       let result;
 
       if (!updatedItems.supplier_id) {
-        result = await SupplierService.create({
-          name: updatedItems.name,
-          phone: updatedItems.phone,
-          email: updatedItems.email,
-          address: updatedItems.address
-        });
+        result = await SupplierService.create(updatedItems);
       } else {
         result = await SupplierService.update(updatedItems.supplier_id, updatedItems);
       }
 
-      if (result.ok && result.data.length > 0) {
-        notify({
-          type: 'success',
-          message: updatedItems.supplier_id
-            ? `แก้ไข Supplier "${updatedItems.name}" สำเร็จ`
-            : `เพิ่ม Supplier "${updatedItems.name}" สำเร็จ`,
-        });
-      } else {
+      if (!result.ok) {
         notify({
           type: 'error',
           message: result.message || 'เกิดข้อผิดพลาดในการบันทึก',
         });
+        return;
       }
+
+      notify({
+        type: 'success',
+        message: updatedItems.supplier_id
+          ? `แก้ไข Supplier "${updatedItems.name}" สำเร็จ`
+          : `เพิ่ม Supplier "${updatedItems.name}" สำเร็จ`,
+      });
       setModalOpen(false);
       setSelectedItem(null);
+      refetch();
     } catch (error: unknown) {
       const message =
         error instanceof Error
@@ -158,7 +158,7 @@ function SupplierPage() {
             )}
           </Box>
         </Group>
-        <DataTable columns={columnsWithAction} data={data} pageSize={10} />
+        <DataTable loading={loading} columns={columnsWithAction} data={data} pageSize={10} />
       </Card>
 
       {modalType === 'confirm' && (

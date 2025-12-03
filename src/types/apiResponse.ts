@@ -1,6 +1,8 @@
 import type { CatagoriesType } from "./catagories";
 import type { ProductType } from "./product";
 import type { PurchaseOrderType } from "./purchaes";
+import type { StockTransactionType } from "./stockTransection";
+import type { SupplierType } from "./suppliers";
 
 export interface ApiPaginationResponse<T> {
   data: T;
@@ -18,4 +20,10 @@ export type CategoryResponse = ApiPaginationResponse<CatagoriesType[]> & {
 };
 export type PurchaseOrderResponse = ApiPaginationResponse<PurchaseOrderType[]> & {
   purchaseOrders?: PurchaseOrderType[];
+};
+export type SupplierResponse = ApiPaginationResponse<SupplierType[]> & {
+  suppliers?: SupplierType[];
+};
+export type StockTransactionResponse = ApiPaginationResponse<StockTransactionType[]> & {
+  stocks?: StockTransactionType[]
 };

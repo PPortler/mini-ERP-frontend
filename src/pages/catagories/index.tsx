@@ -28,7 +28,11 @@ function CatagoriesPage() {
         setSearch,
         search,
         total,
-        loading
+        loading,
+        setSortOrder,
+        setSortField,
+        sortField,
+        sortOrder
     } = useLoadInitialData({
         initialPage: 1,
         initialPageSize: 10,
@@ -81,7 +85,7 @@ function CatagoriesPage() {
                     ? `แก้ไขหมวดหมู่ "${updated.name}" สำเร็จ`
                     : `เพิ่มหมวดหมู่ "${updated.name}" สำเร็จ`,
             });
-            
+
             setModalOpen(false);
             setSelectedCategory(null);
             await refetch();
@@ -196,6 +200,10 @@ function CatagoriesPage() {
                     onPageChange={setPage}
                     onPageSizeChange={setPageSize}
                     loading={loading}
+                    setSortField={setSortField}
+                    setSortOrder={setSortOrder}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
                 />
             </Card>
 

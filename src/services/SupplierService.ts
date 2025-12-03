@@ -1,6 +1,7 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import { mockSuppliers } from "../mocks/mockSuppliers";
 import type { SupplierType } from "../types/suppliers";
+import type { SupplierResponse } from "../types/apiResponse";
 
 export type SupplierListResponse = SupplierType[];
 
@@ -11,18 +12,21 @@ export type SupplierServiceResult =
 export const SupplierService = {
   // ดึงทั้งหมด
   async getAll(): Promise<SupplierServiceResult> {
-    try {
-      if (import.meta.env.VITE_USE_MOCK === "true") {
-        return { ok: true, data: mockSuppliers };
-      }
 
-      const res = await AxiosUtil.createRequest<SupplierListResponse>({
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   return { ok: true, data: mockSuppliers };
+    // }
+
+    try {
+      const res = await AxiosUtil.createRequest<SupplierResponse>({
         method: "GET",
         url: "/suppliers",
       });
 
       if (!res.ok) return { ok: false, message: res.message };
-      return { ok: true, data: res.data };
+      const list = Array.isArray(res.data.suppliers) ? res.data.suppliers : [];
+
+      return { ok: true, data: list };
     } catch (err: unknown) {
       let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
       if (err instanceof Error) {
@@ -50,21 +54,39 @@ export const SupplierService = {
   async create(
     supplier: Omit<SupplierType, "supplier_id">
   ): Promise<SupplierServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const newSupplier = {
-        ...supplier,
-        supplier_id: crypto.randomUUID(),
-        create_at: new Date().toISOString(),
-      };
-      mockSuppliers.push(newSupplier);
-      return { ok: true, data: [newSupplier] };
-    }
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const newSupplier = {
+    //     ...supplier,
+    //     supplier_id: crypto.randomUUID(),
+    //     create_at: new Date().toISOString(),
+    //   };
+    //   mockSuppliers.push(newSupplier);
+    //   return { ok: true, data: [newSupplier] };
+    // }
 
-    return AxiosUtil.createRequest<SupplierListResponse>({
-      method: "POST",
-      url: "/suppliers",
-      data: supplier,
-    });
+    try {
+      const payload = {
+        name: supplier.name,
+        phone: supplier.phone,
+        address: supplier.address,
+        email: supplier.email
+      }
+      const res = await AxiosUtil.createRequest<SupplierListResponse>({
+        method: "POST",
+        url: "/suppliers",
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
+    }
   },
 
   // อัปเดต Supplier
@@ -72,36 +94,65 @@ export const SupplierService = {
     supplier_id: string,
     supplier: Partial<SupplierType>
   ): Promise<SupplierServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
-      if (idx === -1)
-        return { ok: false, message: "Supplier not found (mock)" };
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
+    //   if (idx === -1)
+    //     return { ok: false, message: "Supplier not found (mock)" };
 
-      mockSuppliers[idx] = { ...mockSuppliers[idx], ...supplier };
-      return { ok: true, data: [mockSuppliers[idx]] };
+    //   mockSuppliers[idx] = { ...mockSuppliers[idx], ...supplier };
+    //   return { ok: true, data: [mockSuppliers[idx]] };
+    // }
+
+    try {
+      const payload = {
+        supplier_id: supplier.supplier_id,
+        name: supplier.name,
+        phone: supplier.phone,
+        address: supplier.address,
+        email: supplier.email
+      }
+      const res = await AxiosUtil.createRequest<SupplierListResponse>({
+        method: "PUT",
+        url: `/suppliers/${supplier_id}`,
+        data: payload,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: res.data };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
-
-    return AxiosUtil.createRequest<SupplierListResponse>({
-      method: "PUT",
-      url: `/suppliers/${supplier_id}`,
-      data: supplier,
-    });
   },
 
   // ลบ Supplier
   async delete(supplier_id: string): Promise<SupplierServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
-      if (idx === -1)
-        return { ok: false, message: "Supplier not found (mock)" };
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
+    //   if (idx === -1)
+    //     return { ok: false, message: "Supplier not found (mock)" };
 
-      const deleted = mockSuppliers.splice(idx, 1);
-      return { ok: true, data: deleted };
+    //   const deleted = mockSuppliers.splice(idx, 1);
+    //   return { ok: true, data: deleted };
+    // }
+
+    try {
+      const res = await AxiosUtil.createRequest<SupplierListResponse>({
+        method: "DELETE",
+        url: `/suppliers/${supplier_id}`,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+      return { ok: true, data: [] };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
     }
-
-    return AxiosUtil.createRequest<SupplierListResponse>({
-      method: "DELETE",
-      url: `/suppliers/${supplier_id}`,
-    });
   },
 };
