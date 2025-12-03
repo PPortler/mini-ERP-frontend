@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Group, Title, Button } from "@mantine/core";
+import { Box, Card, Group, Title } from "@mantine/core";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import type { PurchaseOrderType } from "../../types/purchaes";
 import FormModel from "../../components/Models/FormModel";
@@ -12,6 +12,7 @@ import DataTable from "../../components/Table/DataTable";
 import { poOrderSchema } from "../../schemas/poOrderSchema";
 import usePOActionColumn from "./hooks/usePOActionColumn";
 import StatusBadge from "../../components/Polish/StatusBagde";
+import AppButton from "../../components/Form/AppButton";
 
 export default function PoPage() {
     const { purchaseOrders, suppliers, refetch, loading } = useLoadInitialData();
@@ -133,7 +134,7 @@ export default function PoPage() {
                 <Group justify="space-between" mb="md">
                     <Title order={3}>Purchase Orders</Title>
                     {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
-                        <Button onClick={handleCreatePO}>สร้าง PO ใหม่</Button>
+                        <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
                     )}
                 </Group>
                 <DataTable loading={loading} columns={columnsWithAction} data={purchaseOrders} pageSize={10} />

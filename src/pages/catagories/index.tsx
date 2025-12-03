@@ -33,11 +33,7 @@ function CatagoriesPage() {
         setSortField,
         sortField,
         sortOrder
-    } = useLoadInitialData({
-        initialPage: 1,
-        initialPageSize: 10,
-        initialSearch: "",
-    });
+    } = useLoadInitialData();
     const { setOpenLoading } = LoadingProvider.useLoading();
     const roleCurrent = getRoleCurrent();
 

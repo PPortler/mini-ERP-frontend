@@ -1,120 +1,64 @@
-import { useState, useEffect, useCallback } from "react";
-import { LoadingProvider } from "../../../contexts/LoadingContext";
+import { useState, useCallback, useEffect } from "react";
 import { ReportService } from "../../../services/ReportServiec";
-import { ProductService } from "../../../services/ProductService";
-
-const mergeProductToMovements = async (movements: any[]) => {
-    return await Promise.all(
-        movements.map(async (t) => {
-            try {
-                const resProduct = await ProductService.getById(t.product_id);
-                const product = resProduct.ok && resProduct.length > 0 ? resProduct.data[0] : null;
-                return {
-                    ...t,
-                    product_name: product?.name || "Unknown",
-                };
-            } catch {
-                return {
-                    ...t,
-                    product_name: "Unknown",
-                };
-            }
-        })
-    );
-};
+import type { PurchaseSummaryItemType, StockMovementItemType, StockSummaryProductType } from "../../../types/reports";
+import { toDDMMYYYY, toMMYYYY } from "../../../utils/formatDate";
 
 export const useLoadInitialData = () => {
-    const { setOpenLoading } = LoadingProvider.useLoading();
+    const today = new Date();
 
-    const [stockSummary, setStockSummary] = useState<any[]>([]);
-    const [stockMovements, setStockMovements] = useState<any[]>([]);
-    const [purchaseSummary, setPurchaseSummary] = useState<any[]>([]);
+    const [from, setFrom] = useState(toDDMMYYYY(today));
+    const [to, setTo] = useState(toDDMMYYYY(today));
+    const [month, setMonth] = useState(toMMYYYY(today));
+
+    const [loading, setLoading] = useState<boolean>(false)
+    const [stockSummary, setStockSummary] = useState<StockSummaryProductType[]>([]);
+    const [stockMovements, setStockMovements] = useState<StockMovementItemType[]>([]);
+    const [purchaseSummary, setPurchaseSummary] = useState<PurchaseSummaryItemType[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const fetchData = useCallback(async () => {
-        setOpenLoading(true);
+        setLoading(true)
         try {
-            setError(null);
-
-            const [movements, summary, purchase] = await Promise.all([
-                loadMovements(),
-                loadStockSummary(),
-                loadPurchase(),
+            const [resStSummary, resStMovement, resPoSummary] = await Promise.all([
+                ReportService.getStockSummary(),
+                ReportService.getStockMovements(from, to),
+                ReportService.getPurchaseSummary(month),
             ]);
 
-            // merge product info
-            const movementsWithProduct = await mergeProductToMovements(movements);
-            setStockMovements(movementsWithProduct);
+            if (!resStSummary.ok) throw new Error(resStSummary.message || "Failed to load");
+            setStockSummary(resStSummary.data?.products || [])
+            if (!resStMovement.ok) throw new Error(resStMovement.message || "Failed to load");
+            setStockMovements(resStMovement.data?.movements || [])
+            if (!resPoSummary.ok) throw new Error(resPoSummary.message || "Failed to load");
+            setPurchaseSummary(resPoSummary.data?.summary || [])
 
-            setStockSummary(summary);
-            setPurchaseSummary(purchase);
-
-        } catch (err: any) {
-            setError(err.message || "Failed to load report data");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Failed to load data");
+            }
         } finally {
-            setOpenLoading(false);
+            setLoading(false);
         }
-    }, [setOpenLoading]);
+    }, [from, to, month])
 
-    // โหลดครั้งแรก
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
-    // สำหรับโหลด movements ตามช่วงวันที่
-    const loadMovements = async (from?: string, to?: string) => {
-        setOpenLoading(true);
-        try {
-            const res = await ReportService.getStockMovements(from, to);
-            if (res.ok) {
-                const movementsWithProduct = await mergeProductToMovements(res.data);
-                setStockMovements(movementsWithProduct);
-                return movementsWithProduct; // ส่งค่ากลับ
-            }
-            return [];
-        } finally {
-            setOpenLoading(false);
-        }
-    };
-
-    // สำหรับโหลด Stock Summary ตามช่วงวันที่
-    const loadStockSummary = async (from?: string, to?: string) => {
-        setOpenLoading(true);
-        try {
-            const res = await ReportService.getStockSummary(from, to);
-            if (res.ok) {
-                setStockSummary(res.data);
-                return res.data; // ส่งค่ากลับ
-            }
-            return [];
-        } finally {
-            setOpenLoading(false);
-        }
-    };
-
-    // สำหรับโหลด purchase summary
-    const loadPurchase = async (month?: string) => {
-        setOpenLoading(true);
-        try {
-            const res = await ReportService.getPurchaseSummary(month);
-            if (res.ok) {
-                setPurchaseSummary(res.data);
-                return res.data; // ส่งค่ากลับ
-            }
-            return [];
-        } finally {
-            setOpenLoading(false);
-        }
-    };
-
     return {
+        from,
+        to,
+        month,
+        setFrom,
+        setMonth,
+        setTo,
         stockSummary,
         stockMovements,
         purchaseSummary,
+        loading,
         error,
         refetch: fetchData,
-        loadMovements,
-        loadPurchase,
-        loadStockSummary
     };
 };

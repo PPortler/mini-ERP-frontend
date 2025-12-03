@@ -4,26 +4,42 @@ import { StockService } from "../../../services/StockService";
 import { useDebouncedValue } from "@mantine/hooks";
 import type { ProductType } from "../../../types/product";
 import { ProductService } from "../../../services/ProductService";
+import { useSearchParams } from "react-router-dom";
+import { SEARCH_CONFIG, TABLE_CONFIG } from "../../../constants/enum/enum";
+import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSearchParams";
 
-export const useLoadInitialData = ({
-  initialPage = 1,
-  initialPageSize = 10,
-  initialSearch = "",
-  initialProductId = "",
-}) => {
+export const useLoadInitialData = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPage = parseInt(searchParams.get("page") || TABLE_CONFIG.DEFAULT_PAGE.toString());
+  const initialPageSize = parseInt(searchParams.get("pageSize") || TABLE_CONFIG.DEFAULT_PAGE_SIZE.toString());
+  const initialSearch = searchParams.get("debouncedSearch") || "";
+  const initialProductId = searchParams.get("productId") || "";
+  const initialSortField = searchParams.get("sortField") || "";
+  const initialSortOrder = searchParams.get("sortOrder") || "";
+
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [search, setSearch] = useState(initialSearch);
   const [productId, setProductId] = useState(initialProductId);
-  const [sortField, setSortField] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<string>("");
+  const [sortField, setSortField] = useState<string>(initialSortField);
+  const [sortOrder, setSortOrder] = useState<string>(initialSortOrder);
   const [loading, setLoading] = useState<boolean>(false)
   const [stockTransactions, setTransactions] = useState<StockTransactionType[]>([]);
   const [products, setProducts] = useState<ProductType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const [debouncedSearch] = useDebouncedValue(search);
+  const [debouncedSearch] = useDebouncedValue(search, SEARCH_CONFIG.DELAY);
+
+  useSyncStateWithSearchParams({
+    page,
+    pageSize,
+    debouncedSearch,
+    productId,
+    sortField,
+    sortOrder,
+  });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -36,6 +52,11 @@ export const useLoadInitialData = ({
 
       if (!resTransactions.ok) throw new Error(resTransactions.message || "Failed to load stock transactions");
       if (!resProducts.ok) throw new Error(resProducts.message || "Failed to load");
+
+      if (resTransactions.data.data.length <= 0 || pageSize <= 0) {
+        setPage(TABLE_CONFIG.DEFAULT_PAGE)
+        setPageSize(TABLE_CONFIG.DEFAULT_PAGE_SIZE)
+      }
 
       setTransactions(resTransactions.data.data);
       setProducts(resProducts.data ?? []);
@@ -73,6 +94,7 @@ export const useLoadInitialData = ({
     setPageSize,
     search,
     productId,
+    setSearchParams,
     setSearch,
     setProductId
   };

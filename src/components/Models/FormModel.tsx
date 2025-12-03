@@ -58,7 +58,7 @@ const FormModel = <T extends Record<string, unknown>>({
   });
 
   useEffect(() => {
-    const mappedValues: Partial<T> = { ...initialValues }; // ใช้ Partial<T> แทน any
+    const mappedValues: Partial<T> = { ...initialValues };
     fields.forEach(f => {
       const key = f.name as keyof T;
       if (f.type === "number" && mappedValues[key] === 0) {

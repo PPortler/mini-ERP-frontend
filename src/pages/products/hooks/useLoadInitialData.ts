@@ -4,16 +4,22 @@ import { CatagoriesService } from "../../../services/CatagoriesService";
 import type { ProductType } from "../../../types/product";
 import type { CatagoriesType } from "../../../types/catagories";
 import { useDebouncedValue } from "@mantine/hooks";
+import { useSearchParams } from "react-router-dom";
+import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSearchParams";
+import { SEARCH_CONFIG, TABLE_CONFIG } from "../../../constants/enum/enum";
 
-export const useLoadInitialData = ({
-  initialPage = 1,
-  initialPageSize = 10,
-  initialSearch = "",
-  initialCategoryId = "",
-}) => {
+export const useLoadInitialData = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [sortField, setSortField] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<string>("");
+  const initialPage = parseInt(searchParams.get("page") || TABLE_CONFIG.DEFAULT_PAGE.toString());
+  const initialPageSize = parseInt(searchParams.get("pageSize") || TABLE_CONFIG.DEFAULT_PAGE_SIZE.toString());
+  const initialSearch = searchParams.get("debouncedSearch") || "";
+  const initialCategoryId = searchParams.get("categoryId") || "";
+  const initialSortField = searchParams.get("sortField") || "";
+  const initialSortOrder = searchParams.get("sortOrder") || "";
+
+  const [sortField, setSortField] = useState<string>(initialSortField);
+  const [sortOrder, setSortOrder] = useState<string>(initialSortOrder);
   const [products, setProducts] = useState<ProductType[]>([]);
   const [categories, setCategories] = useState<CatagoriesType[]>([]);
   const [total, setTotal] = useState(0);
@@ -24,7 +30,16 @@ export const useLoadInitialData = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [debouncedSearch] = useDebouncedValue(search);
+  const [debouncedSearch] = useDebouncedValue(search, SEARCH_CONFIG.DELAY);
+
+  useSyncStateWithSearchParams({
+    page,
+    pageSize,
+    debouncedSearch,
+    categoryId,
+    sortField,
+    sortOrder,
+  });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -36,6 +51,11 @@ export const useLoadInitialData = ({
 
       if (!productRes.ok) throw new Error(productRes.message || "Failed to load");
       if (!categoryRes.ok) throw new Error(categoryRes.message || "Failed to load");
+
+      if (productRes.data.data.length <= 0 || pageSize <= 0) {
+        setPage(TABLE_CONFIG.DEFAULT_PAGE)
+        setPageSize(TABLE_CONFIG.DEFAULT_PAGE_SIZE)
+      }
 
       setProducts(productRes.data.data);
       setCategories(categoryRes.data ?? []);
@@ -74,6 +94,7 @@ export const useLoadInitialData = ({
     setSortOrder,
     setSortField,
     sortField,
-    sortOrder
+    sortOrder,
+    setSearchParams
   };
 };

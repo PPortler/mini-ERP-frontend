@@ -22,6 +22,7 @@ type RequestParams = {
   url: string;
   data?: unknown;
   params?: Record<string, unknown>;
+  responseType?: "json" | "blob" | "arraybuffer" | "text";
 };
 
 // type ของ return
@@ -31,16 +32,20 @@ type RequestReturn<T> = Promise<{ ok: true; data: T } | { ok: false; message: st
 async function createRequest<T>(params: RequestParams): RequestReturn<T> {
   try {
     let response: AxiosResponse<T>;
+    const axiosConfig = {
+      params: params.params,
+      responseType: params.responseType || "json",
+    };
     if (params.method === "GET") {
-      response = await baseAxios.get<T>(params.url, { params: params.params });
+      response = await baseAxios.get<T>(params.url, axiosConfig);
     } else if (params.method === "POST") {
-      response = await baseAxios.post<T>(params.url, params.data, { params: params.params });
+      response = await baseAxios.post<T>(params.url, params.data, axiosConfig);
     } else if (params.method === "PUT") {
-      response = await baseAxios.put<T>(params.url, params.data, { params: params.params });
+      response = await baseAxios.put<T>(params.url, params.data, axiosConfig);
     } else if (params.method === "DELETE") {
-      response = await baseAxios.delete<T>(params.url, { params: params.params });
+      response = await baseAxios.delete<T>(params.url, axiosConfig);
     } else if (params.method === "PATCH") {
-      response = await baseAxios.patch<T>(params.url, params.data, { params: params.params });
+      response = await baseAxios.patch<T>(params.url, params.data, axiosConfig);
     } else {
       throw new Error("Invalid method");
     }

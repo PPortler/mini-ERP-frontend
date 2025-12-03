@@ -32,3 +32,12 @@ export const SORT_BY_TYPE = {
   ASC: "asc",
   DESC: "desc"
 }
+
+export const TABLE_CONFIG = {
+  DEFAULT_PAGE_SIZE: 10,
+  DEFAULT_PAGE: 1
+}
+
+export const SEARCH_CONFIG = {
+  DELAY: 500
+}

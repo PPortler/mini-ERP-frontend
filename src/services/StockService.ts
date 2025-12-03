@@ -126,14 +126,14 @@ export const StockService = {
       const payload = {
         created_by: pd.created_by,
         product_id: pd.product_id,
-        quantity: pd.quantity,
+        quantity: Number(pd.quantity),
         reason: pd.reason,
         reference_id: pd.reference_id
       }
 
       const res = await AxiosUtil.createRequest({
         method: 'POST',
-        url: '/stock/in',
+        url: '/stocks/in',
         data: payload,
       });
 
@@ -153,15 +153,15 @@ export const StockService = {
   async stockOut(pd: StockTransactionType): Promise<StockServiceResult> {
     try {
       const payload = {
-        created_by: pd.created_by,
         product_id: pd.product_id,
-        quantity: pd.quantity,
+        quantity: Number(pd.quantity),
         reason: pd.reason,
+        created_by: pd.created_by,
       }
 
       const res = await AxiosUtil.createRequest({
         method: 'POST',
-        url: '/stock/out',
+        url: '/stocks/out',
         data: payload,
       });
 
@@ -183,13 +183,13 @@ export const StockService = {
       const payload = {
         created_by: pd.created_by,
         product_id: pd.product_id,
-        quantity: pd.quantity,
+        quantity: Number(pd.quantity),
         reason: pd.reason,
       }
 
       const res = await AxiosUtil.createRequest({
         method: 'POST',
-        url: '/stock/adjust',
+        url: '/stocks/adjust',
         data: payload,
       });
 

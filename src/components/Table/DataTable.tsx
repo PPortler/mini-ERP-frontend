@@ -1,5 +1,5 @@
 import { Table, Pagination, Box, Text, Center, Select, Group, Skeleton } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SORT_BY_TYPE } from "../../constants/enum/enum";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -30,7 +30,7 @@ export default function DataTable<T>({
   columns,
   data = [],
   page = 1,
-  pageSize = 5,
+  pageSize = 10,
   total,
   onPageChange,
   onPageSizeChange,
@@ -43,6 +43,13 @@ export default function DataTable<T>({
 }: DataTableProps<T>) {
   const [internalPage, setInternalPage] = useState(page);
   const [internalPageSize, setInternalPageSize] = useState(pageSize);
+
+  useEffect(() => {
+    setInternalPage(page)
+  },[page])
+  useEffect(() => {
+    setInternalPageSize(pageSize)
+  },[pageSize])
 
   const totalPages = total ? Math.ceil(total / internalPageSize) : Math.ceil(data.length / internalPageSize) || 1;
   const paginatedData = total ? data : data.slice((internalPage - 1) * internalPageSize, internalPage * internalPageSize);

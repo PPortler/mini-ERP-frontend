@@ -120,7 +120,7 @@ export const PurchaseOrderService = {
     }
     try {
       const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
-        method: "PATCH",
+        method: "PUT",
         url: `/purchase-orders/${purchase_order_id}`,
         data: po,
       });

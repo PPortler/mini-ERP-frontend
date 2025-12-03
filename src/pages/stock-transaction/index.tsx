@@ -15,6 +15,7 @@ import { useStore } from "@nanostores/react";
 import { notify } from "../../utils/Notify";
 import { StockService, type StockServiceResult } from "../../services/StockService";
 import { parseDate } from "../../utils/getDateUtils";
+import { stockTransactionSchema } from "../../schemas/stockTransactionSchema";
 
 export default function StockTransactionsPage() {
     const {
@@ -35,12 +36,7 @@ export default function StockTransactionsPage() {
         setSortField,
         sortField,
         sortOrder
-    } = useLoadInitialData({
-        initialPage: 1,
-        initialPageSize: 10,
-        initialSearch: "",
-        initialProductId: "",
-    });
+    } = useLoadInitialData();
     const { setOpenLoading } = LoadingProvider.useLoading();
     const roleCurrent = getRoleCurrent();
     const authUser = useStore($authUser)
@@ -179,13 +175,14 @@ export default function StockTransactionsPage() {
             </Card>
             {modalOpen && (
                 <FormModel<StockTransactionType>
+                    validationSchema={stockTransactionSchema}
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
                     title={modalType === TYPE_STOCK_TRANSECTION.ADJUST ? `Stock ${TYPE_STOCK_TRANSECTION.ADJUST}` : `Stock ${TYPE_STOCK_TRANSECTION.OUT}`}
                     initialValues={{
                         stock_transaction_id: '',
                         product_id: '',
-                        type: '',
+                        type: modalType || '',
                         quantity: 0,
                         reason: '',
                     }}
@@ -198,9 +195,7 @@ export default function StockTransactionsPage() {
                             required: true
                         },
                         { name: 'quantity', label: 'จำนวน', type: 'number', required: true },
-                        ...(modalType === TYPE_STOCK_TRANSECTION.ADJUST
-                            ? [{ name: 'reason', label: 'สาเหตุ', type: 'text', required: true }]
-                            : []),
+                        { name: 'reason', label: 'สาเหตุ', type: 'text', required: modalType === TYPE_STOCK_TRANSECTION.ADJUST },
                     ]}
                     onSubmit={handleStock}
                 />
