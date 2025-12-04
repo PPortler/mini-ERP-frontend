@@ -7,13 +7,13 @@ export type MenuItem = {
 };
 
 export const menuItems: MenuItem[] = [
-    { label: "Dashboard", path: "/dashboard", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Dashboard", path: "/dashboard", roles: [ROLES.ADMIN] },
     { label: "Product", path: "/products", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Stock Transaction", path: "/stock-transaction", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Catagories", path: "/catagories", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Suppliers", path: "/suppliers", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
     { label: "Purchase Order", path: "/po", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
-    { label: "Report", path: "/reports", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER] },
+    { label: "Report", path: "/reports", roles: [ROLES.ADMIN] },
     { label: "User Management", path: "/users-management", roles: [ROLES.ADMIN] },
     { label: "AuditLog", path: "/audit-log", roles: [ROLES.ADMIN] },
 ];

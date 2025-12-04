@@ -8,9 +8,10 @@ export type PurchaseOrderType = {
   total_amount: number;
   created_at?: string;
   created_by?: string;
-  supplier_name?: string
+  supplier_name?: string;
   suppliers?: SupplierType
   products?: ProductType[]
+  supplier?: SupplierType
 };
 
 export type PurchaseOrderItemType = {

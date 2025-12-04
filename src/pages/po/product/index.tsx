@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Group, Title, Button, ActionIcon } from "@mantine/core";
+import { Box, Card, Group, Title, ActionIcon } from "@mantine/core";
 import DataTable from "../../../components/Table/DataTable";
 import FormModel from "../../../components/Models/FormModel";
 import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
@@ -13,12 +13,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useLocation } from "react-router-dom";
 import { poOrderItemsSchema } from "../../../schemas/poOrderItemSchema";
+import AppButton from "../../../components/Form/AppButton";
+import { STATUS_PO } from "../../../constants/enum/enum";
 
 export default function PoProductPage() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const purchase_order_id = searchParams.get("po");
-    const { poItems, error, refetch, products, loading } = useLoadInitialData(purchase_order_id!);
+    const { poItems, refetch, products, loading, poOrderInfo } = useLoadInitialData(purchase_order_id!);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
@@ -97,22 +99,27 @@ export default function PoProductPage() {
             accessor: "total",
             cell: (row: PurchaseOrderItemType) => row.quantity * row.price,
         },
-        {
-            header: "Action",
-            accessor: "action",
-            cell: (row: PurchaseOrderItemType) => (
-                <Group gap="xs">
-                    <ActionIcon color="blue" onClick={() => handleEditItem(row)}>
-                        <EditIcon fontSize="small" />
-                    </ActionIcon>
-                    <ActionIcon color="red" onClick={() => handleDeleteItem(row.product_id)}>
-                        <DeleteIcon fontSize="small" />
-                    </ActionIcon>
-                </Group>
-            ),
-        },
     ];
 
+    const actionColumn = {
+        header: 'Action',
+        accessor: 'action',
+        cell: (row: PurchaseOrderItemType) => (
+            <Group gap="xs">
+                <ActionIcon color="blue" onClick={() => handleEditItem(row)}>
+                    <EditIcon fontSize="small" />
+                </ActionIcon>
+                <ActionIcon color="red" onClick={() => handleDeleteItem(row.purchase_order_item_id)}>
+                    <DeleteIcon fontSize="small" />
+                </ActionIcon>
+            </Group>
+        ),
+    };
+
+    const columnsWithAction =
+        poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT
+            ? [...columns, actionColumn]
+            : [...columns];
     const selectedProdDetail = selectedProduct
         ? products.find(p => p.product_id === selectedProduct.value)
         : null;
@@ -132,13 +139,14 @@ export default function PoProductPage() {
                         </IconButton>
                         <Title order={3}>PO Items for {purchase_order_id}</Title>
                     </Group>
-                    <Button onClick={handleAddItem}>
-                        Add Item
-                    </Button>
+                    {poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT && (
+                        <AppButton loading={loading} onClick={handleAddItem}>
+                            Add Item
+                        </AppButton>
+                    )}
                 </Group>
 
-                <DataTable loading={loading} columns={columns} data={poItems} pageSize={10} />
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                <DataTable loading={loading} columns={columnsWithAction} data={poItems} pageSize={10} />
             </Card>
 
             {modalOpen && (

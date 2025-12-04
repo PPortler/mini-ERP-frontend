@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
     {
         path: "/dashboard",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
                 <GlobalLayout>
                     <Dashboard />
                 </GlobalLayout>
@@ -44,16 +44,6 @@ export const router = createBrowserRouter([
             </ProtectedRoute>
         ),
     },
-    // {
-    //     path: "products/:id",
-    //     element: (
-    //         <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
-    //             <GlobalLayout>
-    //                 <StockPage />
-    //             </GlobalLayout>
-    //         </ProtectedRoute>
-    //     ),
-    // },
     {
         path: "/catagories",
         element: (
@@ -127,7 +117,7 @@ export const router = createBrowserRouter([
     {
         path: "reports",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
                 <GlobalLayout>
                     <ReportPage />
                 </GlobalLayout>

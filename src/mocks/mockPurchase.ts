@@ -55,16 +55,16 @@ const getProductsForPO = (po_id: string): POProduct[] => {
     })
     .filter((p): p is POProduct => !!p);
 };
-export const mockPurchaseOrders: (PurchaseOrderType & { supplier?: SupplierType })[] = [
+export const mockPurchaseOrders: (PurchaseOrderType)[] = [
   {
     purchase_order_id: "po-001",
     supplier_id: "SUP001",
     supplier: getSupplierById("SUP001"),
     status: STATUS_PO.DRAFT,
     total_amount: 1500,
-    create_at: "2025-11-27T09:00:00Z",
+    created_at: "2025-11-27T09:00:00Z",
     products: getProductsForPO("po-001"),
-    create_by: "admin",
+    created_by: "admin",
   },
   {
     purchase_order_id: "po-002",
@@ -72,9 +72,9 @@ export const mockPurchaseOrders: (PurchaseOrderType & { supplier?: SupplierType 
     supplier: getSupplierById("SUP003"),
     status: STATUS_PO.RECEIVED,
     total_amount: 3200,
-    create_at: "2025-11-25T14:30:00Z",
+    created_at: "2025-11-25T14:30:00Z",
     products: getProductsForPO("po-002"),
-    create_by: "staff1",
+    created_by: "staff1",
   },
   {
     purchase_order_id: "po-003",
@@ -82,9 +82,9 @@ export const mockPurchaseOrders: (PurchaseOrderType & { supplier?: SupplierType 
     supplier: getSupplierById("SUP004"),
     status: STATUS_PO.CONFIRMED,
     total_amount: 5000,
-    create_at: "2025-11-25T14:30:00Z",
+    created_at: "2025-11-25T14:30:00Z",
     products: getProductsForPO("po-003"),
-    create_by: "staff1",
+    created_by: "staff1",
   },
   {
     purchase_order_id: "po-004",
@@ -93,8 +93,8 @@ export const mockPurchaseOrders: (PurchaseOrderType & { supplier?: SupplierType 
     status: STATUS_PO.CANCELLED,
     total_amount: 5000,
     products: getProductsForPO("po-004"),
-    create_at: "2025-11-25T14:30:00Z",
-    create_by: "staff1",
+    created_at: "2025-11-25T14:30:00Z",
+    created_by: "staff1",
   },
 ];
 

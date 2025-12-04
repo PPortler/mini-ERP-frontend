@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { getRoleCurrent } from "../utils/RoleUtil";
 import { useStore } from "@nanostores/react";
 import { $authUser } from "../stores/authUserStore";
+import { ROLES } from "../constants/enum/enum";
 
 type ProtectedRouteProps = {
     children: ReactNode;
@@ -21,12 +22,19 @@ export default function ProtectedRoute({
     const roleCurrent = getRoleCurrent();
 
     if (authUser === undefined) {
-        return null; 
+        return null;
     }
 
     if (blockIfAuth && authUser?.access_token && roleCurrent) {
-        return <Navigate to="/dashboard" replace />;
+        if (roleCurrent === ROLES.ADMIN) {
+            return <Navigate to="/dashboard" replace />;
+        } else if (roleCurrent === ROLES.STAFF) {
+            return <Navigate to="/products" replace />;
+        } else if (roleCurrent === ROLES.VIEWER) {
+            return <Navigate to="/products" replace />;
+        }
     }
+
 
     // ถ้า allowedRoles กำหนดและ role ไม่มีสิทธิ์
     if (allowedRoles && (!roleCurrent || !allowedRoles.includes(roleCurrent))) {

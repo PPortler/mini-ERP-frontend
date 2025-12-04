@@ -1,12 +1,16 @@
 import { STATUS_PO } from "../constants/enum/enum";
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
 import { mockSuppliers } from "../mocks/mockSuppliers";
-import type { PurchaseOrderResponse } from "../types/apiResponse";
+import type { PurchaseOrderResponse, PurchaseOrderResponseSingle } from "../types/apiResponse";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
 
 export type PurchaseOrderServiceResult =
   | { ok: true; data: PurchaseOrderType[] }
+  | { ok: false; message: string };
+
+export type PurchaseOrderServiceResultSingle =
+  | { ok: true; data: PurchaseOrderType }  // object เดียว
   | { ok: false; message: string };
 
 export type PurchaseOrderItemService =
@@ -33,12 +37,52 @@ export const PurchaseOrderService = {
       });
       if (!res.ok) return { ok: false, message: res.message };
 
-      const mappedSupplier: PurchaseOrderType[] = (res.data.purchase_orders ?? []).map((po) => ({
+      const orders = res.data.purchase_orders;
+      const mappedSupplier: PurchaseOrderType[] = (Array.isArray(orders) ? orders : orders ? [orders] : []).map((po) => ({
         ...po,
         supplier_name: po.suppliers?.name || "-",
       }));
 
       return { ok: true, data: mappedSupplier };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Request error";
+      return { ok: false, message };
+    }
+  },
+
+  async getById(purchaseOrderId: string): Promise<PurchaseOrderServiceResultSingle> {
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const po = mockPurchaseOrders.find(po => po.purchase_order_id === purchaseOrderId);
+      if (!po) return { ok: false, message: "Purchase order not found" };
+
+      const supplier = mockSuppliers.find(s => s.supplier_id === po.supplier_id);
+      return {
+        ok: true,
+        data: {
+          ...po,
+          supplier_name: supplier?.name || "-",
+        },
+      };
+    }
+
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderResponseSingle>({
+        method: "GET",
+        url: `/purchase-orders/${purchaseOrderId}`,
+      });
+
+      if (!res.ok) return { ok: false, message: res.message };
+
+      const po = res.data.purchase_order;
+      if (!po) return { ok: false, message: "Purchase order not found" };
+
+      return {
+        ok: true,
+        data: {
+          ...po,
+          supplier_name: po.suppliers?.name || "-",
+        } as PurchaseOrderType,
+      };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Request error";
       return { ok: false, message };
@@ -98,7 +142,7 @@ export const PurchaseOrderService = {
       }
 
       const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
-        method: "PATCH",
+        method: "PUT",
         url: `/purchase-orders/${purchase_order_id}/status`,
         data: payload,
       });
@@ -279,7 +323,7 @@ export const PurchaseOrderService = {
     try {
       const res = await AxiosUtil.createRequest<{ success: boolean }>({
         method: "DELETE",
-           url: `/purchase-order-items/${purchase_order_item_id}`,
+        url: `/purchase-order-items/${purchase_order_item_id}`,
       });
 
       if (!res.ok) {
