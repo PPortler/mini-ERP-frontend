@@ -1,3 +1,5 @@
+import type { ProductType } from "./product";
+
 // ==================== Purchase Summary ====================
 export type PurchaseSummaryItemType = {
   average_amount: number;
@@ -34,14 +36,8 @@ export type StockMovementType = {
 };
 
 // ==================== Stock Summary ====================
-export type StockSummaryProductType = {
-  category_name: string;
-  cost_price: number;
+export type StockSummaryProductType  = ProductType &{
   is_low_stock: boolean;
-  min_stock: number;
-  name: string;
-  product_code: string;
-  product_id: string;
   selling_price: number;
   stock_on_hand: number;
   total_cost_value: number;

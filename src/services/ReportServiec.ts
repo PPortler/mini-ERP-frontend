@@ -87,6 +87,7 @@ export const ReportService = {
       if (!res.ok) {
         return { ok: false, message: res.message };
       }
+
       return { ok: true, data: res.data as PurchaseSummaryType };
     } catch (err: unknown) {
       let message = "เกิดข้อผิดพลาด";

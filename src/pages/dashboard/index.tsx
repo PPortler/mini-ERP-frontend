@@ -1,23 +1,63 @@
-import { Card, Grid, Text, Group, Title } from "@mantine/core";
+import { Card, Grid, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
-import { columnProducts } from "../../constants/columnTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
-import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
+import { SummaryCard } from "./components/SummaryCard";
+import { columnProducts } from "../../constants/columnTable";
+import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
+import AppDatePicker from "../../components/Form/AppDatePicker";
+import ChartWrapper from "../../components/Polish/ChartWrapper";
 
 export default function Dashboard() {
-  const { minStock, stockMovement, purchaseTrend, loading } = useLoadInitialData();
+  const {
+    lowStock,
+    stockMovement,
+    purchaseTrend,
+    loading,
+    totalCostPrice,
+    totalStockOnHand,
+    totalLowStock,
+    from,
+    setFrom,
+    to,
+    setTo,
+    month,
+    setMonth,
+    initialLoad,
+    loadStockMovement,
+    loadPoSummary
+  } = useLoadInitialData();
 
   // Chart options
   const stockMovementOptions: ApexOptions = {
     chart: { id: "stock-movement", toolbar: { show: false } },
-    xaxis: { categories: stockMovement.map((item) => item.productName) },
-    title: { text: "Stock Movement", align: "center" },
+    xaxis: { categories: stockMovement.categories },
+    title: { text: "Stock Movement by Day", align: "center" },
   };
+
+
   const purchaseTrendOptions: ApexOptions = {
-    chart: { id: "purchase-trend", toolbar: { show: false } },
-    xaxis: { categories: purchaseTrend.map((item) => item.date), },
-    title: { text: "Purchase Trend", align: "center" },
+    chart: {
+      id: "purchase-trend",
+      toolbar: { show: false },
+    },
+    stroke: { width: 3, curve: "smooth" },
+    markers: { size: 4 },
+    xaxis: {
+      categories: purchaseTrend?.categories,
+      title: { text: "Date" }
+    },
+    yaxis: {
+      title: { text: "Total Orders" }
+    },
+    legend: {
+      position: "top",
+      horizontalAlign: "right"
+    },
+    title: {
+      text: "Purchase Trend",
+      align: "center"
+    }
   };
 
   return (
@@ -26,24 +66,27 @@ export default function Dashboard() {
           1) Summary Cards
       ---------------------------------------------------- */}
       <Grid.Col span={{ base: 12, md: 4 }}>
-        <Card shadow="sm" padding="lg">
-          <Text size="sm" c="dimmed">มูลค่าสินค้าคงคลังรวม</Text>
-          <Title order={2}>฿ 152,400</Title>
-        </Card>
+        <SummaryCard
+          label="Inventory Value"
+          value={`${totalStockOnHand}`}
+          loading={loading}
+        />
       </Grid.Col>
 
       <Grid.Col span={{ base: 12, md: 4 }}>
-        <Card shadow="sm" padding="lg">
-          <Text size="sm" c="dimmed">สินค้าใกล้หมด</Text>
-          <Title order={2}>{minStock.length} รายการ</Title>
-        </Card>
+        <SummaryCard
+          label="Total Low Stocks"
+          value={`${totalLowStock} Lists`}
+          loading={loading}
+        />
       </Grid.Col>
 
       <Grid.Col span={{ base: 12, md: 4 }}>
-        <Card shadow="sm" padding="lg">
-          <Text size="sm" c="dimmed">ยอด PO ทั้งหมด</Text>
-          <Title order={2}>48 PO</Title>
-        </Card>
+        <SummaryCard
+          label="Total Cost Prices"
+          value={`฿ ${totalCostPrice.toLocaleString()}`}
+          loading={loading}
+        />
       </Grid.Col>
 
       {/* ----------------------------------------------------
@@ -54,11 +97,29 @@ export default function Dashboard() {
           <Group justify="space-between" mb="sm">
             <Title order={3}>Stock Movement</Title>
           </Group>
-          <Chart
+          <Group my="sm">
+            <AppDatePicker
+              label="From"
+              value={parseDDMMYYYY(from)}
+              onChange={(newValue) => setFrom(toDDMMYYYY(newValue))}
+              views={["year", "month", "day"]}
+              loading={initialLoad}
+            />
+            <AppDatePicker
+              label="To"
+              value={parseDDMMYYYY(to)}
+              onChange={(newValue) => setTo(toDDMMYYYY(newValue))}
+              views={["year", "month", "day"]}
+              loading={initialLoad}
+            />
+          </Group>
+          <ChartWrapper
             options={stockMovementOptions}
-            series={[{ name: "Stock", data: stockMovement.map((i) => i.quantity) }]}
+            series={stockMovement.series}
             type="bar"
             height={300}
+            loading={loadStockMovement}
+            cardTitle="Stock Movement"
           />
         </Card>
       </Grid.Col>
@@ -68,11 +129,22 @@ export default function Dashboard() {
           <Group justify="space-between" mb="sm">
             <Title order={3}>Purchase Trend</Title>
           </Group>
-          <Chart
+          <Group my="sm">
+            <AppDatePicker
+              label="Select Month"
+              value={month ? parseMonthString(month) : null}
+              onChange={(newValue) => setMonth(toMMYYYY(newValue))}
+              views={["year", "month"]}
+              loading={initialLoad}
+
+            />
+          </Group>
+          <ChartWrapper
             options={purchaseTrendOptions}
-            series={[{ name: "PO", data: purchaseTrend.map((i) => i.count) }]}
+            series={purchaseTrend.series}
             type="line"
-            height={300}
+            loading={loadPoSummary}
+            cardTitle="Purchase Trend"
           />
         </Card>
       </Grid.Col>
@@ -83,9 +155,9 @@ export default function Dashboard() {
       <Grid.Col span={12}>
         <Card shadow="sm" padding="lg">
           <Group justify="space-between" mb="sm">
-            <Title order={3}>สินค้าใกล้หมด (ต่ำกว่า Min Stock)</Title>
+            <Title order={3}>Low Stocks</Title>
           </Group>
-          <DataTable loading={loading} columns={columnProducts} data={minStock} pageSize={5} />
+          <DataTable loading={loading} columns={columnProducts} data={lowStock} pageSize={5} />
         </Card>
       </Grid.Col>
     </Grid>

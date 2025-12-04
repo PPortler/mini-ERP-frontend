@@ -33,7 +33,7 @@ export const PurchaseOrderService = {
       });
       if (!res.ok) return { ok: false, message: res.message };
 
-      const mappedSupplier: PurchaseOrderType[] = (res.data.purchaseOrders ?? []).map((po) => ({
+      const mappedSupplier: PurchaseOrderType[] = (res.data.purchase_orders ?? []).map((po) => ({
         ...po,
         supplier_name: po.suppliers?.name || "-",
       }));
@@ -54,7 +54,7 @@ export const PurchaseOrderService = {
     try {
       const payload = {
         supplier_id: po.supplier_id,
-        status: STATUS_PO.DRAFT
+        created_by: po.created_by
       }
 
       const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
@@ -67,7 +67,7 @@ export const PurchaseOrderService = {
         return { ok: false, message: res.message };
       }
 
-      const list = Array.isArray(res.data.purchaseOrders) ? res.data.purchaseOrders : [];
+      const list = Array.isArray(res.data.purchase_orders) ? res.data.purchase_orders : [];
       return {
         ok: true,
         data: list,
@@ -80,7 +80,8 @@ export const PurchaseOrderService = {
 
   async updateStatus(
     purchase_order_id: string,
-    status: typeof STATUS_PO.CONFIRMED | typeof STATUS_PO.RECEIVED | typeof STATUS_PO.CANCELLED
+    status: typeof STATUS_PO.CONFIRMED | typeof STATUS_PO.RECEIVED | typeof STATUS_PO.CANCELLED,
+    created_by: string
   ): Promise<PurchaseOrderServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrders.findIndex(p => p.purchase_order_id === purchase_order_id);
@@ -92,6 +93,7 @@ export const PurchaseOrderService = {
 
     try {
       const payload = {
+        created_by: created_by,
         status: status
       }
 
@@ -119,10 +121,14 @@ export const PurchaseOrderService = {
       return { ok: true, data: [mockPurchaseOrders[idx]] };
     }
     try {
+      const payload = {
+        supplier_id: po.supplier_id,
+        created_by: po.created_by
+      }
       const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
         method: "PUT",
         url: `/purchase-orders/${purchase_order_id}`,
-        data: po,
+        data: payload,
       });
       if (!res.ok) return { ok: false, message: res.message || "Failed to update PO status" };
 
@@ -163,7 +169,7 @@ export const PurchaseOrderService = {
     try {
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType[]>({
         method: "GET",
-        url: `/purchase-orders/${purchase_order_id}/items`,
+        url: `/purchase-order-items/item/${purchase_order_id}`,
       });
 
       if (!res.ok) return { ok: false, message: res.message };
@@ -189,10 +195,16 @@ export const PurchaseOrderService = {
     }
 
     try {
+      const payload = {
+        product_id: item.product_id,
+        purchase_order_id: purchase_order_id,
+        quantity: item.quantity,
+        price: item.price
+      }
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
         method: "POST",
-        url: `/purchase-orders/${purchase_order_id}/items`,
-        data: item,
+        url: `/purchase-order-items`,
+        data: payload,
       });
 
       if (!res.ok) {
@@ -226,10 +238,15 @@ export const PurchaseOrderService = {
     }
 
     try {
+      const payload = {
+        product_id: item.product_id,
+        price: item.price,
+        quantity: item.quantity,
+      }
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
         method: "PUT",
-        url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
-        data: item,
+        url: `/purchase-order-items/${item.product_id}`,
+        data: payload,
       });
 
       if (!res.ok) {
@@ -262,7 +279,7 @@ export const PurchaseOrderService = {
     try {
       const res = await AxiosUtil.createRequest<{ success: boolean }>({
         method: "DELETE",
-        url: `/purchase-orders/${purchase_order_id}/items/${purchase_order_item_id}`,
+           url: `/purchase-order-items/${purchase_order_item_id}`,
       });
 
       if (!res.ok) {

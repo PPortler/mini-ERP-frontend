@@ -3,18 +3,17 @@ import { PurchaseOrderService } from "../../../../services/PurchaseOrderService"
 import { ProductService } from "../../../../services/ProductService";
 import type { PurchaseOrderItemType } from "../../../../types/purchaes";
 import type { ProductType } from "../../../../types/product";
-import { LoadingProvider } from "../../../../contexts/LoadingContext";
 
 export const useLoadInitialData = (purchase_order_id: string) => {
-  const { setOpenLoading } = LoadingProvider.useLoading();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [poItems, setPoItems] = useState<PurchaseOrderItemType[]>([]);
   const [products, setProducts] = useState<ProductType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      setOpenLoading(true);
+      setLoading(true);
 
       // Fetch PO items
       const poRes = await PurchaseOrderService.getItemsByPOId(purchase_order_id);
@@ -28,7 +27,7 @@ export const useLoadInitialData = (purchase_order_id: string) => {
       if (err instanceof Error) setError(err.message);
       else setError("Failed to load data");
     } finally {
-      setOpenLoading(false);
+      setLoading(false);
     }
   }, [purchase_order_id]);
 
@@ -36,5 +35,5 @@ export const useLoadInitialData = (purchase_order_id: string) => {
     fetchData();
   }, [fetchData]);
 
-  return { poItems, products, error, refetch: fetchData };
+  return { poItems, products, error, refetch: fetchData, loading };
 };

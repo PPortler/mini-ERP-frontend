@@ -6,8 +6,8 @@ export type PurchaseOrderType = {
   supplier_id: string;
   status: string;
   total_amount: number;
-  create_at?: string;
-  create_by?: string;
+  created_at?: string;
+  created_by?: string;
   supplier_name?: string
   suppliers?: SupplierType
   products?: ProductType[]

@@ -10,8 +10,10 @@ export const useLoadInitialData = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const today = new Date();
-    const initialFromDateDDMMYYYY = searchParams.get("from") || toDDMMYYYY(today);
-    const initialToDateDDMMYYYY = searchParams.get("to") || toDDMMYYYY(today);
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const initialFromDateDDMMYYYY = searchParams.get("from") || toDDMMYYYY(startOfMonth);
+    const initialToDateDDMMYYYY = searchParams.get("to") || toDDMMYYYY(endOfMonth);
     const initialDateMMYYYY = searchParams.get("month") || toMMYYYY(today);
     const initialTab = searchParams.get("tab") || TAB_TYPES_REPORTS.SUMMARY;
 
@@ -20,6 +22,7 @@ export const useLoadInitialData = () => {
     const [month, setMonth] = useState(initialDateMMYYYY);
     const [tab, setTab] = useState(initialTab);
     const [loading, setLoading] = useState<boolean>(false)
+    const [initialLoad, setInitialLoad] = useState<boolean>(true)
     const [stockSummary, setStockSummary] = useState<StockSummaryProductType[]>([]);
     const [stockMovements, setStockMovements] = useState<StockMovementItemType[]>([]);
     const [purchaseSummary, setPurchaseSummary] = useState<PurchaseSummaryItemType[]>([]);
@@ -57,6 +60,7 @@ export const useLoadInitialData = () => {
             }
         } finally {
             setLoading(false);
+            setInitialLoad(false);
         }
     }, [from, to, month, tab])
 
@@ -80,5 +84,6 @@ export const useLoadInitialData = () => {
         loading,
         error,
         refetch: fetchData,
+        initialLoad
     };
 };

@@ -1,9 +1,6 @@
 import { Box, Card, Group, Title, Tabs } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
 import AppButton from "../../components/Form/AppButton";
 import type { StockSummaryProductType } from "../../types/reports";
@@ -11,6 +8,7 @@ import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
 import { LoadingProvider } from "../../contexts/LoadingContext";
 import { TAB_TYPES_REPORTS } from "./const/enum";
+import AppDatePicker from "../../components/Form/AppDatePicker";
 
 function ReportPage() {
 
@@ -28,7 +26,8 @@ function ReportPage() {
         setTo,
         setMonth,
         tab,
-        setTab
+        setTab,
+        initialLoad
     } = useLoadInitialData();
 
     const handleExport = async (tab: string) => {
@@ -146,34 +145,20 @@ function ReportPage() {
                         <Box pt="md">
                             <Group justify="space-between" mb="md">
                                 <Group>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker
-                                            label="From"
-                                            value={parseDDMMYYYY(from)}
-                                            onChange={(newValue) => {
-                                                setFrom(toDDMMYYYY(newValue));
-                                            }}
-                                            slotProps={{
-                                                textField: {
-                                                    size: "small",
-                                                    fullWidth: false,
-                                                }
-                                            }}
-                                        />
-                                        <DatePicker
-                                            label="To"
-                                            value={parseDDMMYYYY(to)}
-                                            onChange={(newValue) => {
-                                                setTo(toDDMMYYYY(newValue));
-                                            }}
-                                            slotProps={{
-                                                textField: {
-                                                    size: "small",
-                                                    fullWidth: false,
-                                                }
-                                            }}
-                                        />
-                                    </LocalizationProvider>
+                                    <AppDatePicker
+                                        label="From"
+                                        value={parseDDMMYYYY(from)}
+                                        onChange={(newValue) => setFrom(toDDMMYYYY(newValue))}
+                                        views={["year", "month", "day"]}
+                                        loading={initialLoad}
+                                    />
+                                    <AppDatePicker
+                                        label="To"
+                                        value={parseDDMMYYYY(to)}
+                                        onChange={(newValue) => setTo(toDDMMYYYY(newValue))}
+                                        views={["year", "month", "day"]}
+                                        loading={initialLoad}
+                                    />
                                 </Group>
                                 <Group>
                                     <AppButton loading={loading} onClick={() => handleExport(tab)}>Export Excel</AppButton>
@@ -192,23 +177,13 @@ function ReportPage() {
                         <Box pt="md">
                             <Group justify="space-between" mb="md">
                                 <Group>
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker
-                                            label="Select Month"
-                                            views={["year", "month"]}  // ← เลือกเฉพาะปีและเดือน
-                                            format="MM-yyyy"
-                                            value={month ? parseMonthString(month) : null}
-                                            onChange={(newValue) => {
-                                                setMonth(toMMYYYY(newValue));
-                                            }}
-                                            slotProps={{
-                                                textField: {
-                                                    size: "small",
-                                                    fullWidth: false,
-                                                }
-                                            }}
-                                        />
-                                    </LocalizationProvider>
+                                    <AppDatePicker
+                                        label="Select Month"
+                                        value={month ? parseMonthString(month) : null}
+                                        onChange={(newValue) => setMonth(toMMYYYY(newValue))}
+                                        views={["year", "month"]}
+                                        loading={initialLoad}
+                                    />
                                 </Group>
                                 <Group>
                                     <AppButton loading={loading} onClick={() => handleExport(tab)}>Export Excel</AppButton>

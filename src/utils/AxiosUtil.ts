@@ -7,7 +7,7 @@ const baseAxios: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  // withCredentials: true,
+  withCredentials: true,
 });
 
 baseAxios.interceptors.request.use((config) => {
@@ -78,7 +78,7 @@ if (import.meta.env.VITE_USE_MOCK !== 'true') {
       try {
         // ยิง refresh token API
         const refreshRes = await axios.post(
-          import.meta.env.VITE_APP_BASE_API_URL + "/auth/refresh_token",
+          import.meta.env.VITE_APP_BASE_API_URL + "/auth/token/refresh",
           {},
           { withCredentials: true }
         );

@@ -13,10 +13,16 @@ import { poOrderSchema } from "../../schemas/poOrderSchema";
 import usePOActionColumn from "./hooks/usePOActionColumn";
 import StatusBadge from "../../components/Polish/StatusBagde";
 import AppButton from "../../components/Form/AppButton";
+import { useStore } from "@nanostores/react";
+import { $authUser } from "../../stores/authUserStore";
+import { LoadingProvider } from "../../contexts/LoadingContext";
+import { parseDate } from "../../utils/getDateUtils";
 
 export default function PoPage() {
+    const { setOpenLoading } = LoadingProvider.useLoading();
     const { purchaseOrders, suppliers, refetch, loading } = useLoadInitialData();
     const navigate = useNavigate();
+    const user = useStore($authUser)
     const roleCurrent = getRoleCurrent();
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -40,36 +46,47 @@ export default function PoPage() {
     };
 
     const savePO = async (values: PurchaseOrderType) => {
+        setOpenLoading(true)
+        const prepare = {
+            ...values,
+            supplier_id: values.supplier_id,
+            created_by: user?.user_id,
+        }
         try {
             let result;
             if (!selectedPO) {
-                result = await PurchaseOrderService.create(values);
+                result = await PurchaseOrderService.create(prepare);
             } else {
-                result = await PurchaseOrderService.update(selectedPO.purchase_order_id, values);
+                result = await PurchaseOrderService.update(selectedPO.purchase_order_id, prepare);
             }
 
-            if (result.ok) {
+            if (!result.ok) {
                 notify({
-                    type: "success",
-                    message: !selectedPO ? "สร้าง PO สำเร็จ" : "แก้ไข PO สำเร็จ",
+                    type: 'error',
+                    message: result.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
                 });
-                await refetch();
-                setModalOpen(false);
-                setSelectedPO(null);
-            } else {
-                notify({ type: "error", message: result.message || "เกิดข้อผิดพลาด" });
+                return;
             }
+            notify({
+                type: "success",
+                message: !selectedPO ? "Create PO Success" : "Edit PO Success",
+            });
+            setModalOpen(false);
+            setSelectedPO(null);
+            await refetch();
         } catch (err: unknown) {
             notify({
                 type: "error",
                 message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
             });
+        } finally {
+            setOpenLoading(false);
         }
     };
 
     const handleChangeStatus = async (po: PurchaseOrderType, newStatus: string) => {
         try {
-            const result = await PurchaseOrderService.updateStatus(po.purchase_order_id, newStatus);
+            const result = await PurchaseOrderService.updateStatus(po.purchase_order_id, newStatus, user?.user_id || "");
             if (result.ok) {
                 notify({ type: "success", message: `เปลี่ยนสถานะเป็น ${newStatus} สำเร็จ` });
                 await refetch();
@@ -112,8 +129,14 @@ export default function PoPage() {
             header: "Status", accessor: "status",
             cell: (row: PurchaseOrderType) => <StatusBadge status={row.status} />,
         },
-        { header: "Total", accessor: "total_amount" },
-        { header: "Created At", accessor: "create_at" },
+        // { header: "Total", accessor: "total_amount" },
+        {
+            header: "Created At", accessor: "created_at",
+            cell: (row: PurchaseOrderType) => {
+                const { dateString, timeString } = parseDate(row.created_at || "");
+                return `${dateString}, ${timeString}`;
+            },
+        },
     ];
 
     const actionColumn = usePOActionColumn(

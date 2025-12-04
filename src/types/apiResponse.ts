@@ -20,7 +20,7 @@ export type CategoryResponse = ApiPaginationResponse<CatagoriesType[]> & {
   categories?: CatagoriesType[];
 };
 export type PurchaseOrderResponse = ApiPaginationResponse<PurchaseOrderType[]> & {
-  purchaseOrders?: PurchaseOrderType[];
+  purchase_orders?: PurchaseOrderType[];
 };
 export type SupplierResponse = ApiPaginationResponse<SupplierType[]> & {
   suppliers?: SupplierType[];

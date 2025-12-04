@@ -17,7 +17,8 @@ import { poOrderItemsSchema } from "../../../schemas/poOrderItemSchema";
 export default function PoProductPage() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    const purchase_order_id = searchParams.get("po"); const { poItems, error, refetch, products } = useLoadInitialData(purchase_order_id!);
+    const purchase_order_id = searchParams.get("po");
+    const { poItems, error, refetch, products, loading } = useLoadInitialData(purchase_order_id!);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
@@ -136,7 +137,7 @@ export default function PoProductPage() {
                     </Button>
                 </Group>
 
-                <DataTable columns={columns} data={poItems} pageSize={10} />
+                <DataTable loading={loading} columns={columns} data={poItems} pageSize={10} />
                 {error && <p style={{ color: "red" }}>{error}</p>}
             </Card>
 
