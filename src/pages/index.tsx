@@ -34,7 +34,7 @@ export default function LoginPage() {
                 // console.log("Login success:", response);
 
                 const { user } = response.data;
-                console.log(response)
+
                 if (user) {
                     setAuth(user.access_token ?? "", user);
                 }

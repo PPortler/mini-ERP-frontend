@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Box, Card, Group, Title, Tabs } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
-// import { DateInput, MonthPickerInput } from "@mantine/dates";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -12,12 +10,12 @@ import type { StockSummaryProductType } from "../../types/reports";
 import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
 import { LoadingProvider } from "../../contexts/LoadingContext";
+import { TAB_TYPES_REPORTS } from "./const/enum";
 
 function ReportPage() {
 
     const { setOpenLoading } = LoadingProvider.useLoading();
 
-    const [activeTab, setActiveTab] = useState<string | null>("summary");
     const {
         loading,
         stockSummary,
@@ -28,7 +26,9 @@ function ReportPage() {
         month,
         setFrom,
         setTo,
-        setMonth
+        setMonth,
+        tab,
+        setTab
     } = useLoadInitialData();
 
     const handleExport = async (tab: string) => {
@@ -36,13 +36,13 @@ function ReportPage() {
         try {
             let res: { ok: boolean; message?: string };
             switch (tab) {
-                case "summary":
+                case TAB_TYPES_REPORTS.SUMMARY:
                     res = await ReportService.getStockSummaryExportToCsv();
                     break;
-                case "movement":
+                case TAB_TYPES_REPORTS.MOVEMENTS:
                     res = await ReportService.getStockMovementExportToExcel(from, to);
                     break;
-                case "purchase":
+                case TAB_TYPES_REPORTS.PURCHASES:
                     res = await ReportService.getPurchaseSummaryExportToExcel(month);
                     break;
                 default:
@@ -117,19 +117,20 @@ function ReportPage() {
                 <Group mb="md" justify="space-between">
                     <Title order={3}>Reports</Title>
                 </Group>
-                <Tabs value={activeTab} onChange={setActiveTab}>
+                <Tabs value={tab} onChange={(value) => {
+                    if (value !== null) setTab(value);
+                }}>
                     <Tabs.List>
-                        <Tabs.Tab value="summary">Stock Summary</Tabs.Tab>
-                        <Tabs.Tab value="movement">Stock Movement</Tabs.Tab>
-                        <Tabs.Tab value="purchase">Purchase Summary</Tabs.Tab>
+                        <Tabs.Tab value={TAB_TYPES_REPORTS.SUMMARY}>Stock Summary</Tabs.Tab>
+                        <Tabs.Tab value={TAB_TYPES_REPORTS.MOVEMENTS}>Stock Movement</Tabs.Tab>
+                        <Tabs.Tab value={TAB_TYPES_REPORTS.PURCHASES}>Purchase Summary</Tabs.Tab>
                     </Tabs.List>
 
-
-                    {activeTab === "summary" && (
+                    {tab === TAB_TYPES_REPORTS.SUMMARY && (
                         <Box pt="md">
                             <Group justify="end" mb="md">
                                 <Group>
-                                    <AppButton loading={loading} onClick={() => handleExport(activeTab)}>Export CSV</AppButton>
+                                    <AppButton loading={loading} onClick={() => handleExport(tab)}>Export CSV</AppButton>
                                 </Group>
                             </Group>
                             <DataTable
@@ -141,7 +142,7 @@ function ReportPage() {
                         </Box>
                     )}
 
-                    {activeTab === "movement" && (
+                    {tab === TAB_TYPES_REPORTS.MOVEMENTS && (
                         <Box pt="md">
                             <Group justify="space-between" mb="md">
                                 <Group>
@@ -175,7 +176,7 @@ function ReportPage() {
                                     </LocalizationProvider>
                                 </Group>
                                 <Group>
-                                    <AppButton loading={loading} onClick={() => handleExport(activeTab)}>Export Excel</AppButton>
+                                    <AppButton loading={loading} onClick={() => handleExport(tab)}>Export Excel</AppButton>
                                 </Group>
                             </Group>
                             <DataTable
@@ -187,7 +188,7 @@ function ReportPage() {
                         </Box>
                     )}
 
-                    {activeTab === "purchase" && (
+                    {tab === TAB_TYPES_REPORTS.PURCHASES && (
                         <Box pt="md">
                             <Group justify="space-between" mb="md">
                                 <Group>
@@ -210,7 +211,7 @@ function ReportPage() {
                                     </LocalizationProvider>
                                 </Group>
                                 <Group>
-                                    <AppButton loading={loading} onClick={() => handleExport(activeTab)}>Export Excel</AppButton>
+                                    <AppButton loading={loading} onClick={() => handleExport(tab)}>Export Excel</AppButton>
                                 </Group>
                             </Group>
                             <DataTable

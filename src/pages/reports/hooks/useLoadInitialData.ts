@@ -2,35 +2,52 @@ import { useState, useCallback, useEffect } from "react";
 import { ReportService } from "../../../services/ReportServiec";
 import type { PurchaseSummaryItemType, StockMovementItemType, StockSummaryProductType } from "../../../types/reports";
 import { toDDMMYYYY, toMMYYYY } from "../../../utils/formatDate";
+import { useSearchParams } from "react-router-dom";
+import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSearchParams";
+import { TAB_TYPES_REPORTS } from "../const/enum";
 
 export const useLoadInitialData = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const today = new Date();
+    const initialFromDateDDMMYYYY = searchParams.get("from") || toDDMMYYYY(today);
+    const initialToDateDDMMYYYY = searchParams.get("to") || toDDMMYYYY(today);
+    const initialDateMMYYYY = searchParams.get("month") || toMMYYYY(today);
+    const initialTab = searchParams.get("tab") || TAB_TYPES_REPORTS.SUMMARY;
 
-    const [from, setFrom] = useState(toDDMMYYYY(today));
-    const [to, setTo] = useState(toDDMMYYYY(today));
-    const [month, setMonth] = useState(toMMYYYY(today));
-
+    const [from, setFrom] = useState(initialFromDateDDMMYYYY);
+    const [to, setTo] = useState(initialToDateDDMMYYYY);
+    const [month, setMonth] = useState(initialDateMMYYYY);
+    const [tab, setTab] = useState(initialTab);
     const [loading, setLoading] = useState<boolean>(false)
     const [stockSummary, setStockSummary] = useState<StockSummaryProductType[]>([]);
     const [stockMovements, setStockMovements] = useState<StockMovementItemType[]>([]);
     const [purchaseSummary, setPurchaseSummary] = useState<PurchaseSummaryItemType[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    const syncParams = { tab, from, to, month };
+    useSyncStateWithSearchParams(syncParams);
+
     const fetchData = useCallback(async () => {
         setLoading(true)
         try {
-            const [resStSummary, resStMovement, resPoSummary] = await Promise.all([
-                ReportService.getStockSummary(),
-                ReportService.getStockMovements(from, to),
-                ReportService.getPurchaseSummary(month),
-            ]);
+            if (tab === TAB_TYPES_REPORTS.SUMMARY) {
+                const res = await ReportService.getStockSummary();
+                if (!res.ok) throw new Error(res.message);
+                setStockSummary(res.data?.products || []);
+            }
 
-            if (!resStSummary.ok) throw new Error(resStSummary.message || "Failed to load");
-            setStockSummary(resStSummary.data?.products || [])
-            if (!resStMovement.ok) throw new Error(resStMovement.message || "Failed to load");
-            setStockMovements(resStMovement.data?.movements || [])
-            if (!resPoSummary.ok) throw new Error(resPoSummary.message || "Failed to load");
-            setPurchaseSummary(resPoSummary.data?.summary || [])
+            if (tab === TAB_TYPES_REPORTS.MOVEMENTS) {
+                const res = await ReportService.getStockMovements(from, to);
+                if (!res.ok) throw new Error(res.message);
+                setStockMovements(res.data?.movements || []);
+            }
+
+            if (tab === TAB_TYPES_REPORTS.PURCHASES) {
+                const res = await ReportService.getPurchaseSummary(month);
+                if (!res.ok) throw new Error(res.message);
+                setPurchaseSummary(res.data?.summary || []);
+            }
 
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -41,7 +58,7 @@ export const useLoadInitialData = () => {
         } finally {
             setLoading(false);
         }
-    }, [from, to, month])
+    }, [from, to, month, tab])
 
     useEffect(() => {
         fetchData();
@@ -54,6 +71,9 @@ export const useLoadInitialData = () => {
         setFrom,
         setMonth,
         setTo,
+        tab,
+        setTab,
+        setSearchParams,
         stockSummary,
         stockMovements,
         purchaseSummary,
