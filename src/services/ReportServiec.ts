@@ -1,6 +1,6 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-// import { getMockStockSummaryReport, getMockStockMovements, getMockPurchaseSummary } from "../mocks/mockReports";
 import type { StockSummaryType, StockMovementType, PurchaseSummaryType } from "../types/reports";
+// import { getMockPurchaseSummary, getMockStockMovements, getMockStockSummaryReport } from "../mocks/mockReports";
 
 type ReportServiceResult<T> =
   | { ok: true; data?: T }
@@ -10,7 +10,7 @@ export const ReportService = {
   // Stock Summary Report
   async getStockSummary(): Promise<ReportServiceResult<StockSummaryType>> {
     // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const mock = getMockStockSummaryReport(from, to);
+    //   const mock = getMockStockSummaryReport();
     //   return { ok: true, data: mock };
     // }
 
@@ -37,6 +37,11 @@ export const ReportService = {
 
   // Stock Movements Report
   async getStockMovements(from: string, to: string): Promise<ReportServiceResult<StockMovementType>> {
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const mock = getMockStockMovements(from, to);
+    //   return { ok: true, data: mock };
+    // }
+
     const params = {
       from: from,
       to: to
@@ -68,6 +73,7 @@ export const ReportService = {
     //   const mock = getMockPurchaseSummary(month);
     //   return { ok: true, data: mock };
     // }
+
     const params = {
       month: month
     }

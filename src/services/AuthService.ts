@@ -2,19 +2,6 @@ import { AxiosUtil } from "../utils/AxiosUtil";
 import { findMockUser } from "../mocks/mockAuth";
 import type { UserInfoType } from "../types/user";
 
-export type UserResponse = {
-    id: string;
-    username: string;
-    first_name?: string;
-    last_name?: string;
-    role: string;
-    access_token?: string;
-    access_token_exp?: number;
-    refresh_token?: string;
-    refresh_token_exp?: number;
-    password?: string
-}
-
 export type RefreshResponse = {
     access_token: string;
     refresh_token?: string;
@@ -35,40 +22,48 @@ export type LoginResult =
 
 export const AuthService = {
     async login(username: string, password: string): Promise<LoginResult> {
-        try {
-            if (import.meta.env.VITE_USE_MOCK === "true") {
-                const user: UserResponse | undefined = findMockUser(username, password);
-                if (!user) {
-                    return { ok: false, message: "Invalid credentials (mock)" };
-                }
-
-                return {
-                    ok: true,
-                    data: {
-                        user: {
-                            user_id: user.id,
-                            username: user.username,
-                            first_name: user.first_name,
-                            last_name: user.last_name,
-                            role: user.role,
-                            access_token: `mock_access_${user.username}`,
-                            refresh_token: `mock_refresh_${user.username}`,
-                            access_token_exp: 17990,
-                            refresh_token_exp: 17990,
-                        },
-                    },
-                };
+        if (import.meta.env.VITE_USE_MOCK === "true") {
+            const user: UserInfoType | undefined = findMockUser(username, password);
+            if (!user) {
+                return { ok: false, message: "Invalid credentials (mock)" };
             }
 
-            const res = await AxiosUtil.createRequest<LoginResponse>({
+            return {
+                ok: true,
+                data: {
+                    user: {
+                        user_id: user.user_id,
+                        username: user.username,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        role: user.role,
+                        access_token: `mock_access_${user.username}`,
+                        refresh_token: `mock_refresh_${user.username}`,
+                        access_token_exp: 17990,
+                        refresh_token_exp: 17990,
+                    },
+                },
+            };
+        }
+
+        const payload = {
+            username: username,
+            password: password
+        }
+        try {
+            const res = await AxiosUtil.createRequest<UserInfoType>({
                 method: "POST",
                 url: "/auth/login",
-                data: { username, password },
+                data: payload,
             });
 
             if (!res.ok) return { ok: false, message: res.message };
 
-            return { ok: true, data: res.data };
+            return {
+                ok: true, data: {
+                    user: res.data
+                }
+            };
 
         } catch (err: unknown) {
             let message = "Unknown error";

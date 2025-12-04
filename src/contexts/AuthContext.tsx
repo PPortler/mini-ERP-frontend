@@ -6,9 +6,6 @@ import { $authUser } from "../stores/authUserStore";
 type AuthContextType = {
       setAuth: (
         access_token: string,
-        access_token_exp: number,
-        refresh_token: string,
-        refresh_token_exp: number,
         user: UserInfoType
     ) => void;
     logout: () => void;
@@ -20,9 +17,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const access_token = localStorage.getItem("access_token") || undefined;
-        const access_token_exp = localStorage.getItem("access_token_exp") ? Number(localStorage.getItem("access_token_exp")) : undefined;
-        const refresh_token = localStorage.getItem("refresh_token") || undefined;
-        const refresh_token_exp = localStorage.getItem("refresh_token_exp") ? Number(localStorage.getItem("refresh_token_exp")) : undefined;
+        // const access_token_exp = localStorage.getItem("access_token_exp") ? Number(localStorage.getItem("access_token_exp")) : undefined;
+        // const refresh_token = localStorage.getItem("refresh_token") || undefined;
+        // const refresh_token_exp = localStorage.getItem("refresh_token_exp") ? Number(localStorage.getItem("refresh_token_exp")) : undefined;
         const userInfoRaw = localStorage.getItem("userInfo");
 
         if (userInfoRaw) {
@@ -31,9 +28,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 $authUser.set({
                     ...userInfo,
                     access_token,
-                    access_token_exp,
-                    refresh_token,
-                    refresh_token_exp,
+                    // access_token_exp,
+                    // refresh_token,
+                    // refresh_token_exp,
                 });
             } catch (err) {
                 console.error("Failed to parse userInfo from localStorage:", err);
@@ -46,19 +43,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const setAuth = (
         access_token: string,
-        access_token_exp: number,
-        refresh_token: string,
-        refresh_token_exp: number,
-        user: UserInfoType
+        user: UserInfoType,
+        // access_token_exp: number,
+        // refresh_token: string,
+        // refresh_token_exp: number,
     ) => {
         localStorage.setItem("access_token", access_token);
-        localStorage.setItem("access_token_exp", access_token_exp.toString());
-        localStorage.setItem("refresh_token", refresh_token);
-        localStorage.setItem("refresh_token_exp", refresh_token_exp.toString());
+        // localStorage.setItem("access_token_exp", access_token_exp.toString());
+        // localStorage.setItem("refresh_token", refresh_token);
+        // localStorage.setItem("refresh_token_exp", refresh_token_exp.toString());
         localStorage.setItem(
             "userInfo",
             JSON.stringify({
-                user_id: user.user_id,
+                user_id: user.id,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 role: user.role,
@@ -68,17 +65,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         $authUser.set({
             ...user,
             access_token,
-            access_token_exp,
-            refresh_token,
-            refresh_token_exp,
+            // access_token_exp,
+            // refresh_token,
+            // refresh_token_exp,
         });
     };
 
     const logout = () => {
         localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("access_token_exp");
-        localStorage.removeItem("refresh_token_exp");
+        // localStorage.removeItem("refresh_token");
+        // localStorage.removeItem("access_token_exp");
+        // localStorage.removeItem("refresh_token_exp");
         localStorage.removeItem("userInfo");
         $authUser.set(null);
     };

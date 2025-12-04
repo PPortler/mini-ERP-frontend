@@ -2,7 +2,6 @@ import type { Column } from "../components/Table/DataTable";
 import type { AuditLogType } from "../types/auditLog";
 import type { CatagoriesType } from "../types/catagories";
 import type { ProductType } from "../types/product";
-import type { SupplierType } from "../types/suppliers";
 
 export const columnProducts: Column<ProductType>[] = [
   { header: "รหัสสินค้า", accessor: "product_code" },
@@ -28,13 +27,6 @@ export const columnAuditLogs: Column<AuditLogType>[] = [
     header: "Created At",
     accessor: "created_at",
   }
-];
-
-export const columnSupplier: Column<SupplierType>[] = [
-  { header: "ชื่อ", accessor: "name" },
-  { header: "เบอร์โทร", accessor: "phone" },
-  { header: "อีเมล", accessor: "email" },
-  { header: "ที่อยู่", accessor: "address" },
 ];
 
 export const columnCategory: Column<CatagoriesType>[] = [

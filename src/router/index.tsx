@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import Dashboard from '../pages/dashboard';
 import LoginPage from '../pages';
 import ProtectedRoute from './ProtectedRoute';
-import GlobalLayout from '../components/Layout/GlobalLayout';
+import GlobalLayout from '../components/layout/GlobalLayout';
 import ProductPage from '../pages/products';
 import { ROLES } from '../constants/enum/enum';
 import CatagoriesPage from '../pages/catagories';
@@ -12,6 +12,7 @@ import PoPage from '../pages/po';
 import PoProductPage from '../pages/po/product';
 import StockTransactionsPage from '../pages/stock-transaction';
 import ReportPage from '../pages/reports';
+import UserManagementPage from '../pages/users';
 // import StockPage from '../pages/products/stock';
 
 export const router = createBrowserRouter([
@@ -129,6 +130,16 @@ export const router = createBrowserRouter([
             <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
                 <GlobalLayout>
                     <ReportPage />
+                </GlobalLayout>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "users-management",
+        element: (
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                <GlobalLayout>
+                    <UserManagementPage />
                 </GlobalLayout>
             </ProtectedRoute>
         ),

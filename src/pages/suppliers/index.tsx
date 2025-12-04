@@ -1,7 +1,6 @@
-import { ActionIcon, Box, Button, Card, Group, Title } from '@mantine/core'
-import DataTable from '../../components/Table/DataTable'
+import { ActionIcon, Box, Card, Group, Title } from '@mantine/core'
+import DataTable, { type Column } from '../../components/Table/DataTable'
 import { useLoadInitialData } from './hooks/useLoadInitialData';
-import { columnSupplier } from '../../constants/columnTable';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getRoleCurrent } from '../../utils/RoleUtil';
@@ -14,6 +13,7 @@ import { SupplierService } from '../../services/SupplierService';
 import { notify } from '../../utils/Notify';
 import { LoadingProvider } from '../../contexts/LoadingContext';
 import { supplierSchema } from '../../schemas/supplierSchema';
+import AppButton from '../../components/Form/AppButton';
 
 function SupplierPage() {
   const { setOpenLoading } = LoadingProvider.useLoading();
@@ -68,7 +68,7 @@ function SupplierPage() {
         message,
       });
     } finally {
-      setOpenLoading(true)
+      setOpenLoading(false)
     }
     setModalOpen(false);
     setSelectedItem(null);
@@ -133,6 +133,14 @@ function SupplierPage() {
       </Group>
     ),
   };
+
+  const columnSupplier: Column<SupplierType>[] = [
+    { header: "ชื่อ", accessor: "name" },
+    { header: "เบอร์โทร", accessor: "phone" },
+    { header: "อีเมล", accessor: "email" },
+    { header: "ที่อยู่", accessor: "address" },
+  ];
+
   const columnsWithAction =
     roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
       ? [...columnSupplier]
@@ -142,19 +150,22 @@ function SupplierPage() {
     <Box>
       <Card shadow="sm" padding="lg">
         <Group justify="space-between" mb="sm">
-          <Title order={3}>ผู้จัดหา</Title>
+          <Title order={3}>Supplier</Title>
           <Box style={{
             display: "flex",
             gap: "10px"
           }}>
             {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
-              <Button
+              <AppButton
+                loading={loading}
                 onClick={() => {
                   setSelectedItem(null);
                   setModalType('form');
                   setModalOpen(true);
                 }}
-              >เพิ่มผู้จัดหา</Button>
+              >
+                Add Supplier
+              </AppButton>
             )}
           </Box>
         </Group>

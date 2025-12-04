@@ -1,7 +1,8 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { mockProducts } from "../mocks/mockProducts";
+import { getMockProducts, mockProducts } from "../mocks/mockProducts";
 import type { ProductType } from "../types/product";
 import type { ProductResponse } from "../types/apiResponse";
+import { delay } from "../utils/delay";
 // import { delay } from "../utils/delay";
 // import { CatagoriesService } from "./CatagoriesService";
 // import { mapProductsWithCategory } from "../utils/mapProductWithCategory";
@@ -14,9 +15,9 @@ export type ProductServiceResult =
 
 export const ProductService = {
   async getAll(): Promise<ProductServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   return { ok: true, data: mockProducts };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      return { ok: true, data: mockProducts };
+    }
 
     try {
       const res = await AxiosUtil.createRequest<ProductResponse>({
@@ -49,11 +50,11 @@ export const ProductService = {
     sortOrder?: string
   ): Promise<{ ok: true; data: ProductResponse } | { ok: false; message: string }> {
     // ใช้ mock
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const data = getMockProducts(page, pageSize, search, categoryId);
-    //   await delay();
-    //   return { ok: true, data };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const data = getMockProducts(page, pageSize, search, categoryId);
+      await delay();
+      return { ok: true, data };
+    }
 
     // เรียก backend จริง
     const params = {
@@ -108,11 +109,11 @@ export const ProductService = {
 
   // เพิ่มสินค้าใหม่
   async create(product: Omit<ProductType, "product_id">): Promise<ProductServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const newProduct = { ...product, product_id: crypto.randomUUID() };
-    //   mockProducts.push(newProduct);
-    //   return { ok: true, data: [newProduct] };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const newProduct = { ...product, product_id: crypto.randomUUID() };
+      mockProducts.push(newProduct);
+      return { ok: true, data: [newProduct] };
+    }
 
     try {
       const payload = {
@@ -145,12 +146,13 @@ export const ProductService = {
 
   // แก้ไขสินค้า
   async update(product_id: string, product: Partial<ProductType>): Promise<ProductServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const idx = mockProducts.findIndex(p => p.product_id === product_id);
-    //   if (idx === -1) return { ok: false, message: "Product not found (mock)" };
-    //   mockProducts[idx] = { ...mockProducts[idx], ...product };
-    //   return { ok: true, data: [mockProducts[idx]] };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockProducts.findIndex(p => p.product_id === product_id);
+      if (idx === -1) return { ok: false, message: "Product not found (mock)" };
+      mockProducts[idx] = { ...mockProducts[idx], ...product };
+      return { ok: true, data: [mockProducts[idx]] };
+    }
+
     try {
       const payload = {
         product_code: product.product_code,
@@ -181,12 +183,13 @@ export const ProductService = {
 
   // ลบสินค้า
   async delete(product_id: string): Promise<ProductServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const idx = mockProducts.findIndex(p => p.product_id === product_id);
-    //   if (idx === -1) return { ok: false, message: "Product not found (mock)" };
-    //   const deleted = mockProducts.splice(idx, 1);
-    //   return { ok: true, data: deleted };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockProducts.findIndex(p => p.product_id === product_id);
+      if (idx === -1) return { ok: false, message: "Product not found (mock)" };
+      const deleted = mockProducts.splice(idx, 1);
+      return { ok: true, data: deleted };
+    }
+
     try {
 
       const res = await AxiosUtil.createRequest<ProductListResponse>({

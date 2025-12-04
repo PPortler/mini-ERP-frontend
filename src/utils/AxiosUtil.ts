@@ -61,73 +61,53 @@ async function createRequest<T>(params: RequestParams): RequestReturn<T> {
   }
 }
 
-// let isRefreshing = false;
-// let queue: Array<() => void> = [];
+if (import.meta.env.VITE_USE_MOCK !== 'true') {
 
-// baseAxios.interceptors.request.use(async (config) => {
-//   const user = $authUser.get();
-//   const now = Math.floor(Date.now() / 1000);
+  baseAxios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-//   if (user) {
-//     if (user.access_token_exp && user.access_token_exp <= now) {
-//       const refreshTokenValid = user.refresh_token_exp && user.refresh_token_exp > now;
+      // ถ้าไม่ใช่ 401 หรือ retry แล้ว → ไป error เลย
+      if (error.response?.status !== 401 || originalRequest._retry) {
+        return Promise.reject(error);
+      }
 
-//       if (refreshTokenValid && !isRefreshing) {
-//         try {
-//           isRefreshing = true;
-//           const res = await axios.post(
-//             import.meta.env.VITE_APP_BASE_API_URL + "/auth/refresh-token",
-//             { refresh_token: user.refresh_token }
-//           );
+      originalRequest._retry = true;
 
-//           const { access_token, access_token_exp, refresh_token, refresh_token_exp } = res.data;
+      try {
+        // ยิง refresh token API
+        const refreshRes = await axios.post(
+          import.meta.env.VITE_APP_BASE_API_URL + "/auth/refresh_token",
+          {},
+          { withCredentials: true }
+        );
 
-//           localStorage.setItem("access_token", access_token);
-//           localStorage.setItem("access_token_exp", access_token_exp.toString());
-//           localStorage.setItem("refresh_token", refresh_token);
-//           localStorage.setItem("refresh_token_exp", refresh_token_exp.toString());
+        const newAccessToken = refreshRes.data.access_token;
 
-//           const updatedUser = {
-//             ...user,
-//             access_token,
-//             access_token_exp,
-//             refresh_token,
-//             refresh_token_exp
-//           };
-//           $authUser.set(updatedUser);
+        // เก็บ token ใหม่
+        localStorage.setItem("access_token", newAccessToken);
 
-//           config.headers.Authorization = `Bearer ${access_token}`;
+        // อัปเดต store
+        const user = $authUser.get();
+        if (user) {
+          $authUser.set({ ...user, access_token: newAccessToken });
+        }
 
-//           // ยิงคิว
-//           queue.forEach((cb) => cb());
-//           queue = [];
-//         } catch (err) {
-//           $authUser.set(null);
-//           return Promise.reject(err);
-//         } finally {
-//           isRefreshing = false;
-//         }
-//       } else if (!refreshTokenValid) {
-//         // refresh หมดอายุ → logout
-//         ["access_token", "refresh_token", "access_token_exp", "refresh_token_exp", "userInfo"].forEach((key) =>
-//           localStorage.removeItem(key)
-//         );
-//         $authUser.set(null);
-//         return Promise.reject(new Error("Session expired. Please login again."));
-//       } else if (isRefreshing) {
-//         // ดักคิว
-//         return new Promise((resolve) => {
-//           queue.push(() => resolve(baseAxios(config)));
-//         });
-//       }
-//     } else {
-//       // access token ยังไม่หมด
-//       config.headers.Authorization = `Bearer ${user.access_token}`;
-//     }
-//   }
+        // เพิ่ม token ใหม่ใน header แล้วยิงใหม่
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-//   return config;
-// });
+        return baseAxios(originalRequest);
+      } catch (refreshErr) {
+        // refresh fail → logout
+        localStorage.removeItem("access_token");
+        $authUser.set(null);
+
+        return Promise.reject(refreshErr);
+      }
+    }
+  );
+}
 
 export const AxiosUtil = {
   createRequest,

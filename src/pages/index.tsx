@@ -31,12 +31,12 @@ export default function LoginPage() {
             const response = await AuthService.login(username, password);
 
             if (response.ok) {
-                console.log("Login success:", response.data);
+                // console.log("Login success:", response);
 
                 const { user } = response.data;
-
+                console.log(response)
                 if (user) {
-                    setAuth(user.access_token, user.access_token_exp, user.refresh_token, user.refresh_token_exp, user);
+                    setAuth(user.access_token ?? "", user);
                 }
 
                 const rolePath = "/dashboard";

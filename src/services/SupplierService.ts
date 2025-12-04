@@ -13,9 +13,9 @@ export const SupplierService = {
   // ดึงทั้งหมด
   async getAll(): Promise<SupplierServiceResult> {
 
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   return { ok: true, data: mockSuppliers };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      return { ok: true, data: mockSuppliers };
+    }
 
     try {
       const res = await AxiosUtil.createRequest<SupplierResponse>({
@@ -54,15 +54,15 @@ export const SupplierService = {
   async create(
     supplier: Omit<SupplierType, "supplier_id">
   ): Promise<SupplierServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const newSupplier = {
-    //     ...supplier,
-    //     supplier_id: crypto.randomUUID(),
-    //     create_at: new Date().toISOString(),
-    //   };
-    //   mockSuppliers.push(newSupplier);
-    //   return { ok: true, data: [newSupplier] };
-    // }
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const newSupplier = {
+        ...supplier,
+        supplier_id: crypto.randomUUID(),
+        create_at: new Date().toISOString(),
+      };
+      mockSuppliers.push(newSupplier);
+      return { ok: true, data: [newSupplier] };
+    }
 
     try {
       const payload = {
@@ -94,14 +94,14 @@ export const SupplierService = {
     supplier_id: string,
     supplier: Partial<SupplierType>
   ): Promise<SupplierServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
-    //   if (idx === -1)
-    //     return { ok: false, message: "Supplier not found (mock)" };
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
+      if (idx === -1)
+        return { ok: false, message: "Supplier not found (mock)" };
 
-    //   mockSuppliers[idx] = { ...mockSuppliers[idx], ...supplier };
-    //   return { ok: true, data: [mockSuppliers[idx]] };
-    // }
+      mockSuppliers[idx] = { ...mockSuppliers[idx], ...supplier };
+      return { ok: true, data: [mockSuppliers[idx]] };
+    }
 
     try {
       const payload = {
@@ -130,14 +130,14 @@ export const SupplierService = {
 
   // ลบ Supplier
   async delete(supplier_id: string): Promise<SupplierServiceResult> {
-    // if (import.meta.env.VITE_USE_MOCK === "true") {
-    //   const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
-    //   if (idx === -1)
-    //     return { ok: false, message: "Supplier not found (mock)" };
+    if (import.meta.env.VITE_USE_MOCK === "true") {
+      const idx = mockSuppliers.findIndex(s => s.supplier_id === supplier_id);
+      if (idx === -1)
+        return { ok: false, message: "Supplier not found (mock)" };
 
-    //   const deleted = mockSuppliers.splice(idx, 1);
-    //   return { ok: true, data: deleted };
-    // }
+      const deleted = mockSuppliers.splice(idx, 1);
+      return { ok: true, data: deleted };
+    }
 
     try {
       const res = await AxiosUtil.createRequest<SupplierListResponse>({
