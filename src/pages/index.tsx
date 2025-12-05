@@ -4,12 +4,11 @@ import { useForm } from '@mantine/form';
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 import { AuthService } from '../services/AuthService';
 import { useNavigate } from "react-router-dom";
-import { LoadingProvider } from '../contexts/LoadingContext';
 import { authActions } from '../stores/authUserStore';
+import { loadingActions } from '../stores/loadingStore';
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { setOpenLoading } = LoadingProvider.useLoading();
 
     const form = useForm<LoginFormValues>({
         initialValues: {
@@ -25,7 +24,7 @@ export default function LoginPage() {
         const values = loginSchema.cast(form.values);
         const { username, password } = values;
 
-        setOpenLoading(true)
+        loadingActions.show();
         try {
             const response = await AuthService.login(username, password);
 
@@ -54,7 +53,7 @@ export default function LoginPage() {
                 password: "Unexpected error, please try again",
             });
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
     };
 

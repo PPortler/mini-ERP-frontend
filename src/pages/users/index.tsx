@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { LoadingProvider } from "../../contexts/LoadingContext";
 import type { UserInfoType } from "../../types/user";
 import { useLoadInitialData } from "./hooks/useLoadInitial";
 import { UserService } from "../../services/UserService";
@@ -15,9 +14,9 @@ import FormModel from "../../components/Models/FormModel";
 import { ROLES } from "../../constants/enum/enum";
 import { userSchema } from "../../schemas/userSchema";
 import { parseDate } from "../../utils/getDateUtils";
+import { loadingActions } from "../../stores/loadingStore";
 
 function UserManagementPage() {
-    const { setOpenLoading } = LoadingProvider.useLoading();
     const { data, refetch, loading } = useLoadInitialData();
 
     // State สำหรับ modal
@@ -40,7 +39,7 @@ function UserManagementPage() {
     };
 
     const confirmDelete = async () => {
-        setOpenLoading(true)
+        loadingActions.show();
         if (!selectedItem) return;
         try {
             const res = await UserService.delete(selectedItem.user_id)
@@ -64,15 +63,14 @@ function UserManagementPage() {
                     : 'error to delete';
             console.log(message)
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
         setModalOpen(false);
         setSelectedItem(null);
     };
 
     const saveItems = async (updatedItems: UserInfoType) => {
-        setOpenLoading(true);
-
+        loadingActions.show();
         try {
             let result;
 
@@ -107,7 +105,7 @@ function UserManagementPage() {
 
             console.log(message)
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
     };
 

@@ -2,7 +2,6 @@ import { Box, Card, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import { getRoleCurrent } from "../../utils/RoleUtil";
-import { LoadingProvider } from "../../contexts/LoadingContext";
 import FilterInputs from "../../components/Filters/FilterSearch";
 import AppButton from "../../components/Form/AppButton";
 import { useState } from "react";
@@ -16,6 +15,7 @@ import { notify } from "../../utils/Notify";
 import { StockService, type StockServiceResult } from "../../services/StockService";
 import { parseDate } from "../../utils/getDateUtils";
 import { stockTransactionSchema } from "../../schemas/stockTransactionSchema";
+import { loadingActions } from "../../stores/loadingStore";
 
 export default function StockTransactionsPage() {
     const {
@@ -37,7 +37,6 @@ export default function StockTransactionsPage() {
         sortField,
         sortOrder
     } = useLoadInitialData();
-    const { setOpenLoading } = LoadingProvider.useLoading();
     const roleCurrent = getRoleCurrent();
     const authUser = useStore($authUser)
 
@@ -50,7 +49,7 @@ export default function StockTransactionsPage() {
     }));
 
     const handleStock = async (item: StockTransactionType) => {
-        setOpenLoading(true)
+        loadingActions.show();
         const prepare = {
             ...item,
             created_by: authUser?.user_id
@@ -88,7 +87,7 @@ export default function StockTransactionsPage() {
                 });
             }
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
 
     }

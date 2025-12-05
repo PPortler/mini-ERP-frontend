@@ -8,7 +8,6 @@ import { Notifications } from '@mantine/notifications';
 import GlobalLoading from './components/Polish/GlobalLoading';
 import { useEffect } from 'react';
 import { authActions } from './stores/authUserStore';
-import { AppProviders } from './contexts/AppProvider';
 
 export default function App() {
   useEffect(() => {
@@ -16,11 +15,9 @@ export default function App() {
   }, []);
   return (
     <MantineProvider >
-      <AppProviders>
-        <Notifications position="top-right" zIndex={2077} />
-        <GlobalLoading />
-        <RouterProvider router={router} />
-      </AppProviders>
+      <Notifications position="top-right" zIndex={2077} />
+      <GlobalLoading />
+      <RouterProvider router={router} />
     </MantineProvider>
   );
 }

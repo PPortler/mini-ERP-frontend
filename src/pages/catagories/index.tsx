@@ -13,9 +13,9 @@ import { CatagoriesService } from '../../services/CatagoriesService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
-import { LoadingProvider } from '../../contexts/LoadingContext';
 import { categorySchema } from '../../schemas/categorySchema';
 import { columnCategory } from '../../constants/columnTable';
+import { loadingActions } from '../../stores/loadingStore';
 
 function CatagoriesPage() {
     const {
@@ -34,7 +34,6 @@ function CatagoriesPage() {
         sortField,
         sortOrder
     } = useLoadInitialData();
-    const { setOpenLoading } = LoadingProvider.useLoading();
     const roleCurrent = getRoleCurrent();
 
     // Modal states
@@ -55,7 +54,7 @@ function CatagoriesPage() {
     };
 
     const saveCategory = async (updated: CatagoriesType) => {
-        setOpenLoading(true)
+        loadingActions.show();
         try {
 
             let res;
@@ -93,12 +92,12 @@ function CatagoriesPage() {
                 });
             }
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
     };
 
     const confirmDelete = async () => {
-        setOpenLoading(true)
+        loadingActions.show();
         if (!selectedCategory) return;
         try {
             const res = await CatagoriesService.delete(selectedCategory.category_id)
@@ -126,7 +125,7 @@ function CatagoriesPage() {
                 });
             }
         } finally {
-            setOpenLoading(false)
+           loadingActions.hide();
         }
 
     };

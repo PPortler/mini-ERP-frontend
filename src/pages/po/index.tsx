@@ -15,11 +15,10 @@ import StatusBadge from "../../components/Polish/StatusBagde";
 import AppButton from "../../components/Form/AppButton";
 import { useStore } from "@nanostores/react";
 import { $authUser } from "../../stores/authUserStore";
-import { LoadingProvider } from "../../contexts/LoadingContext";
 import { parseDate } from "../../utils/getDateUtils";
+import { loadingActions } from "../../stores/loadingStore";
 
 export default function PoPage() {
-    const { setOpenLoading } = LoadingProvider.useLoading();
     const { purchaseOrders, suppliers, refetch, loading } = useLoadInitialData();
     const navigate = useNavigate();
     const user = useStore($authUser)
@@ -46,7 +45,7 @@ export default function PoPage() {
     };
 
     const savePO = async (values: PurchaseOrderType) => {
-        setOpenLoading(true)
+        loadingActions.show();
         const prepare = {
             ...values,
             supplier_id: values.supplier_id,
@@ -80,7 +79,7 @@ export default function PoPage() {
                 message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
             });
         } finally {
-            setOpenLoading(false);
+            loadingActions.hide();
         }
     };
 

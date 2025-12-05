@@ -11,12 +11,11 @@ import FormModel from '../../components/Models/FormModel';
 import ConfirmModal from '../../components/Models/ConfirmModel';
 import { SupplierService } from '../../services/SupplierService';
 import { notify } from '../../utils/Notify';
-import { LoadingProvider } from '../../contexts/LoadingContext';
 import { supplierSchema } from '../../schemas/supplierSchema';
 import AppButton from '../../components/Form/AppButton';
+import { loadingActions } from '../../stores/loadingStore';
 
 function SupplierPage() {
-  const { setOpenLoading } = LoadingProvider.useLoading();
   const { data, refetch, loading } = useLoadInitialData();
   const roleCurrent = getRoleCurrent();
 
@@ -40,7 +39,7 @@ function SupplierPage() {
   };
 
   const confirmDelete = async () => {
-    setOpenLoading(true)
+    loadingActions.show();
     if (!selectedItem) return;
     try {
       const res = await SupplierService.delete(selectedItem.supplier_id)
@@ -68,15 +67,14 @@ function SupplierPage() {
         message,
       });
     } finally {
-      setOpenLoading(false)
+      loadingActions.hide();
     }
     setModalOpen(false);
     setSelectedItem(null);
   };
 
   const saveItems = async (updatedItems: SupplierType) => {
-    setOpenLoading(true);
-
+    loadingActions.show();
     try {
       let result;
 
@@ -114,7 +112,7 @@ function SupplierPage() {
         message,
       });
     } finally {
-      setOpenLoading(false)
+      loadingActions.hide();
     }
   };
 

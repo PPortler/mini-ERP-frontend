@@ -15,8 +15,8 @@ import { ProductService } from '../../services/ProductService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
-import { LoadingProvider } from '../../contexts/LoadingContext';
 import { productSchema } from '../../schemas/productSchema';
+import { loadingActions } from '../../stores/loadingStore';
 
 function ProductPage() {
   const {
@@ -39,7 +39,6 @@ function ProductPage() {
     sortOrder
   } = useLoadInitialData();
 
-  const { setOpenLoading } = LoadingProvider.useLoading();
   const roleCurrent = getRoleCurrent();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -66,7 +65,7 @@ function ProductPage() {
   };
 
   const confirmDelete = async () => {
-    setOpenLoading(true)
+    loadingActions.show();
 
     if (!selectedProduct?.product_id) return;
     try {
@@ -94,12 +93,12 @@ function ProductPage() {
         });
       }
     } finally {
-      setOpenLoading(false)
+      loadingActions.hide();
     }
   };
 
   const saveItems = async (updatedProduct: ProductType) => {
-    setOpenLoading(true)
+    loadingActions.show();
 
     try {
       let result;
@@ -143,7 +142,7 @@ function ProductPage() {
         });
       }
     } finally {
-      setOpenLoading(false)
+      loadingActions.hide();
     }
   };
 

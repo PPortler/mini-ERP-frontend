@@ -6,13 +6,12 @@ import AppButton from "../../components/Form/AppButton";
 import type { StockSummaryProductType } from "../../types/reports";
 import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
-import { LoadingProvider } from "../../contexts/LoadingContext";
 import { TAB_TYPES_REPORTS } from "./const/enum";
 import AppDatePicker from "../../components/Form/AppDatePicker";
+import { loadingActions } from "../../stores/loadingStore";
 
 function ReportPage() {
 
-    const { setOpenLoading } = LoadingProvider.useLoading();
 
     const {
         loading,
@@ -31,7 +30,7 @@ function ReportPage() {
     } = useLoadInitialData();
 
     const handleExport = async (tab: string) => {
-        setOpenLoading(true)
+        loadingActions.show();
         try {
             let res: { ok: boolean; message?: string };
             switch (tab) {
@@ -68,7 +67,7 @@ function ReportPage() {
                 message,
             });
         } finally {
-            setOpenLoading(false)
+            loadingActions.hide();
         }
     };
 
