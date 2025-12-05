@@ -74,13 +74,13 @@ function ProductPage() {
       if (!res.ok) {
         notify({
           type: 'error',
-          message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+          message: res.message,
         });
         return;
       }
       notify({
         type: 'success',
-        message: 'ลบสินค้าสำเร็จ',
+        message: 'Delete successfully',
       });
       setSelectedProduct(null);
       setModalOpen(false);
@@ -89,7 +89,7 @@ function ProductPage() {
       if (err instanceof Error) {
         notify({
           type: "error",
-          message: err.message || "เกิดข้อผิดพลาด",
+          message: err.message,
         });
       }
     } finally {
@@ -122,15 +122,15 @@ function ProductPage() {
         notify({
           type: 'success',
           message: updatedProduct.product_id
-            ? `แก้ไขสินค้า "${updatedProduct.name}" สำเร็จ`
-            : `เพิ่มสินค้า "${updatedProduct.name}" สำเร็จ`,
+            ? `Edit Product "${updatedProduct.name}" Successfully`
+            : `Create Produuct "${updatedProduct.name}" Successfully`,
         });
         setModalOpen(false);
         refetch();
       } else {
         notify({
           type: 'error',
-          message: result.message || "เกิดข้อผิดพลาด",
+          message: result.message,
         });
       }
 
@@ -138,7 +138,7 @@ function ProductPage() {
       if (err instanceof Error) {
         notify({
           type: "error",
-          message: err.message || "เกิดข้อผิดพลาด",
+          message: err.message,
         });
       }
     } finally {
@@ -170,21 +170,21 @@ function ProductPage() {
     <Box>
       <Card shadow="sm" padding="lg">
         <Group justify="space-between" mb="sm">
-          <Title order={3}>สินค้าทั้งหมด</Title>
+          <Title order={3}>Products</Title>
         </Group>
         <Group justify="space-between">
           <FilterInputs
             fields={[
               {
                 key: "search",
-                label: "ค้นหา",
+                label: "Code or Name",
                 type: "text",
                 value: search,
                 onChange: setSearch,
               },
               {
                 key: "categoryId",
-                label: "หมวดหมู่",
+                label: "Category",
                 type: "select",
                 value: categoryId,
                 options: categoryOptions,
@@ -201,7 +201,7 @@ function ProductPage() {
                 setModalOpen(true);
               }}
             >
-              เพิ่มสินค้า
+              Create Product
             </AppButton>
           )}
         </Group>
@@ -226,8 +226,8 @@ function ProductPage() {
         <ConfirmModal
           opened={modalOpen}
           onClose={() => setModalOpen(false)}
-          title="ยืนยันการลบสินค้า"
-          message={`คุณต้องการลบสินค้า "${selectedProduct?.name}" ใช่หรือไม่?`}
+          title="Confirm Delete Product"
+          message={`Do you want to delete product: "${selectedProduct?.name}" ?`}
           onConfirm={confirmDelete}
         />
       )}
@@ -239,8 +239,8 @@ function ProductPage() {
           onClose={() => setModalOpen(false)}
           title={
             selectedProduct
-              ? `แก้ไขสินค้า "${selectedProduct.name}"`
-              : 'เพิ่มสินค้าใหม่'
+              ? `Edit Product: "${selectedProduct.name}"`
+              : 'Crteate New Product'
           }
           initialValues={
             selectedProduct || {
@@ -256,15 +256,15 @@ function ProductPage() {
             }
           }
           fields={[
-            { name: 'product_code', label: 'รหัสสินค้า', type: 'text', required: true, disabled: !!selectedProduct },
-            { name: 'name', label: 'ชื่อสินค้า', type: 'text', required: true },
-            { name: 'cost_price', label: 'ราคาทุน', type: 'number', required: true },
-            { name: 'selling_price', label: 'ราคาขาย', type: 'number', required: true },
+            { name: 'product_code', label: 'Product Code', type: 'text', required: true, disabled: !!selectedProduct },
+            { name: 'name', label: 'Product Name', type: 'text', required: true },
+            { name: 'cost_price', label: 'Cost Price', type: 'number', required: true },
+            { name: 'selling_price', label: 'Selling Price', type: 'number', required: true },
             { name: 'min_stock', label: 'Min Stock', type: 'number', required: true },
-            { name: 'unit', label: 'หน่วย', type: 'string', required: true },
+            { name: 'unit', label: 'Unit', type: 'string', required: true },
             {
               name: "category_id",
-              label: "หมวดหมู่",
+              label: "Category",
               type: "select",
               disabled: !!selectedProduct,
               options: categoryOptions,

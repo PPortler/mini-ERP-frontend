@@ -34,7 +34,7 @@ export default function DataTable<T>({
   total,
   onPageChange,
   onPageSizeChange,
-  emptyText = "ไม่พบข้อมูล",
+  emptyText = "No data available",
   loading = false,
   sortField,
   sortOrder,
@@ -46,10 +46,10 @@ export default function DataTable<T>({
 
   useEffect(() => {
     setInternalPage(page)
-  },[page])
+  }, [page])
   useEffect(() => {
     setInternalPageSize(pageSize)
-  },[pageSize])
+  }, [pageSize])
 
   const totalPages = total ? Math.ceil(total / internalPageSize) : Math.ceil(data.length / internalPageSize) || 1;
   const paginatedData = total ? data : data.slice((internalPage - 1) * internalPageSize, internalPage * internalPageSize);
@@ -159,7 +159,7 @@ export default function DataTable<T>({
         <Box />
         <Group>
           <Text size="sm" color="dimmed">
-            รวมทั้งหมด: {total ?? data.length} รายการ
+            Total: {total ?? data.length} items
           </Text>
           <Select
             value={internalPageSize.toString()}

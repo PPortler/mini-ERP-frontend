@@ -19,7 +19,7 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
             {/* ข้อความยืนยัน */}
             {nextStatus && (
                 <Box>
-                    คุณต้องการเปลี่ยนสถานะเป็น <b>{nextStatus}</b> ใช่หรือไม่?
+                    Do you want to change status to <b>{nextStatus}</b> ?
                 </Box>
             )}
 
@@ -41,10 +41,10 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
                                 {p.product_code}/{p.name}
                             </Box>
                             <Box>
-                                {p.quantity} x {p.price?.toLocaleString()} บาท
+                                {p.quantity} x {p.price?.toLocaleString()} Bath
                             </Box>
                             <Box>
-                                รวม: {(p.quantity! * (p.price ?? 0)).toLocaleString()} บาท
+                                Total: {(p.quantity! * (p.price ?? 0)).toLocaleString()} Bath
                             </Box>
                         </Group>
                     ))}
@@ -52,7 +52,7 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
                     {/* บรรทัดสุดท้าย ราคารวมทั้งหมด */}
                     <Group justify="space-between" mt="sm">
                         <Box><b>Total Amount:</b></Box>
-                        <Box>{po.total_amount} บาท</Box>
+                        <Box>{po.total_amount} Bath</Box>
                     </Group>
 
                 </>

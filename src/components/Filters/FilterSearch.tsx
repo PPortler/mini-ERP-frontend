@@ -55,7 +55,7 @@ export default function FilterInputs({ fields, loading = false }: TableFilterInp
           );
         } else if (f.type === "select") {
           const optionsWithAll = [
-            { label: "ทั้งหมด", value: "" },
+            { label: "All", value: "" },
             ...(f.options || []).map(opt => ({
               label: opt.label,
               value: String(opt.value),

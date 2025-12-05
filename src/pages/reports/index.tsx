@@ -3,16 +3,15 @@ import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
 import AppButton from "../../components/Form/AppButton";
-import type { StockSummaryProductType } from "../../types/reports";
+import type { StockMovementItemType, StockSummaryProductType } from "../../types/reports";
 import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
 import { TAB_TYPES_REPORTS } from "./const/enum";
 import AppDatePicker from "../../components/Form/AppDatePicker";
 import { loadingActions } from "../../stores/loadingStore";
+import { parseDate } from "../../utils/getDateUtils";
 
 function ReportPage() {
-
-
     const {
         loading,
         stockSummary,
@@ -91,7 +90,13 @@ function ReportPage() {
 
     const columnStockMovement = [
         { header: "Transaction ID", accessor: "stock_transaction_id" },
-        { header: "Date", accessor: "created_at" },
+        {
+            header: "Date", accessor: "created_at",
+            cell: (row: StockMovementItemType) => {
+                const { dateString, timeString } = parseDate(row.created_at || "");
+                return `${dateString}, ${timeString}`;
+            }
+        },
         { header: "Product Code", accessor: "product_code" },
         { header: "Product Name", accessor: "product_name" },
         { header: "Category Name", accessor: "category_name" },

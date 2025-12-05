@@ -70,15 +70,15 @@ function CatagoriesPage() {
             if (!res.ok) {
                 notify({
                     type: "error",
-                    message: res.message || "เกิดข้อผิดพลาด",
+                    message: res.message,
                 });
                 return;
             }
             notify({
                 type: "success",
                 message: selectedCategory
-                    ? `แก้ไขหมวดหมู่ "${updated.name}" สำเร็จ`
-                    : `เพิ่มหมวดหมู่ "${updated.name}" สำเร็จ`,
+                    ? `Edit Category "${updated.name}" Successfully`
+                    : `Create Category "${updated.name}" Successfully`,
             });
 
             setModalOpen(false);
@@ -88,7 +88,7 @@ function CatagoriesPage() {
             if (err instanceof Error) {
                 notify({
                     type: "error",
-                    message: err.message || "เกิดข้อผิดพลาด",
+                    message: err.message,
                 });
             }
         } finally {
@@ -106,13 +106,13 @@ function CatagoriesPage() {
             if (!res.ok) {
                 notify({
                     type: 'error',
-                    message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+                    message: res.message,
                 });
                 return;
             }
             notify({
                 type: 'success',
-                message: 'ลบสำเร็จ',
+                message: 'Delete successfully',
             });
             setModalOpen(false);
             setSelectedCategory(null);
@@ -121,7 +121,7 @@ function CatagoriesPage() {
             if (err instanceof Error) {
                 notify({
                     type: "error",
-                    message: err.message || "เกิดข้อผิดพลาด",
+                    message: err.message,
                 });
             }
         } finally {
@@ -158,14 +158,14 @@ function CatagoriesPage() {
         <Box>
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="sm">
-                    <Title order={3}>หมวดหมู่สินค้า</Title>
+                    <Title order={3}>Categories</Title>
                 </Group>
                 <Group justify='space-between'>
                     <FilterInputs
                         fields={[
                             {
                                 key: "search",
-                                label: "ค้นหา",
+                                label: "Name",
                                 type: "text",
                                 value: search,
                                 onChange: setSearch,
@@ -182,7 +182,7 @@ function CatagoriesPage() {
                             }}
                             disabled={loading} // ป้องกันคลิกตอน loading
                         >
-                            เพิ่มหมวดหมู่
+                            Create Category
                         </AppButton>
                     )}
                 </Group>
@@ -208,11 +208,11 @@ function CatagoriesPage() {
                     validationSchema={categorySchema}
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
-                    title={selectedCategory ? `แก้ไขหมวดหมู่ ${selectedCategory.name}` : 'เพิ่มหมวดหมู่'}
+                    title={selectedCategory ? `Edit Category ${selectedCategory.name}` : 'Create Category'}
                     initialValues={selectedCategory || { category_id: '', name: '', description: '' }}
                     fields={[
-                        { name: 'name', label: 'ชื่อหมวดหมู่', type: 'text', required: true },
-                        { name: 'description', label: 'คำอธิบาย', type: 'text', required: true },
+                        { name: 'name', label: 'Category Name', type: 'text', required: true },
+                        { name: 'description', label: 'Description', type: 'text', required: true },
                     ]}
                     onSubmit={saveCategory}
                 />
@@ -223,8 +223,8 @@ function CatagoriesPage() {
                 <ConfirmModal
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
-                    title="ยืนยันการลบหมวดหมู่"
-                    message={`คุณต้องการลบหมวดหมู่ "${selectedCategory.name}" ใช่หรือไม่?`}
+                    title="Confirm Delete Category"
+                    message={`Do you want to delete category: "${selectedCategory.name}" ?`}
                     onConfirm={confirmDelete}
                 />
             )}

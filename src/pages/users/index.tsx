@@ -47,13 +47,13 @@ function UserManagementPage() {
             if (!res.ok) {
                 notify({
                     type: 'error',
-                    message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+                    message: res.message,
                 });
                 return;
             }
             notify({
                 type: 'success',
-                message: 'ลบสำเร็จ',
+                message: 'Delete successful',
             });
             refetch();
         } catch (err: unknown) {
@@ -83,7 +83,7 @@ function UserManagementPage() {
             if (!result.ok) {
                 notify({
                     type: 'error',
-                    message: result.message || 'เกิดข้อผิดพลาดในการบันทึก',
+                    message: result.message,
                 });
                 return;
             }
@@ -91,8 +91,8 @@ function UserManagementPage() {
             notify({
                 type: 'success',
                 message: updatedItems.user_id
-                    ? `แก้ไข User: "${updatedItems.username}" สำเร็จ`
-                    : `เพิ่ม User: "${updatedItems.username}" สำเร็จ`,
+                    ? `Edit User: "${updatedItems.username}" Successfully`
+                    : `Create User: "${updatedItems.username}" Successfully`,
             });
             setModalOpen(false);
             setSelectedItem(null);
@@ -192,8 +192,8 @@ function UserManagementPage() {
                     onClose={() => setModalOpen(false)}
                     title={
                         selectedItem
-                            ? `แก้ไข user: "${selectedItem.username}"`
-                            : 'เพิ่ม user: ใหม่'
+                            ? `Edit user: "${selectedItem.username}"`
+                            : 'Create New User'
                     }
                     initialValues={
                         selectedItem || {

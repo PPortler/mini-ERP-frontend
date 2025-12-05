@@ -68,14 +68,14 @@ export default function StockTransactionsPage() {
             if (!res.ok) {
                 notify({
                     type: 'error',
-                    message: res.message || 'เกิดข้อผิดพลาด',
+                    message: res.message || 'Error to create stock transaction',
                 });
                 return;
             }
 
             notify({
                 type: 'success',
-                message: 'create stock success.',
+                message: 'Create stock successfully',
             });
             setModalOpen(false);
             refetch();
@@ -83,7 +83,7 @@ export default function StockTransactionsPage() {
             if (err instanceof Error) {
                 notify({
                     type: "error",
-                    message: err.message || "เกิดข้อผิดพลาด",
+                    message: err.message || "Error to create stock transaction",
                 });
             }
         } finally {
@@ -94,19 +94,19 @@ export default function StockTransactionsPage() {
 
     const columnStockTransaction = [
         {
-            header: "วันที่", accessor: "created_at",
+            header: "Date", accessor: "created_at",
             cell: (row: StockTransactionType) => {
                 const dateObj = parseDate(row.created_at?.toString() || "");
                 return <>{dateObj.dateString}, {dateObj.timeString}</>;
             }
         },
-        { header: "รหัสสินค้า", accessor: "product_code" },
-        { header: "ชื่อสินค้า", accessor: "product_name" },
-        { header: "ประเภท", accessor: "type" },
-        { header: "จำนวน", accessor: "quantity" },
-        { header: "สาเหตุ", accessor: "reason" },
-        { header: "reference", accessor: "reference" },
-        { header: "create by", accessor: "created_by" },
+        { header: "Product Code", accessor: "product_code" },
+        { header: "Product Name", accessor: "product_name" },
+        { header: "Type", accessor: "type" },
+        { header: "Quantity", accessor: "quantity" },
+        { header: "Reason", accessor: "reason" },
+        { header: "Reference", accessor: "reference" },
+        { header: "Create By", accessor: "created_by" },
     ]
     return (
         <Box>
@@ -119,14 +119,14 @@ export default function StockTransactionsPage() {
                         fields={[
                             {
                                 key: "search",
-                                label: "ค้นหา",
+                                label: "Search",
                                 type: "text",
                                 value: search,
                                 onChange: setSearch,
                             },
                             {
                                 key: "productId",
-                                label: "สินค้า",
+                                label: "Products",
                                 type: "select",
                                 value: productId,
                                 options: productsOption,
@@ -188,13 +188,13 @@ export default function StockTransactionsPage() {
                     fields={[
                         {
                             name: "product_id",
-                            label: "สินค้า",
+                            label: "Product",
                             type: "select",
                             options: productsOption,
                             required: true
                         },
-                        { name: 'quantity', label: 'จำนวน', type: 'number', required: true },
-                        { name: 'reason', label: 'สาเหตุ', type: 'text', required: modalType === TYPE_STOCK_TRANSECTION.ADJUST },
+                        { name: 'quantity', label: 'Quantity', type: 'number', required: true },
+                        { name: 'reason', label: 'Reason', type: 'text', required: modalType === TYPE_STOCK_TRANSECTION.ADJUST },
                     ]}
                     onSubmit={handleStock}
                 />

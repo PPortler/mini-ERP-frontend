@@ -47,20 +47,20 @@ function SupplierPage() {
       if (!res.ok) {
         notify({
           type: 'error',
-          message: res.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+          message: res.message,
         });
         return;
       }
       notify({
         type: 'success',
-        message: 'ลบสำเร็จ',
+        message: 'Delete successful',
       });
       refetch();
     } catch (err: unknown) {
       const message =
         err instanceof Error
           ? err.message
-          : 'เกิดข้อผิดพลาดลบไม่สำเร็จ';
+          : 'Delete error';
 
       notify({
         type: "error",
@@ -87,7 +87,7 @@ function SupplierPage() {
       if (!result.ok) {
         notify({
           type: 'error',
-          message: result.message || 'เกิดข้อผิดพลาดในการบันทึก',
+          message: result.message,
         });
         return;
       }
@@ -95,8 +95,8 @@ function SupplierPage() {
       notify({
         type: 'success',
         message: updatedItems.supplier_id
-          ? `แก้ไข Supplier "${updatedItems.name}" สำเร็จ`
-          : `เพิ่ม Supplier "${updatedItems.name}" สำเร็จ`,
+          ? `Edit Supplier "${updatedItems.name}" Successful`
+          : `Create Supplier "${updatedItems.name}" Successful`,
       });
       setModalOpen(false);
       setSelectedItem(null);
@@ -105,7 +105,7 @@ function SupplierPage() {
       const message =
         error instanceof Error
           ? error.message
-          : 'เกิดข้อผิดพลาดในการบันทึก';
+          : 'Error to save';
 
       notify({
         type: 'error',
@@ -133,10 +133,10 @@ function SupplierPage() {
   };
 
   const columnSupplier: Column<SupplierType>[] = [
-    { header: "ชื่อ", accessor: "name" },
-    { header: "เบอร์โทร", accessor: "phone" },
-    { header: "อีเมล", accessor: "email" },
-    { header: "ที่อยู่", accessor: "address" },
+    { header: "Supplier Name", accessor: "name" },
+    { header: "Phone", accessor: "phone" },
+    { header: "Email", accessor: "email" },
+    { header: "Address", accessor: "address" },
   ];
 
   const columnsWithAction =
@@ -162,7 +162,7 @@ function SupplierPage() {
                   setModalOpen(true);
                 }}
               >
-                Add Supplier
+                Create Supplier
               </AppButton>
             )}
           </Box>
@@ -174,8 +174,8 @@ function SupplierPage() {
         <ConfirmModal
           opened={modalOpen}
           onClose={() => setModalOpen(false)}
-          title="ยืนยันการลบ supplier"
-          message={`คุณต้องการลบ supplier "${selectedItem?.name}" ใช่หรือไม่?`}
+          title="Confirm Delete Supplier"
+          message={`Do you want to delete supplier: "${selectedItem?.name}" ?`}
           onConfirm={confirmDelete}
         />
       )}
@@ -187,8 +187,8 @@ function SupplierPage() {
           onClose={() => setModalOpen(false)}
           title={
             selectedItem
-              ? `แก้ไข supplier "${selectedItem.name}"`
-              : 'เพิ่ม supplier ใหม่'
+              ? `Edit Supplier "${selectedItem.name}"`
+              : 'Create New Supplier'
           }
           initialValues={
             selectedItem || {
@@ -200,10 +200,10 @@ function SupplierPage() {
             }
           }
           fields={[
-            { name: 'name', label: 'ชื่อผู้จัดหา', type: 'text', required: true },
-            { name: 'phone', label: 'เบอร์โทร', type: 'text', required: true },
-            { name: 'email', label: 'อีเมล', type: 'text', required: true },
-            { name: 'address', label: 'ที่อยู่', type: 'text', required: true },
+            { name: 'name', label: 'Supplier Name', type: 'text', required: true },
+            { name: 'phone', label: 'Phone', type: 'text', required: true },
+            { name: 'email', label: 'Email', type: 'text', required: true },
+            { name: 'address', label: 'Address', type: 'text', required: true },
           ]}
           onSubmit={saveItems}
         />

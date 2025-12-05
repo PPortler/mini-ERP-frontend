@@ -4,13 +4,13 @@ import type { CatagoriesType } from "../types/catagories";
 import type { ProductType } from "../types/product";
 
 export const columnProducts: Column<ProductType>[] = [
-  { header: "รหัสสินค้า", accessor: "product_code" },
-  { header: "สินค้า", accessor: "name" },
-  { header: "หน่วย", accessor: "unit" },
-  { header: "ราคาทุน", accessor: "cost_price" },
-  { header: "ราคาขาย", accessor: "selling_price" },
+  { header: "Product Code", accessor: "product_code" },
+  { header: "Product Name", accessor: "name" },
+  { header: "Unit", accessor: "unit" },
+  { header: "Cost Price", accessor: "cost_price" },
+  { header: "Selling Price", accessor: "selling_price" },
   {
-    header: "หมวดหมู่", accessor: "category_name",
+    header: "Categoty", accessor: "category_name",
   },
   { header: "Min Stock", accessor: "min_stock" },
 ];
@@ -30,7 +30,7 @@ export const columnAuditLogs: Column<AuditLogType>[] = [
 ];
 
 export const columnCategory: Column<CatagoriesType>[] = [
-  { header: 'ชื่อหมวดหมู่', accessor: 'name' },
-  { header: 'คำอธิบาย', accessor: 'description' },
+  { header: 'Category Name', accessor: 'name' },
+  { header: 'Description', accessor: 'description' },
 ];
 

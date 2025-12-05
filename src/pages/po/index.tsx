@@ -62,7 +62,7 @@ export default function PoPage() {
             if (!result.ok) {
                 notify({
                     type: 'error',
-                    message: result.message || 'เกิดข้อผิดพลาดลบไม่สำเร็จ',
+                    message: result.message,
                 });
                 return;
             }
@@ -76,7 +76,7 @@ export default function PoPage() {
         } catch (err: unknown) {
             notify({
                 type: "error",
-                message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
+                message: err instanceof Error ? err.message : "Error to save PO",
             });
         } finally {
             loadingActions.hide();
@@ -87,15 +87,15 @@ export default function PoPage() {
         try {
             const result = await PurchaseOrderService.updateStatus(po.purchase_order_id, newStatus, user?.user_id || "");
             if (result.ok) {
-                notify({ type: "success", message: `เปลี่ยนสถานะเป็น ${newStatus} สำเร็จ` });
+                notify({ type: "success", message: `Change status to ${newStatus} successfully` });
                 await refetch();
             } else {
-                notify({ type: "error", message: result.message || "เกิดข้อผิดพลาด" });
+                notify({ type: "error", message: result.message});
             }
         } catch (err: unknown) {
             notify({
                 type: "error",
-                message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
+                message: err instanceof Error ? err.message : "Error to change status",
             });
         }
     };
@@ -105,15 +105,15 @@ export default function PoPage() {
             const result = await PurchaseOrderService.delete(po.purchase_order_id);
 
             if (result.ok) {
-                notify({ type: "success", message: "ลบสำเร็จ" });
+                notify({ type: "success", message: "Deleted successfully" });
                 await refetch(); // โหลดข้อมูลใหม่
             } else {
-                notify({ type: "error", message: result.message || "ไม่สามารถลบได้" });
+                notify({ type: "error", message: result.message });
             }
         } catch (err: unknown) {
             notify({
                 type: "error",
-                message: err instanceof Error ? err.message : "เกิดข้อผิดพลาด",
+                message: err instanceof Error ? err.message : "Error to delete PO",
             });
         }
     };
@@ -167,7 +167,7 @@ export default function PoPage() {
                     validationSchema={poOrderSchema}
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
-                    title={!selectedPO ? "สร้าง Purchase Order" : `แก้ไข Purchase Order ${selectedPO.purchase_order_id}`}
+                    title={!selectedPO ? "Create Purchase Order" : `Edit Purchase Order ${selectedPO.purchase_order_id}`}
                     initialValues={selectedPO || {
                         purchase_order_id: "",
                         supplier_id: "",

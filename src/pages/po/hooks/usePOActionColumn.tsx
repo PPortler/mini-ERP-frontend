@@ -29,8 +29,8 @@ export default function usePOActionColumn(
   const openStatusConfirm = (po: PurchaseOrderType, status: string) => {
     if (!po.products || po.products.length === 0) {
       notify({
-        title: 'ไม่สามารถเปลี่ยนสถานะได้',
-        message: 'กรุณาเพิ่มสินค้าก่อนเปลี่ยนสถานะ',
+        title: 'Cannot change status',
+        message: 'Please add products to the PO before changing its status.',
         type: 'error',
       });
       return;
@@ -152,7 +152,7 @@ export default function usePOActionColumn(
             <ConfirmModal
               opened={confirmStatusOpen && currentPO.purchase_order_id === row.purchase_order_id}
               onClose={() => setConfirmStatusOpen(false)}
-              title="ยืนยันการเปลี่ยนสถานะ"
+              title="Confirm Change PO Status"
               message={
                 <POConfirmMessage po={currentPO} nextStatus={nextStatus} />
               }
@@ -167,8 +167,8 @@ export default function usePOActionColumn(
             <ConfirmModal
               opened={confirmDeleteOpen && currentPO.purchase_order_id === row.purchase_order_id}
               onClose={() => setConfirmDeleteOpen(false)}
-              title="ยืนยันการลบ PO"
-              message="คุณต้องการลบ PO นี้ใช่หรือไม่?"
+              title="Confirm Delete PO"
+              message="Do you want to delete this Purchase Order?"
               onConfirm={() => {
                 if (currentPO) handleDeletePO(currentPO);
                 setConfirmDeleteOpen(false);

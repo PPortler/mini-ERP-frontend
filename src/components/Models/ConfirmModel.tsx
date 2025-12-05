@@ -36,10 +36,10 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
                 {/* Action Buttons */}
                 <Group justify="end" mt="md">
                     <Button variant="outline" color="gray" onClick={onClose}>
-                        ยกเลิก
+                        Cancel
                     </Button>
                     <Button color="blue" onClick={onConfirm}>
-                        ยืนยัน
+                        Confirm
                     </Button>
                 </Group>
             </Stack>

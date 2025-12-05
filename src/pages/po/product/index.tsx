@@ -43,13 +43,11 @@ export default function PoProductPage() {
     const handleDeleteItem = async (itemId: string) => {
         try {
             await PurchaseOrderService.deleteItem(purchase_order_id!, itemId);
-            notify({ type: "success", message: "ลบ item สำเร็จ" });
+            notify({ type: "success", message: "Deleted Item Successfully" });
             refetch();
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
-            } else {
-                notify({ type: "error", message: "เกิดข้อผิดพลาด" });
             }
         }
     };
@@ -59,14 +57,14 @@ export default function PoProductPage() {
             if (!selectedItem) {
                 console.log(values)
                 await PurchaseOrderService.addItem(purchase_order_id!, values);
-                notify({ type: "success", message: "เพิ่ม item สำเร็จ" });
+                notify({ type: "success", message: "Created Item Successfully" });
             } else {
                 await PurchaseOrderService.updateItem(
                     purchase_order_id!,
                     selectedItem.purchase_order_item_id,
                     values
                 );
-                notify({ type: "success", message: "แก้ไข item สำเร็จ" });
+                notify({ type: "success", message: "Edit Item Successfully" });
             }
             refetch();
             setModalOpen(false);
@@ -75,9 +73,7 @@ export default function PoProductPage() {
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
-            } else {
-                notify({ type: "error", message: "เกิดข้อผิดพลาด" });
-            }
+            } 
         }
     };
 
@@ -184,7 +180,7 @@ export default function PoProductPage() {
                             type: "number",
                             required: true,
                             helperText: selectedProdDetail
-                                ? `ราคาต้นทุน: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
+                                ? `Cost Price: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
                                 : ''
                         },
                     ]}

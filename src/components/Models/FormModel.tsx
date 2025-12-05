@@ -90,7 +90,7 @@ const FormModel = <T extends Record<string, unknown>>({
               onBlur={() => form.validateField(f.name)}
               error={form.errors[f.name]}
               data={f.options || []}
-              placeholder={f.placeholder || `เลือก${f.label}`}
+              placeholder={f.placeholder || `Select ${f.label}`}
               disabled={f.disabled}
               label={
                 <span>
@@ -121,9 +121,9 @@ const FormModel = <T extends Record<string, unknown>>({
         })}
 
         <Group mt="xl" style={{ display: "flex", flexDirection: "row-reverse" }}>
-          <Button type="submit">บันทึก</Button>
+          <Button type="submit">Confirm</Button>
           <Button variant="outline" onClick={onClose}>
-            ยกเลิก
+            Cancel
           </Button>
         </Group>
       </form>
