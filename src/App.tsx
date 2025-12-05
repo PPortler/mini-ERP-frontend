@@ -5,10 +5,15 @@ import { MantineProvider } from '@mantine/core';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import { Notifications } from '@mantine/notifications';
-import { AppProviders } from './contexts/AppProvider';
 import GlobalLoading from './components/Polish/GlobalLoading';
+import { useEffect } from 'react';
+import { authActions } from './stores/authUserStore';
+import { AppProviders } from './contexts/AppProvider';
 
 export default function App() {
+  useEffect(() => {
+    authActions.initializeAuth();
+  }, []);
   return (
     <MantineProvider >
       <AppProviders>

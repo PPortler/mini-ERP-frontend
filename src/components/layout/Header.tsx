@@ -1,13 +1,12 @@
 import { Group, Text, Button, Box } from "@mantine/core";
-import { AuthProvider } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { authActions } from "../../stores/authUserStore";
 
 export default function Header() {
-  const { logout } = AuthProvider.useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    authActions.logout();
     navigate("/", { replace: true });
   };
 

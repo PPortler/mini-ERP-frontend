@@ -1,9 +1,9 @@
 import { Loader } from "@mantine/core";
-import { LoadingProvider } from "../../contexts/LoadingContext";
+import { $openLoading } from "../../stores/loadingStore"
+import { useStore } from "@nanostores/react";
 
-export default function GlobalLoading() {
-    const { openLoading } = LoadingProvider.useLoading();
-
+export default function GlobalLoading() {;
+    const openLoading = useStore($openLoading);
     // if (true) return null;
     if (!openLoading) return null;
 

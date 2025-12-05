@@ -4,12 +4,11 @@ import { useForm } from '@mantine/form';
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 import { AuthService } from '../services/AuthService';
 import { useNavigate } from "react-router-dom";
-import { AuthProvider } from '../contexts/AuthContext';
 import { LoadingProvider } from '../contexts/LoadingContext';
+import { authActions } from '../stores/authUserStore';
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { setAuth } = AuthProvider.useAuth();
     const { setOpenLoading } = LoadingProvider.useLoading();
 
     const form = useForm<LoginFormValues>({
@@ -36,7 +35,7 @@ export default function LoginPage() {
                 const { user } = response.data;
 
                 if (user) {
-                    setAuth(user.access_token ?? "", user);
+                    authActions.setAuth(user.access_token ?? "", user);
                 }
 
                 const rolePath = "/dashboard";
