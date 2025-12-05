@@ -14,8 +14,8 @@ export default function Dashboard() {
     stockMovement,
     purchaseTrend,
     loading,
-    totalCostPrice,
-    totalStockOnHand,
+    totalInventoryValue,
+    totalPo,
     totalLowStock,
     from,
     setFrom,
@@ -64,10 +64,11 @@ export default function Dashboard() {
       {/* ----------------------------------------------------
           1) Summary Cards
       ---------------------------------------------------- */}
+
       <Grid.Col span={{ base: 12, md: 4 }}>
         <SummaryCard
-          label="Inventory Value"
-          value={`${totalStockOnHand}`}
+          label="Total Inventory Value"
+          value={`฿ ${totalInventoryValue.toLocaleString()}`}
           loading={loading}
         />
       </Grid.Col>
@@ -80,10 +81,11 @@ export default function Dashboard() {
         />
       </Grid.Col>
 
+
       <Grid.Col span={{ base: 12, md: 4 }}>
         <SummaryCard
-          label="Total Cost Prices"
-          value={`฿ ${totalCostPrice.toLocaleString()}`}
+          label="Total Purchase Orders"
+          value={`${totalPo} Po.`}
           loading={loading}
         />
       </Grid.Col>

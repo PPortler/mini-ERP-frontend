@@ -39,9 +39,9 @@ export const useLoadInitialData = () => {
     const [loadPoSummary, setLoadPoSummary] = useState<boolean>(true)
     const [initialLoad, setInitialLoad] = useState<boolean>(true)
     const [lowStock, setLowStock] = useState<StockSummaryProductType[]>([]);
-    const [totalCostPrice, setTotalCostPrice] = useState<number>(0);
+    const [totalInventoryValue, setTotalInventoryValue] = useState<number>(0);
     const [totalLowStock, setTotalLowStock] = useState<number>(0);
-    const [totalStockOnHand, setTotalStockOnHand] = useState<number>(0);
+    const [totalPo, setTotalPo] = useState<number>(0);
     const [stockMovement, setStockMovement] = useState<StockMovementChart>({
         categories: [],
         series: [],
@@ -68,8 +68,7 @@ export const useLoadInitialData = () => {
                 if (!resStock.ok) throw new Error(resStock.message || "Failed to load");
                 setLowStock(resStock.data?.low_stock ?? []);
                 setTotalLowStock(resStock.data?.low_stock_count || 0);
-                setTotalStockOnHand(resStock.data?.total_stock_on_hand || 0);
-                setTotalCostPrice(resStock.data?.total_cost_value || 0);
+                setTotalInventoryValue(resStock.data?.total_cost_value || 0);
             } catch (error: unknown) {
                 setError(error instanceof Error ? error.message : "Failed to load data");
             } finally {
@@ -105,6 +104,7 @@ export const useLoadInitialData = () => {
         try {
             const res = await ReportService.getPurchaseSummary(monthParam);
             if (!res.ok) throw new Error(res.message || "Failed to load");
+            setTotalPo(res.data?.total_orders || 0);
             setPurchaseTrend(groupByStatusSummary(res.data?.summary || []));
         } catch (error: unknown) {
             setError(error instanceof Error ? error.message : "Failed to load data");
@@ -123,8 +123,8 @@ export const useLoadInitialData = () => {
         purchaseTrend,
         error,
         loading,
-        totalCostPrice,
-        totalStockOnHand,
+        totalInventoryValue,
+        totalPo,
         totalLowStock,
         from,
         to,

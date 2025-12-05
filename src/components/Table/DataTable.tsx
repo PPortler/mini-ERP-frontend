@@ -71,6 +71,12 @@ export default function DataTable<T>({
     setSortOrder?.(order);
   };
 
+  const formatCellValue = (value: number | string | null | undefined) => {
+    if (value == null) return "-";
+    if (typeof value === "number") return value.toLocaleString();
+    return value;
+  };
+
   // จำนวน skeleton row ตาม pageSize
   const skeletonRows = Array.from({ length: internalPageSize });
 
@@ -136,7 +142,9 @@ export default function DataTable<T>({
                 <Table.Tr key={i}>
                   {columns.map((col) => (
                     <Table.Td key={String(col.accessor)}>
-                      {col.cell ? col.cell(row) : String(row[col.accessor] ?? "-")}
+                      {col.cell
+                        ? col.cell(row)
+                        : formatCellValue(row[col.accessor as keyof T] as unknown as number | string)}
                     </Table.Td>
                   ))}
                 </Table.Tr>

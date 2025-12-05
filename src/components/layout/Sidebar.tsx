@@ -23,7 +23,6 @@ export default function Sidebar() {
     ),
   }));
 
-  console.log(groupedMenu)
   return (
     <Stack gap="sm" className={styles.sideBarContainer}>
       {/* User Section */}
