@@ -41,3 +41,10 @@ export const TABLE_CONFIG = {
 export const SEARCH_CONFIG = {
   DELAY: 500
 }
+
+export const CATEGORY_MENU = {
+  OVERVIEW: "Overview",
+  INVENTORY: "Inventory",
+  PURCHASE: "Purchase",
+  ADMIN: "Admin"
+}

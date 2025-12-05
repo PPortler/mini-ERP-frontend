@@ -165,8 +165,9 @@ function CatagoriesPage() {
                         fields={[
                             {
                                 key: "search",
-                                label: "Name",
+                                label: "Search",
                                 type: "text",
+                                placeholder: "Category name or description",
                                 value: search,
                                 onChange: setSearch,
                             },

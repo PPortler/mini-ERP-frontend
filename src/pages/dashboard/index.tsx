@@ -35,7 +35,6 @@ export default function Dashboard() {
     title: { text: "Stock Movement by Day", align: "center" },
   };
 
-
   const purchaseTrendOptions: ApexOptions = {
     chart: {
       id: "purchase-trend",
@@ -45,7 +44,7 @@ export default function Dashboard() {
     markers: { size: 4 },
     xaxis: {
       categories: purchaseTrend?.categories,
-      title: { text: "Date" }
+      title: { text: `${month}` }
     },
     yaxis: {
       title: { text: "Total Orders" }

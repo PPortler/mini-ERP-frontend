@@ -177,7 +177,8 @@ function ProductPage() {
             fields={[
               {
                 key: "search",
-                label: "Code or Name",
+                label: "Search",
+                placeholder: "Code or product name",
                 type: "text",
                 value: search,
                 onChange: setSearch,
@@ -192,7 +193,7 @@ function ProductPage() {
               },
             ]}
           />
-          {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
+          {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
             <AppButton
               loading={loading}
               onClick={() => {
