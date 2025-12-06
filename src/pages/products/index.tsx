@@ -178,7 +178,7 @@ function ProductPage() {
               {
                 key: "search",
                 label: "Search",
-                placeholder: "Code or product name",
+                placeholder: "code or product name",
                 type: "text",
                 value: search,
                 onChange: setSearch,

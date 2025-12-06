@@ -11,7 +11,7 @@ export const menuItems: MenuItem[] = [
     //Overview
     { label: "Dashboard", path: "/dashboard", roles: [ROLES.ADMIN], category: CATEGORY_MENU.OVERVIEW },
     //Inventory
-    { label: "Product", path: "/products", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER], category: CATEGORY_MENU.INVENTORY },
+    { label: "Products", path: "/products", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER], category: CATEGORY_MENU.INVENTORY },
     { label: "Catagories", path: "/catagories", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER], category: CATEGORY_MENU.INVENTORY },
     { label: "Stock Transaction", path: "/stock-transaction", roles: [ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER], category: CATEGORY_MENU.INVENTORY },
     //Purchase

@@ -167,7 +167,7 @@ function CatagoriesPage() {
                                 key: "search",
                                 label: "Search",
                                 type: "text",
-                                placeholder: "Category name or description",
+                                placeholder: "category name or description",
                                 value: search,
                                 onChange: setSearch,
                             },

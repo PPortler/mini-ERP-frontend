@@ -140,7 +140,7 @@ function SupplierPage() {
   ];
 
   const columnsWithAction =
-    roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
+    roleCurrent !== ROLES.ADMIN
       ? [...columnSupplier]
       : [...columnSupplier, actionColumn];
 
@@ -153,7 +153,7 @@ function SupplierPage() {
             display: "flex",
             gap: "10px"
           }}>
-            {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
+            {roleCurrent === ROLES.ADMIN && (
               <AppButton
                 loading={loading}
                 onClick={() => {

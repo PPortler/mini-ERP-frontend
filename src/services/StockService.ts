@@ -1,5 +1,5 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { getMockStockSummary, mockStockTransactions } from "../mocks/mockStockTransaction";
+import { getMockStockSummary } from "../mocks/mockStockTransaction";
 import type { StockTransactionType } from "../types/stockTransection";
 import type { StockTransactionResponse } from "../types/apiResponse";
 
@@ -77,19 +77,19 @@ export const StockService = {
   },
 
   // ลบ transaction (option)
-  async delete(stock_transaction_id: string): Promise<StockServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const idx = mockStockTransactions.findIndex(t => t.stock_transaction_id === stock_transaction_id);
-      if (idx === -1) return { ok: false, message: "Stock transaction not found (mock)" };
-      const deleted = mockStockTransactions.splice(idx, 1);
-      return { ok: true, data: deleted };
-    }
+  // async delete(stock_transaction_id: string): Promise<StockServiceResult> {
+  //   if (import.meta.env.VITE_USE_MOCK === "true") {
+  //     const idx = mockStockTransactions.findIndex(t => t.stock_transaction_id === stock_transaction_id);
+  //     if (idx === -1) return { ok: false, message: "Stock transaction not found (mock)" };
+  //     const deleted = mockStockTransactions.splice(idx, 1);
+  //     return { ok: true, data: deleted };
+  //   }
 
-    return AxiosUtil.createRequest<StockListResponse>({
-      method: "DELETE",
-      url: `/stock-transactions/${stock_transaction_id}`,
-    });
-  },
+  //   return AxiosUtil.createRequest<StockListResponse>({
+  //     method: "DELETE",
+  //     url: `/stock-transactions/${stock_transaction_id}`,
+  //   });
+  // },
 
   // for get summary
   async getStockSummary(product_id: string): Promise<StockSummaryServiceResult> {

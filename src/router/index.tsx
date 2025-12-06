@@ -13,6 +13,7 @@ import PoProductPage from '../pages/po/product';
 import StockTransactionsPage from '../pages/stock-transaction';
 import ReportPage from '../pages/reports';
 import UserManagementPage from '../pages/users';
+import { getRolesByPath } from '../utils/getRoleByPath';
 // import StockPage from '../pages/products/stock';
 
 export const router = createBrowserRouter([
@@ -27,7 +28,7 @@ export const router = createBrowserRouter([
     {
         path: "/dashboard",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/dashboard")}>
                 <GlobalLayout>
                     <Dashboard />
                 </GlobalLayout>
@@ -37,7 +38,7 @@ export const router = createBrowserRouter([
     {
         path: "/products",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/products")}>
                 <GlobalLayout>
                     <ProductPage />
                 </GlobalLayout>
@@ -47,7 +48,7 @@ export const router = createBrowserRouter([
     {
         path: "/catagories",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/catagories")}>
                 <GlobalLayout>
                     <CatagoriesPage />
                 </GlobalLayout>
@@ -57,7 +58,7 @@ export const router = createBrowserRouter([
     {
         path: "/audit-log",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/audit-log")}>
                 <GlobalLayout>
                     <AuditLogPage />
                 </GlobalLayout>
@@ -67,7 +68,7 @@ export const router = createBrowserRouter([
     {
         path: "/stock-transaction",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/stock-transaction")}>
                 <GlobalLayout>
                     <StockTransactionsPage />
                 </GlobalLayout>
@@ -77,7 +78,7 @@ export const router = createBrowserRouter([
     {
         path: "/suppliers",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/suppliers")}>
                 <GlobalLayout>
                     <SupplierPage />
                 </GlobalLayout>
@@ -87,7 +88,7 @@ export const router = createBrowserRouter([
     {
         path: "/po",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/po")}>
                 <GlobalLayout>
                     <PoPage />
                 </GlobalLayout>
@@ -105,19 +106,9 @@ export const router = createBrowserRouter([
         ),
     },
     {
-        path: "/stock/transactions",
-        element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF, ROLES.VIEWER]}>
-                <GlobalLayout>
-                    <StockTransactionsPage />
-                </GlobalLayout>
-            </ProtectedRoute>
-        ),
-    },
-    {
         path: "reports",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/reports")}>
                 <GlobalLayout>
                     <ReportPage />
                 </GlobalLayout>

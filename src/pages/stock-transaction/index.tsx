@@ -108,6 +108,7 @@ export default function StockTransactionsPage() {
         { header: "Reference", accessor: "reference" },
         { header: "Create By", accessor: "created_by" },
     ]
+    
     return (
         <Box>
             <Card shadow="sm" padding="lg">

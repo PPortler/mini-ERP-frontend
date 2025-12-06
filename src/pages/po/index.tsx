@@ -155,7 +155,7 @@ export default function PoPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="md">
                     <Title order={3}>Purchase Orders</Title>
-                    {roleCurrent && roleCurrent !== ROLES.ADMIN || roleCurrent && roleCurrent !== ROLES.STAFF && (
+                    {roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF && (
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
                     )}
                 </Group>

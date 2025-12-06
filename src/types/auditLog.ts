@@ -9,6 +9,6 @@ export type AuditLogType = {
         role: string
     },
     description?: string,
-    created_at?: Date,
-    detail?: Record<string, unknown>;
+    created_at?: string,
+    detail?: Record<string, unknown> | string;
 }

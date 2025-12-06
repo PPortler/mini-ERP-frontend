@@ -17,6 +17,7 @@ export const useLoadInitialData = () => {
       } else {
         setError(res.message || "Failed to load audit logs");
       }
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || "Failed to load audit logs");

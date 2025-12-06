@@ -13,7 +13,7 @@ export const mockAuditLogs: AuditLogType[] = [
       role: ROLES.ADMIN,
     },
     description: "User logged in successfully.",
-    created_at: new Date("2025-01-15T08:45:12.000Z"),
+    created_at: "2025-01-15T08:45:12.000Z",
     detail: {
       ipAddress: "192.168.1.10",
       userAgent: "Chrome on macOS",
@@ -30,7 +30,7 @@ export const mockAuditLogs: AuditLogType[] = [
       role: ROLES.VIEWER,
     },
     description: "Updated product 'Som Tam Thai' price 65 → 70",
-    created_at: new Date("2025-02-03T14:22:55.000Z"),
+    created_at: "2025-02-03T14:22:55.000Z",
     detail: {
       productId: "prod_101",
       oldPrice: 65,
@@ -50,7 +50,7 @@ export const mockAuditLogs: AuditLogType[] = [
       role: ROLES.STAFF,
     },
     description: "Deleted category ID: cat_103",
-    created_at: new Date("2025-02-03T14:25:40.000Z"),
+    created_at: "2025-02-03T14:25:40.000Z",
     detail: {
       categoryId: "cat_103",
       ipAddress: "192.168.1.11",
@@ -68,7 +68,7 @@ export const mockAuditLogs: AuditLogType[] = [
       role: ROLES.VIEWER,
     },
     description: "Added new product 'Khao Niao 10 THB'",
-    created_at: new Date("2025-02-20T10:18:09.000Z"),
+    created_at: "2025-02-20T10:18:09.000Z",
     detail: {
       productId: "prod_105",
       price: 10,
@@ -87,7 +87,7 @@ export const mockAuditLogs: AuditLogType[] = [
       role: ROLES.ADMIN,
     },
     description: "User logged out.",
-    created_at: new Date("2025-02-21T19:55:03.000Z"),
+    created_at: "2025-02-21T19:55:03.000Z",
     detail: {
       ipAddress: "192.168.1.10",
       userAgent: "Chrome on macOS",
