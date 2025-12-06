@@ -125,7 +125,7 @@ function CatagoriesPage() {
                 });
             }
         } finally {
-           loadingActions.hide();
+            loadingActions.hide();
         }
 
     };
@@ -135,7 +135,6 @@ function CatagoriesPage() {
         header: 'Action',
         accessor: 'action',
         cell: (row: CatagoriesType) => {
-            if (roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF) return null;
             return (
                 <Group gap="xs">
                     <ActionIcon color="blue" onClick={() => handleEdit(row)}>
@@ -150,7 +149,7 @@ function CatagoriesPage() {
     };
 
     const columnsWithAction =
-        roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF
+        (roleCurrent === ROLES.ADMIN)
             ? [...columnCategory, actionColumn]
             : [...columnCategory];
 
@@ -173,7 +172,7 @@ function CatagoriesPage() {
                             },
                         ]}
                     />
-                    {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
+                    {(roleCurrent === ROLES.ADMIN) && (
                         <AppButton
                             loading={loading}
                             onClick={() => {

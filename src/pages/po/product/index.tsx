@@ -15,6 +15,7 @@ import { useLocation } from "react-router-dom";
 import { poOrderItemsSchema } from "../../../schemas/poOrderItemSchema";
 import AppButton from "../../../components/Form/AppButton";
 import { STATUS_PO } from "../../../constants/enum/enum";
+import { loadingActions } from "../../../stores/loadingStore";
 
 export default function PoProductPage() {
     const location = useLocation();
@@ -24,7 +25,7 @@ export default function PoProductPage() {
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
-    const [selectedProduct, setSelectedProduct] = useState<{ label: string; value: string } | null>(null);
+    // const [selectedProduct, setSelectedProduct] = useState<{ label: string; value: string } | null>(null);
 
     const handleAddItem = () => {
         setSelectedItem(null);
@@ -33,10 +34,10 @@ export default function PoProductPage() {
 
     const handleEditItem = (item: PurchaseOrderItemType) => {
         setSelectedItem(item);
-        setSelectedProduct({
-            label: item.products?.name || "",
-            value: item.product_id
-        })
+        // setSelectedProduct({
+        //     label: item.products?.name || "",
+        //     value: item.product_id
+        // })
         setModalOpen(true);
     };
 
@@ -53,27 +54,37 @@ export default function PoProductPage() {
     };
 
     const saveItem = async (values: PurchaseOrderItemType) => {
+        loadingActions.show();
         try {
             if (!selectedItem) {
-                console.log(values)
-                await PurchaseOrderService.addItem(purchase_order_id!, values);
+                const res = await PurchaseOrderService.addItem(purchase_order_id!, values);
+                if (!res.ok) {
+                    notify({ type: "error", message: res.message });
+                    return;
+                }
                 notify({ type: "success", message: "Created Item Successfully" });
             } else {
-                await PurchaseOrderService.updateItem(
+                const res = await PurchaseOrderService.updateItem(
                     purchase_order_id!,
                     selectedItem.purchase_order_item_id,
                     values
                 );
+                if (!res.ok) {
+                    notify({ type: "error", message: res.message });
+                    return;
+                }
                 notify({ type: "success", message: "Edit Item Successfully" });
             }
             refetch();
             setModalOpen(false);
             setSelectedItem(null);
-            setSelectedProduct(null)
+            // setSelectedProduct(null)
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
-            } 
+            }
+        }finally{
+            loadingActions.hide();
         }
     };
 
@@ -116,9 +127,9 @@ export default function PoProductPage() {
         poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT
             ? [...columns, actionColumn]
             : [...columns];
-    const selectedProdDetail = selectedProduct
-        ? products.find(p => p.product_id === selectedProduct.value)
-        : null;
+    // const selectedProdDetail = selectedProduct
+    //     ? products.find(p => p.product_id === selectedProduct.value)
+    //     : null;
 
     return (
         <Box>
@@ -150,7 +161,7 @@ export default function PoProductPage() {
                     opened={modalOpen}
                     onClose={() => {
                         setModalOpen(false)
-                        setSelectedProduct(null)
+                        // setSelectedProduct(null)
                     }}
                     title={!selectedItem ? "Add PO Item" : "Edit PO Item"}
                     initialValues={selectedItem ||
@@ -168,10 +179,10 @@ export default function PoProductPage() {
                             type: "select",
                             required: true,
                             options: productOptions,
-                            onChange: (val) => {
-                                const prod = productOptions.find(p => p.value === val as string);
-                                setSelectedProduct(prod ?? null);
-                            }
+                            // onChange: (val) => {
+                            //     const prod = productOptions.find(p => p.value === val as string);
+                            //     setSelectedProduct(prod ?? null);
+                            // }
                         },
                         { name: "quantity", label: "Quantity", type: "number", required: true, },
                         {
@@ -179,9 +190,9 @@ export default function PoProductPage() {
                             label: "Price",
                             type: "number",
                             required: true,
-                            helperText: selectedProdDetail
-                                ? `Cost Price: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
-                                : ''
+                            // helperText: selectedProdDetail
+                            //     ? `Cost Price: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
+                            //     : ''
                         },
                     ]}
                     onSubmit={saveItem}

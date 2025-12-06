@@ -17,6 +17,10 @@ export type PurchaseOrderItemService =
   | { ok: true; data: PurchaseOrderItemType[] }
   | { ok: false; message: string };
 
+export type PurchaseOrderItemServiceSingle =
+  | { ok: true; data?: PurchaseOrderItemType }
+  | { ok: false; message: string };
+
 export const PurchaseOrderService = {
   async getAll(): Promise<PurchaseOrderServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
@@ -225,26 +229,30 @@ export const PurchaseOrderService = {
     }
   },
 
+  // add items to po
   async addItem(
     purchase_order_id: string,
     item: Omit<PurchaseOrderItemType, "purchase_order_item_id">
-  ): Promise<PurchaseOrderItemType> {
+  ): Promise<PurchaseOrderItemServiceSingle> {
+
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const newItem: PurchaseOrderItemType = {
         ...item,
         purchase_order_item_id: crypto.randomUUID(),
       };
       mockPurchaseOrderItems.push(newItem);
-      return newItem;
+
+      return { ok: true, data: newItem };
     }
 
     try {
       const payload = {
         product_id: item.product_id,
-        purchase_order_id: purchase_order_id,
+        purchase_order_id,
         quantity: item.quantity,
         price: item.price
-      }
+      };
+
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
         method: "POST",
         url: `/purchase-order-items`,
@@ -252,55 +260,67 @@ export const PurchaseOrderService = {
       });
 
       if (!res.ok) {
-        throw new Error(res.message || "Failed to add PO item");
+        return { ok: false, message: res.message ?? "Failed to add PO item" };
       }
 
-      return res.data;
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw err;
-      }
-      throw new Error("เกิดข้อผิดพลาด");
+      return { ok: true, data: res.data };
+
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      return { ok: false, message: msg };
     }
   },
 
-  // แก้ไข item ของ PO
+  // edit item ของ PO
   async updateItem(
     purchase_order_id: string,
     purchase_order_item_id: string,
     item: Partial<PurchaseOrderItemType>
-  ): Promise<PurchaseOrderItemType | null> {
+  ): Promise<PurchaseOrderItemServiceSingle> {
+
+    // MOCK mode
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrderItems.findIndex(
         (i) =>
           i.purchase_order_item_id === purchase_order_item_id &&
           i.purchase_order_id === purchase_order_id
       );
-      if (idx === -1) return null;
-      mockPurchaseOrderItems[idx] = { ...mockPurchaseOrderItems[idx], ...item };
-      return mockPurchaseOrderItems[idx];
+
+      if (idx === -1) {
+        return { ok: false, message: "Item not found" };
+      }
+
+      mockPurchaseOrderItems[idx] = {
+        ...mockPurchaseOrderItems[idx],
+        ...item,
+      };
+
+      return { ok: true, data: mockPurchaseOrderItems[idx] };
     }
 
+    // REAL API
     try {
       const payload = {
         product_id: item.product_id,
         price: item.price,
         quantity: item.quantity,
-      }
+      };
+
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
         method: "PUT",
-        url: `/purchase-order-items/${item.product_id}`,
+        url: `/purchase-order-items/${purchase_order_item_id}`,
         data: payload,
       });
 
       if (!res.ok) {
-        throw new Error(res.message || "Failed to update PO item");
+        return { ok: false, message: res.message ?? "Failed to update PO item" };
       }
 
-      return res.data;
-    } catch (err: unknown) {
-      if (err instanceof Error) throw err;
-      throw new Error("เกิดข้อผิดพลาด");
+      return { ok: true, data: res.data };
+
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      return { ok: false, message: msg };
     }
   },
 
@@ -308,18 +328,25 @@ export const PurchaseOrderService = {
   async deleteItem(
     purchase_order_id: string,
     purchase_order_item_id: string
-  ): Promise<boolean> {
+  ): Promise<PurchaseOrderItemServiceSingle> {
+
+    // MOCK mode
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const idx = mockPurchaseOrderItems.findIndex(
         (i) =>
           i.purchase_order_item_id === purchase_order_item_id &&
           i.purchase_order_id === purchase_order_id
       );
-      if (idx === -1) return false;
+
+      if (idx === -1) {
+        return { ok: false, message: "Item not found" };
+      }
+
       mockPurchaseOrderItems.splice(idx, 1);
-      return true;
+      return { ok: true };
     }
 
+    // REAL API
     try {
       const res = await AxiosUtil.createRequest<{ success: boolean }>({
         method: "DELETE",
@@ -327,13 +354,14 @@ export const PurchaseOrderService = {
       });
 
       if (!res.ok) {
-        throw new Error(res.message || "Failed to delete PO item");
+        return { ok: false, message: res.message ?? "Failed to delete PO item" };
       }
 
-      return true;
-    } catch (err: unknown) {
-      console.error(err);
-      return false; // หรือ throw err ขึ้นไปแล้วให้ caller handle
+      return { ok: true };
+
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      return { ok: false, message: msg };
     }
   }
 };

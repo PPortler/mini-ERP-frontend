@@ -10,7 +10,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import DeleteIcon from "@mui/icons-material/Delete";
+// import DeleteIcon from "@mui/icons-material/Delete";
 import { POConfirmMessage } from "../components/PoConfirmMassage";
 import { notify } from "../../../utils/Notify";
 
@@ -27,23 +27,26 @@ export default function usePOActionColumn(
   const [nextStatus, setNextStatus] = useState<string>("");
 
   const openStatusConfirm = (po: PurchaseOrderType, status: string) => {
-    if (!po.products || po.products.length === 0) {
-      notify({
-        title: 'Cannot change status',
-        message: 'Please add products to the PO before changing its status.',
-        type: 'error',
-      });
-      return;
+    if (status !== STATUS_PO.CANCELLED) {
+      if (!po.products || po.products.length === 0) {
+        notify({
+          title: 'Cannot change status',
+          message: 'Please add products to the PO before changing its status.',
+          type: 'error',
+        });
+        return;
+      }
     }
+
     setCurrentPO(po);
     setNextStatus(status);
     setConfirmStatusOpen(true);
   };
 
-  const openDeleteConfirm = (po: PurchaseOrderType) => {
-    setCurrentPO(po);
-    setConfirmDeleteOpen(true);
-  };
+  // const openDeleteConfirm = (po: PurchaseOrderType) => {
+  //   setCurrentPO(po);
+  //   setConfirmDeleteOpen(true);
+  // };
 
   const actionColumn = {
     header: "Action",
@@ -84,17 +87,26 @@ export default function usePOActionColumn(
             <InventoryIcon fontSize="small" />
           </ActionIcon>
         );
-
         buttons.push(
           <ActionIcon
-            key={`delete-${row.purchase_order_id}`}
+            key={`cancel-${row.purchase_order_id}`}
             color="red"
-            onClick={() => openDeleteConfirm(row)}
-            title="Delete PO"
+            onClick={() => openStatusConfirm(row, STATUS_PO.CANCELLED)}
+            title="Cancel"
           >
-            <DeleteIcon fontSize="small" />
+            <CancelIcon fontSize="small" />
           </ActionIcon>
         );
+        // buttons.push(
+        //   <ActionIcon
+        //     key={`delete-${row.purchase_order_id}`}
+        //     color="red"
+        //     onClick={() => openStatusConfirm(row, STATUS_PO.CANCELLED)}
+        //     title="Delete PO"
+        //   >
+        //     <DeleteIcon fontSize="small" />
+        //   </ActionIcon>
+        // );
       }
 
       else if (row.status === STATUS_PO.CONFIRMED) {

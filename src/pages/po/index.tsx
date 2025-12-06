@@ -84,6 +84,7 @@ export default function PoPage() {
     };
 
     const handleChangeStatus = async (po: PurchaseOrderType, newStatus: string) => {
+        loadingActions.show();
         try {
             const result = await PurchaseOrderService.updateStatus(po.purchase_order_id, newStatus, user?.user_id || "");
             if (result.ok) {
@@ -97,6 +98,8 @@ export default function PoPage() {
                 type: "error",
                 message: err instanceof Error ? err.message : "Error to change status",
             });
+        }finally{
+            loadingActions.hide();
         }
     };
 
@@ -155,7 +158,7 @@ export default function PoPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="md">
                     <Title order={3}>Purchase Orders</Title>
-                    {roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF && (
+                    {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
                     )}
                 </Group>
