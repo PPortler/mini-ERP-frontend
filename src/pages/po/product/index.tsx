@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Group, Title, ActionIcon } from "@mantine/core";
+import { Box, Card, Group, Title, ActionIcon, Text } from "@mantine/core";
 import DataTable from "../../../components/Table/DataTable";
 import FormModel from "../../../components/Models/FormModel";
 import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
@@ -27,9 +27,8 @@ export default function PoProductPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
-    // const [selectedProduct, setSelectedProduct] = useState<{ label: string; value: string } | null>(null);
 
-    // เปิด modal confirm delete
+    // modal confirm delete
     const handleDelete = (item: PurchaseOrderItemType) => {
         setSelectedItem(item);
         setModalConfirmOpen(true);
@@ -42,10 +41,6 @@ export default function PoProductPage() {
 
     const handleEditItem = (item: PurchaseOrderItemType) => {
         setSelectedItem(item);
-        // setSelectedProduct({
-        //     label: item.products?.name || "",
-        //     value: item.product_id
-        // })
         setModalOpen(true);
     };
 
@@ -113,8 +108,7 @@ export default function PoProductPage() {
             header: "Product",
             accessor: "product_id",
             cell: (row: PurchaseOrderItemType) => {
-                const product = products.find(p => p.product_id === row.product_id);
-                return product?.name || "-";
+                return row.product?.name || "-";
             },
         },
         { header: "Quantity", accessor: "quantity" },
@@ -124,6 +118,18 @@ export default function PoProductPage() {
             accessor: "total",
             cell: (row: PurchaseOrderItemType) => row.quantity * (row?.price || 0),
         },
+        {
+            header: "Mark",
+            accessor: "mark",
+            cell: (row: PurchaseOrderItemType) => {
+                const isLowCost = (row.price || 0) < (row.product?.cost_price || 0)
+                return (
+                    <Text size="sm" color={isLowCost ? "red" : ""}>
+                        {isLowCost ? "Price lower than cost" : "-"}
+                    </Text>
+                )
+            }
+        }
     ];
 
     const actionColumn = {
@@ -145,9 +151,6 @@ export default function PoProductPage() {
         poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT
             ? [...columns, actionColumn]
             : [...columns];
-    // const selectedProdDetail = selectedProduct
-    //     ? products.find(p => p.product_id === selectedProduct.value)
-    //     : null;
 
     return (
         <Box>

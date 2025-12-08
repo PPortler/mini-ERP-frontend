@@ -162,7 +162,6 @@ function ProductPage() {
         <ActionIcon color="green" onClick={() => handleNavigateToStock(row.product_id)}>
           <VisibilityIcon fontSize="small" />
         </ActionIcon>
-
         {/* ปุ่ม edit/delete เฉพาะ admin หรือ staff */}
         {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
           <>

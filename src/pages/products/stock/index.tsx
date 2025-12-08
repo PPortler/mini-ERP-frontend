@@ -1,4 +1,4 @@
-import { Badge, Box, Card, Divider, Grid, Group, Stack, Text, Title } from '@mantine/core'
+import { Badge, Box, Card, Divider, Grid, Group, Stack, Text } from '@mantine/core'
 import { useLoadInitialData } from './hooks/useLoadInitialData'
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -11,6 +11,7 @@ import { SummaryCard } from '../../../components/UI/SummaryCard';
 import ChartWrapper from '../../../components/Polish/ChartWrapper';
 import type { ApexOptions } from "apexcharts";
 import { useStockMovement } from './hooks/useStockMovement';
+import { InfoCard } from './components/InfoCard';
 
 function StockProductPage() {
 
@@ -91,31 +92,41 @@ function StockProductPage() {
                     </Group>
                     <Divider />
                     <Box>
-                        <Group justify="space-between" mb="sm">
-                            <Title order={3}>Product Detail</Title>
-                        </Group>
-
-                        {loading ? (
-                            <>
-                                <Skeleton height={18} width="50%" mb={6} />
-                                <Skeleton height={18} width="50%" mb={6} />
-                                <Skeleton height={18} width="60%" mb={6} />
-                                <Skeleton height={18} width="50%" mb={6} />
-                                <Skeleton height={18} width="60%" mb={6} />
-                                <Skeleton height={18} width="70%" mb={6} />
-                                <Skeleton height={18} width="80%" />
-                            </>
-                        ) : (
-                            <>
-                                <Text>Product Name: <b>{product?.name}</b></Text>
-                                <Text>Product Code: <b>{product?.product_code}</b></Text>
-                                <Text>Category: <b>{product?.category?.name}</b></Text>
-                                <Text>Unit: <b>{product?.unit}</b></Text>
-                                <Text>Updated Latest: <b>{parseDateUpdate.dateString}, {parseDateUpdate.timeString}</b></Text>
-                                <Text>Created At: <b>{parseDateCreate.dateString}, {parseDateCreate.timeString}</b></Text>
-                                <Text>Minimum Stock: <b>{product?.min_stock}</b></Text>
-                            </>
-                        )}
+                        <InfoCard
+                            loading={loading}
+                            title="Product Info"
+                            titleColor="#1D4E89"
+                            bgColor="#E8F1FA"
+                            items={[
+                                { label: 'Name', value: product?.name },
+                                { label: 'Code', value: product?.product_code },
+                                { label: 'Category', value: product?.category?.name },
+                                { label: 'Unit', value: product?.unit },
+                            ]}
+                        />
+                        <InfoCard
+                            loading={loading}
+                            title="Stock Info"
+                            titleColor="#D9822B"
+                            bgColor="#FFF4E6"
+                            items={[
+                                { label: 'Minimum Stock', value: product?.min_stock },
+                                { label: 'Current Stock', value: stock?.current_stock },
+                                { label: 'In Stock', value: stock?.total_in },
+                                { label: 'Out Stock', value: stock?.total_out },
+                                { label: 'Adjust Stock', value: stock?.total_adjust },
+                            ]}
+                        />
+                        <InfoCard
+                            loading={loading}
+                            title="Dates"
+                            titleColor="#2E7D32"
+                            bgColor="#E8F5E9"
+                            items={[
+                                { label: 'Updated Latest', value: `${parseDateUpdate.dateString}, ${parseDateUpdate.timeString}` },
+                                { label: 'Created At', value: `${parseDateCreate.dateString}, ${parseDateCreate.timeString}` },
+                            ]}
+                        />
                     </Box>
                     <Divider />
 
@@ -152,7 +163,7 @@ function StockProductPage() {
                             <ChartWrapper
                                 options={stockMovementOptions(movement.categories)}
                                 series={movement.series}
-                                type="bar"
+                                type="line"
                                 height={300}
                                 loading={loading}
                                 cardTitle="Stock Movement"
