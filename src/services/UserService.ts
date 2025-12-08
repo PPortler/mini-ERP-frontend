@@ -35,6 +35,49 @@ export const UserService = {
         }
     },
 
+    async getByPagination(
+        page = 1,
+        pageSize = 10,
+        search = "",
+    ): Promise<{ ok: true; data: UserResponse } | { ok: false; message: string }> {
+
+        // if (import.meta.env.VITE_USE_MOCK === "true") {
+        //     const data = get(page, pageSize, search);
+        //     await delay();
+        //     return { ok: true, data };
+        // }
+
+        const params = {
+            page: page,
+            pageSize: pageSize,
+            search: search,
+        }
+        
+        try {
+            const res = await AxiosUtil.createRequest<UserResponse>({
+                method: "GET",
+                url: "/user",
+                params,
+            });
+            if (!res.ok) return { ok: false, message: res.message };
+
+            const mappedData: UserResponse = {
+                ...res.data,
+                data: res.data.users ?? [],
+            };
+
+            return {
+                ok: true, data: mappedData,
+            };
+        } catch (err: unknown) {
+            let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+            if (err instanceof Error) {
+                message = err.message;
+            }
+            return { ok: false, message };
+        }
+    },
+
     // เพิ่ม User
     async create(
         users: UserInfoType
@@ -101,7 +144,7 @@ export const UserService = {
             if (users.password) {
                 payload.password = users.password;
             }
-            
+
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "PUT",
                 url: `/user/${user_id}`,

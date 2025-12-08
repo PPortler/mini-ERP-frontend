@@ -15,9 +15,19 @@ import { ROLES } from "../../constants/enum/enum";
 import { userCreateSchema, userEditSchema } from "../../schemas/userSchema";
 import { parseDate } from "../../utils/getDateUtils";
 import { loadingActions } from "../../stores/loadingStore";
+import FilterInputs from "../../components/Filters/FilterSearch";
 
 function UserManagementPage() {
-    const { data, refetch, loading } = useLoadInitialData();
+    const { data,
+        refetch,
+        loading,
+        setPage,
+        setPageSize,
+        setSearch,
+        page,
+        pageSize,
+        search,
+    } = useLoadInitialData();
 
     // State สำหรับ modal
     const [modalOpen, setModalOpen] = useState(false);
@@ -156,6 +166,20 @@ function UserManagementPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="sm">
                     <Title order={3}>Users Management</Title>
+                </Group>
+                <Group justify="space-between">
+                    <FilterInputs
+                        fields={[
+                            {
+                                key: "search",
+                                label: "Search",
+                                type: "text",
+                                placeholder: "username",
+                                value: search,
+                                onChange: setSearch,
+                            },
+                        ]}
+                    />
                     <Box style={{
                         display: "flex",
                         gap: "10px"
@@ -172,7 +196,15 @@ function UserManagementPage() {
                         </AppButton>
                     </Box>
                 </Group>
-                <DataTable loading={loading} columns={columnsWithAction} data={data} pageSize={10} />
+                <DataTable
+                    loading={loading}
+                    columns={columnsWithAction}
+                    data={data}
+                    pageSize={pageSize}
+                    page={page}
+                    onPageChange={setPage}
+                    onPageSizeChange={setPageSize}
+                />
             </Card>
 
             {modalType === 'confirm' && (
@@ -206,7 +238,7 @@ function UserManagementPage() {
                         }
                     }
                     fields={[
-                        { name: 'username', label: 'Username', type: 'text', required: true, disabled: !!selectedItem },
+                        { name: 'username', label: 'Username', type: 'text', required: true },
                         { name: 'password', label: 'Password', type: 'password', required: !selectedItem },
                         // { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
                         { name: 'first_name', label: 'First Name', type: 'text', required: true },
@@ -215,7 +247,7 @@ function UserManagementPage() {
                             name: 'role',
                             label: 'Role',
                             type: 'select',
-                            disabled: !!selectedItem,
+                            // disabled: !!selectedItem,
                             options: roleOptions,
                             required: true
                         },
