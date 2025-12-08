@@ -4,19 +4,33 @@ import { ProductService } from "../../../services/ProductService";
 import { SupplierService } from "../../../services/SupplierService";
 import type { PurchaseOrderType } from "../../../types/purchaes";
 import type { SupplierType } from "../../../types/suppliers";
+import { useSearchParams } from "react-router-dom";
+import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSearchParams";
 
 export const useLoadInitialData = () => {
+    const [searchParams] = useSearchParams();
+
+    const statusParam = searchParams.get("status");
+    const initialStatus = statusParam && !isNaN(Number(statusParam))
+        ? statusParam
+        : "";
+        
+    const [status, setStatus] = useState<string>(initialStatus);
     const [loading, setLoading] = useState<boolean>(false)
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrderType[]>([]);
     const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
     const [error, setError] = useState<string | null>(null);
+
+    useSyncStateWithSearchParams({
+        status,
+    });
 
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
 
             const [poRes, supplierRes, productRes] = await Promise.all([
-                PurchaseOrderService.getAll(),
+                PurchaseOrderService.getByParams(status),
                 SupplierService.getAll(),
                 ProductService.getAll(),
             ]);
@@ -37,7 +51,7 @@ export const useLoadInitialData = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [status]);
 
     useEffect(() => {
         fetchData();
@@ -48,6 +62,8 @@ export const useLoadInitialData = () => {
         suppliers,
         error,
         refetch: fetchData,
-        loading
+        loading,
+        status,
+        setStatus
     };
 };

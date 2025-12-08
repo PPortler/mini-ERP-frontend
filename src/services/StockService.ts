@@ -1,7 +1,8 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
-import { getMockStockSummary } from "../mocks/mockStockTransaction";
+// import { getMockStockSummary } from "../mocks/mockStockTransaction";
 import type { StockTransactionType } from "../types/stockTransection";
 import type { StockTransactionResponse } from "../types/apiResponse";
+import type { ProductStockType } from "../types/product";
 
 export interface StockInPayload {
   product_id: string;
@@ -11,16 +12,8 @@ export interface StockInPayload {
   created_by: string;
 }
 
-export type StockSummaryType = {
-  product_id: string;
-  current_stock?: number;
-  total_in?: number,
-  total_out?: number,
-  total_adjust?: number,
-};
-
 export type StockSummaryServiceResult =
-  | { ok: true; data: StockSummaryType, message?: string }
+  | { ok: true; data: ProductStockType, message?: string }
   | { ok: false; message: string };
 
 
@@ -92,17 +85,17 @@ export const StockService = {
   // },
 
   // for get summary
-  async getStockSummary(product_id: string): Promise<StockSummaryServiceResult> {
-    if (import.meta.env.VITE_USE_MOCK === "true") {
-      const stockSummary = getMockStockSummary(product_id);
-      return { ok: true, data: stockSummary };
-    }
+  async getStockSummaryByProduct(product_id: string): Promise<StockSummaryServiceResult> {
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   const stockSummary = getMockStockSummary(product_id);
+    //   return { ok: true, data: stockSummary };
+    // }
 
     const params = {
       product_id: product_id
     }
     try {
-      const res = await AxiosUtil.createRequest<StockSummaryType>({
+      const res = await AxiosUtil.createRequest<ProductStockType>({
         method: "GET",
         url: `/products/${product_id}/stock-summary`,
         params,

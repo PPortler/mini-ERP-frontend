@@ -20,7 +20,7 @@ export const useLoadInitialData = (purchase_order_id: string) => {
       const poRes = await PurchaseOrderService.getItemsByPOId(purchase_order_id);
 
       if(!poRes.ok) throw new Error(poRes.message || "Failed to fetch PO items");
-      setPoItems(poRes.data || []);
+      setPoItems(poRes.data.purchase_order_items);
 
       // Fetch PO order info
       const poOrderRes = await PurchaseOrderService.getById(purchase_order_id);

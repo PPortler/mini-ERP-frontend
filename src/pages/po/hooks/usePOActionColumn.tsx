@@ -28,7 +28,7 @@ export default function usePOActionColumn(
 
   const openStatusConfirm = (po: PurchaseOrderType, status: string) => {
     if (status !== STATUS_PO.CANCELLED) {
-      if (!po.products || po.products.length === 0) {
+      if (!po.purchase_order_items || po.purchase_order_items.length === 0) {
         notify({
           title: 'Cannot change status',
           message: 'Please add products to the PO before changing its status.',
@@ -123,23 +123,23 @@ export default function usePOActionColumn(
 
         buttons.push(
           <ActionIcon
-            key={`cancel-${row.purchase_order_id}`}
-            color="red"
-            onClick={() => openStatusConfirm(row, STATUS_PO.CANCELLED)}
-            title="Cancel"
-          >
-            <CancelIcon fontSize="small" />
-          </ActionIcon>
-        );
-
-        buttons.push(
-          <ActionIcon
             key={`view-${row.purchase_order_id}`}
             color="teal"
             onClick={() => handleManageProducts(row)}
             title="View Products"
           >
             <InventoryIcon fontSize="small" />
+          </ActionIcon>
+        );
+
+        buttons.push(
+          <ActionIcon
+            key={`cancel-${row.purchase_order_id}`}
+            color="red"
+            onClick={() => openStatusConfirm(row, STATUS_PO.CANCELLED)}
+            title="Cancel"
+          >
+            <CancelIcon fontSize="small" />
           </ActionIcon>
         );
       }

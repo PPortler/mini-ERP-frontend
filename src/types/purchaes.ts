@@ -10,7 +10,7 @@ export type PurchaseOrderType = {
   created_by?: string;
   supplier_name?: string;
   suppliers?: SupplierType
-  products?: ProductType[]
+  purchase_order_items?: ProductType[]
   supplier?: SupplierType
 };
 
@@ -20,5 +20,6 @@ export type PurchaseOrderItemType = {
   product_id: string;
   quantity: number;
   products?: ProductType
-  price: number;
+  product?: ProductType
+  price?: number;
 }

@@ -13,7 +13,6 @@ interface PoConfirmProductType extends ProductType {
 }
 
 export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStatus }) => {
-
     return (
         <Stack gap="sm">
             {/* ข้อความยืนยัน */}
@@ -32,28 +31,28 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
             </Stack>
 
             {/* รายการสินค้า */}
-            {po.products && po.products.length > 0 && (
+            {po.purchase_order_items && po.purchase_order_items.length > 0 && (
                 <>
                     <Divider label="Products" labelPosition="center" />
-                    {(po.products as PoConfirmProductType[]).map((p) => (
+                    {(po.purchase_order_items as PoConfirmProductType[]).map((p) => (
                         <Group justify="space-between" key={p.product_id}>
                             <Box>
-                                {p.product_code}/{p.name}
+                                {p.product.product_code}/{p.product.name}
                             </Box>
                             <Box>
                                 {p.quantity} x {p.price?.toLocaleString()} Bath
                             </Box>
                             <Box>
-                                Total: {(p.quantity! * (p.price ?? 0)).toLocaleString()} Bath
+                                {(p.quantity! * (p.price ?? 0)).toLocaleString()} Bath
                             </Box>
                         </Group>
                     ))}
 
                     {/* บรรทัดสุดท้าย ราคารวมทั้งหมด */}
-                    <Group justify="space-between" mt="sm">
+                    {/* <Group justify="space-between" mt="sm">
                         <Box><b>Total Amount:</b></Box>
                         <Box>{po.total_amount} Bath</Box>
-                    </Group>
+                    </Group> */}
 
                 </>
             )}

@@ -17,6 +17,7 @@ import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
 import { productSchema } from '../../schemas/productSchema';
 import { loadingActions } from '../../stores/loadingStore';
+import { useNavigate } from 'react-router-dom';
 
 function ProductPage() {
   const {
@@ -39,6 +40,7 @@ function ProductPage() {
     sortOrder
   } = useLoadInitialData();
 
+  const navigate = useNavigate();
   const roleCurrent = getRoleCurrent();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -62,6 +64,11 @@ function ProductPage() {
     setSelectedProduct(product);
     setModalType('form');
     setModalOpen(true);
+  };
+
+  // เปิด modal edit
+  const handleNavigateToStock = (id: string) => {
+    navigate(`/products/stock?poid=${id}`)
   };
 
   const confirmDelete = async () => {
@@ -151,6 +158,9 @@ function ProductPage() {
     accessor: 'action',
     cell: (row: ProductType) => (
       <Group gap="xs">
+        <ActionIcon color="blue" onClick={() => handleNavigateToStock(row.product_id)}>
+          <EditIcon fontSize="small" />
+        </ActionIcon>
         <ActionIcon color="blue" onClick={() => handleEdit(row)}>
           <EditIcon fontSize="small" />
         </ActionIcon>

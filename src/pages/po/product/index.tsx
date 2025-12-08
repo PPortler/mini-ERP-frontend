@@ -12,10 +12,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useLocation } from "react-router-dom";
-import { poOrderItemsSchema } from "../../../schemas/poOrderItemSchema";
+import { poOrderItemsSchemaAdd, poOrderItemsSchemaEdit } from "../../../schemas/poOrderItemSchema";
 import AppButton from "../../../components/Form/AppButton";
 import { STATUS_PO } from "../../../constants/enum/enum";
 import { loadingActions } from "../../../stores/loadingStore";
+import ConfirmModal from "../../../components/Models/ConfirmModel";
 
 export default function PoProductPage() {
     const location = useLocation();
@@ -24,8 +25,15 @@ export default function PoProductPage() {
     const { poItems, refetch, products, loading, poOrderInfo } = useLoadInitialData(purchase_order_id!);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
+    const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
     // const [selectedProduct, setSelectedProduct] = useState<{ label: string; value: string } | null>(null);
+
+    // เปิด modal confirm delete
+    const handleDelete = (item: PurchaseOrderItemType) => {
+        setSelectedItem(item);
+        setModalConfirmOpen(true);
+    };
 
     const handleAddItem = () => {
         setSelectedItem(null);
@@ -41,15 +49,25 @@ export default function PoProductPage() {
         setModalOpen(true);
     };
 
-    const handleDeleteItem = async (itemId: string) => {
+    const handleDeleteItem = async () => {
+        loadingActions.show()
+
+        const itemId = selectedItem?.product_id || ""
         try {
-            await PurchaseOrderService.deleteItem(purchase_order_id!, itemId);
+            const res = await PurchaseOrderService.deleteItem(purchase_order_id!, itemId);
+            if (!res.ok) {
+                notify({ type: "error", message: res.message });
+                return;
+            }
             notify({ type: "success", message: "Deleted Item Successfully" });
             refetch();
+            setModalConfirmOpen(false)
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
             }
+        } finally {
+            loadingActions.hide()
         }
     };
 
@@ -83,7 +101,7 @@ export default function PoProductPage() {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
             }
-        }finally{
+        } finally {
             loadingActions.hide();
         }
     };
@@ -104,7 +122,7 @@ export default function PoProductPage() {
         {
             header: "Total",
             accessor: "total",
-            cell: (row: PurchaseOrderItemType) => row.quantity * row.price,
+            cell: (row: PurchaseOrderItemType) => row.quantity * (row?.price || 0),
         },
     ];
 
@@ -116,7 +134,7 @@ export default function PoProductPage() {
                 <ActionIcon color="blue" onClick={() => handleEditItem(row)}>
                     <EditIcon fontSize="small" />
                 </ActionIcon>
-                <ActionIcon color="red" onClick={() => handleDeleteItem(row.purchase_order_item_id)}>
+                <ActionIcon color="red" onClick={() => handleDelete(row)}>
                     <DeleteIcon fontSize="small" />
                 </ActionIcon>
             </Group>
@@ -156,6 +174,16 @@ export default function PoProductPage() {
                 <DataTable loading={loading} columns={columnsWithAction} data={poItems} pageSize={10} />
             </Card>
 
+            {modalConfirmOpen && (
+                <ConfirmModal
+                    opened={modalConfirmOpen}
+                    onClose={() => setModalConfirmOpen(false)}
+                    title="Confirm Delete Product"
+                    message={`Do you want to delete product: "${selectedItem?.product?.name}" ?`}
+                    onConfirm={handleDeleteItem}
+                />
+            )}
+
             {modalOpen && (
                 <FormModel
                     opened={modalOpen}
@@ -185,18 +213,22 @@ export default function PoProductPage() {
                             // }
                         },
                         { name: "quantity", label: "Quantity", type: "number", required: true, },
-                        {
-                            name: "price",
-                            label: "Price",
-                            type: "number",
-                            required: true,
-                            // helperText: selectedProdDetail
-                            //     ? `Cost Price: ${selectedProdDetail.cost_price}/${selectedProdDetail.unit}`
-                            //     : ''
-                        },
+                        ...(selectedItem
+                            ? [{
+                                name: "price",
+                                label: "Price",
+                                type: "number",
+                                required: true,
+                                helperText: `Cost Price: ${selectedItem.product?.cost_price}/${selectedItem.product?.unit}`
+                            }]
+                            : [])
                     ]}
                     onSubmit={saveItem}
-                    validationSchema={poOrderItemsSchema}
+                    validationSchema={
+                        selectedItem
+                            ? poOrderItemsSchemaEdit
+                            : poOrderItemsSchemaAdd
+                    }
                 />
             )}
         </Box>

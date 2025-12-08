@@ -1,7 +1,7 @@
 import { STATUS_PO } from "../constants/enum/enum";
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
 import { mockSuppliers } from "../mocks/mockSuppliers";
-import type { PurchaseOrderResponse, PurchaseOrderResponseSingle } from "../types/apiResponse";
+import type { PoOrderItemResponse, PurchaseOrderResponse, PurchaseOrderResponseSingle } from "../types/apiResponse";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
 
@@ -44,12 +44,45 @@ export const PurchaseOrderService = {
       const orders = res.data.purchase_orders;
       const mappedSupplier: PurchaseOrderType[] = (Array.isArray(orders) ? orders : orders ? [orders] : []).map((po) => ({
         ...po,
-        supplier_name: po.suppliers?.name || "-",
+        supplier_name: po.supplier?.name || "-",
       }));
 
       return { ok: true, data: mappedSupplier };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Request error";
+      return { ok: false, message };
+    }
+  },
+
+
+  async getByParams(
+    status = "",
+  ): Promise<{ ok: true; data: PurchaseOrderServiceResult } | { ok: false; message: string }> {
+
+    // เรียก backend จริง
+    const params = {
+      status: status,
+    }
+    try {
+      const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
+        method: "GET",
+        url: "/purchase-orders",
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
+
+      const orders = res.data.purchase_orders;
+      const mappedSupplier: PurchaseOrderType[] = (Array.isArray(orders) ? orders : orders ? [orders] : []).map((po) => ({
+        ...po,
+        supplier_name: po.supplier?.name || "-",
+      }));
+
+      return { ok: true, data: mappedSupplier };
+    } catch (err: unknown) {
+      let message = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+      if (err instanceof Error) {
+        message = err.message;
+      }
       return { ok: false, message };
     }
   },
@@ -215,9 +248,9 @@ export const PurchaseOrderService = {
     }
 
     try {
-      const res = await AxiosUtil.createRequest<PurchaseOrderItemType[]>({
+      const res = await AxiosUtil.createRequest<PoOrderItemResponse[]>({
         method: "GET",
-        url: `/purchase-order-items/item/${purchase_order_id}`,
+        url: `/purchase-order-items/${purchase_order_id}`,
       });
 
       if (!res.ok) return { ok: false, message: res.message };
@@ -248,9 +281,9 @@ export const PurchaseOrderService = {
     try {
       const payload = {
         product_id: item.product_id,
-        purchase_order_id,
-        quantity: item.quantity,
-        price: item.price
+        purchase_order_id: purchase_order_id,
+        price: Number(item.price),
+        quantity: Number(item.quantity),
       };
 
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({
@@ -302,8 +335,8 @@ export const PurchaseOrderService = {
     try {
       const payload = {
         product_id: item.product_id,
-        price: item.price,
-        quantity: item.quantity,
+        price: Number(item.price),
+        quantity: Number(item.quantity),
       };
 
       const res = await AxiosUtil.createRequest<PurchaseOrderItemType>({

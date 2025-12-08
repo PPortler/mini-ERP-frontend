@@ -10,7 +10,7 @@ export const useLoadInitialData = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const today = new Date();
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     const initialFromDateDDMMYYYY = searchParams.get("from") || toDDMMYYYY(startOfMonth);
     const initialToDateDDMMYYYY = searchParams.get("to") || toDDMMYYYY(endOfMonth);

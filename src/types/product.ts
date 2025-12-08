@@ -12,4 +12,23 @@ export type ProductType = {
     stock?: number,
     category?: CatagoriesType | null;
     category_name?: string | null;
+    created_at?: string,
+    updated_at?: string
+}
+
+export type StockSummaryType = {
+    product_id: string;
+    current_stock?: number;
+    total_in?: number,
+    total_out?: number,
+    total_adjust?: number,
+};
+
+export type ProductStockType = {
+    product: ProductType,
+    stock_summary: StockSummaryType,
+    is_low_stock: boolean,
+    created_at?: string,
+    updated_at?: string,
+    min_stock?: number
 }

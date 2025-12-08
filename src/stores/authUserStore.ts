@@ -24,7 +24,7 @@ export const authActions = {
             access_token,
         });
     },
-    logout: () => {
+    clearAuth: () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("userInfo");
         $authUser.set(null);

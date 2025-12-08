@@ -72,6 +72,30 @@ export const AuthService = {
         }
     },
 
+    async logout(): Promise<LoginResult> {
+        if (import.meta.env.VITE_USE_MOCK === "true") {
+            return { ok: true, data: { user: {} as UserInfoType } };
+        }
+
+        try {
+
+            const res = await AxiosUtil.createRequest<UserInfoType>({
+                method: "POST",
+                url: "/auth/logout",
+            });
+
+            if (!res.ok) {
+                console.error("Logout failed:", res.message);
+            }
+
+            return { ok: true, data: { user: {} as UserInfoType } };
+        } catch (err: unknown) {
+            console.error("Logout failed:", err);
+            let message = "Unknown error";
+            if (err instanceof Error) message = err.message;
+            return { ok: false, message };
+        }
+    }
     // async refreshToken(refreshToken: string): Promise<RefreshResult> {
     //     try {
     //         if (import.meta.env.VITE_USE_MOCK === "true") {

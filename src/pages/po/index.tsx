@@ -17,9 +17,16 @@ import { useStore } from "@nanostores/react";
 import { $authUser } from "../../stores/authUserStore";
 import { parseDate } from "../../utils/getDateUtils";
 import { loadingActions } from "../../stores/loadingStore";
+import FilterInputs from "../../components/Filters/FilterSearch";
 
 export default function PoPage() {
-    const { purchaseOrders, suppliers, refetch, loading } = useLoadInitialData();
+    const { purchaseOrders,
+        suppliers,
+        refetch,
+        loading,
+        setStatus,
+        status
+    } = useLoadInitialData();
     const navigate = useNavigate();
     const user = useStore($authUser)
     const roleCurrent = getRoleCurrent();
@@ -91,14 +98,14 @@ export default function PoPage() {
                 notify({ type: "success", message: `Change status to ${newStatus} successfully` });
                 await refetch();
             } else {
-                notify({ type: "error", message: result.message});
+                notify({ type: "error", message: result.message });
             }
         } catch (err: unknown) {
             notify({
                 type: "error",
                 message: err instanceof Error ? err.message : "Error to change status",
             });
-        }finally{
+        } finally {
             loadingActions.hide();
         }
     };
@@ -141,6 +148,11 @@ export default function PoPage() {
         },
     ];
 
+    const statusOptions = Object.entries(STATUS_PO).map(([key, value]) => ({
+        value,
+        label: key.charAt(0) + key.slice(1).toLowerCase(),
+    }));
+
     const actionColumn = usePOActionColumn(
         handleEditPO,
         handleManageProducts,
@@ -158,6 +170,20 @@ export default function PoPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" mb="md">
                     <Title order={3}>Purchase Orders</Title>
+                </Group>
+                <Group justify="space-between">
+                    <FilterInputs
+                        fields={[
+                            {
+                                key: "status",
+                                label: "Status",
+                                type: "select",
+                                value: status,
+                                options: statusOptions,
+                                onChange: setStatus,
+                            },
+                        ]}
+                    />
                     {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
                     )}
