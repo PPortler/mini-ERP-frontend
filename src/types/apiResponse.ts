@@ -1,6 +1,6 @@
 import type { CatagoriesType } from "./catagories";
 import type { ProductType } from "./product";
-import type { PurchaseOrderItemType, PurchaseOrderType } from "./purchaes";
+import type { PurchaseOrderType } from "./purchaes";
 import type { StockTransactionType } from "./stockTransection";
 import type { SupplierType } from "./suppliers";
 import type { UserInfoType } from "./user";
@@ -33,7 +33,4 @@ export type StockTransactionResponse = ApiPaginationResponse<StockTransactionTyp
 };
 export type UserResponse = ApiPaginationResponse<UserInfoType[]> & {
   users?: UserInfoType[]
-};
-export type PoOrderItemResponse = ApiPaginationResponse<PurchaseOrderItemType[]> & {
-  purchase_order_items?: PurchaseOrderItemType[]
 };

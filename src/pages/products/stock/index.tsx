@@ -124,7 +124,7 @@ function StockProductPage() {
                         <Grid.Col span={{ base: 12, md: 4 }}>
                             <SummaryCard
                                 label="Current Stock"
-                                value={`฿ ${stock?.current_stock}`}
+                                value={`${stock?.current_stock}`}
                                 loading={loading}
                             />
                         </Grid.Col>
@@ -136,7 +136,6 @@ function StockProductPage() {
                                 loading={loading}
                             />
                         </Grid.Col>
-
 
                         <Grid.Col span={{ base: 12, md: 4 }}>
                             <SummaryCard

@@ -12,6 +12,7 @@ export type PurchaseOrderType = {
   suppliers?: SupplierType
   purchase_order_items?: ProductType[]
   supplier?: SupplierType
+  products?: ProductType[]
 };
 
 export type PurchaseOrderItemType = {

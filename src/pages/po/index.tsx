@@ -25,6 +25,7 @@ export default function PoPage() {
         refetch,
         loading,
         setStatus,
+        setSortField,
         status
     } = useLoadInitialData();
     const navigate = useNavigate();
@@ -188,7 +189,13 @@ export default function PoPage() {
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
                     )}
                 </Group>
-                <DataTable loading={loading} columns={columnsWithAction} data={purchaseOrders} pageSize={10} />
+                <DataTable
+                    setSortField={setSortField}
+                    loading={loading}
+                    columns={columnsWithAction}
+                    data={purchaseOrders}
+                    pageSize={10}
+                />
             </Card>
             {/* Form Modal สำหรับสร้าง/แก้ไข PO */}
             {modalOpen && (

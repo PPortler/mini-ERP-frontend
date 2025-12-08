@@ -49,7 +49,7 @@ export const getMockPurchaseSummary = (month?: string) => {
 
   const poInMonth = mockPurchaseOrders.filter((po) => {
     if (!month) return true; // เอาทุก PO
-    return po.create_at?.slice(0, 7) === month;
+    return po.created_at?.slice(0, 7) === month;
   });
 
   // สร้าง row สำหรับ DataTable
@@ -61,7 +61,7 @@ export const getMockPurchaseSummary = (month?: string) => {
       supplier_name: supplier?.name || po.supplier_id,
       status: po.status,
       total_amount: po.total_amount,
-      create_at: po.create_at,
+      create_at: po.created_at,
     };
   });
 

@@ -1,7 +1,7 @@
 import { STATUS_PO } from "../constants/enum/enum";
 import { mockPurchaseOrders, mockPurchaseOrderItems } from "../mocks/mockPurchase";
 import { mockSuppliers } from "../mocks/mockSuppliers";
-import type { PoOrderItemResponse, PurchaseOrderResponse, PurchaseOrderResponseSingle } from "../types/apiResponse";
+import type { PurchaseOrderResponse, PurchaseOrderResponseSingle } from "../types/apiResponse";
 import type { PurchaseOrderType, PurchaseOrderItemType } from "../types/purchaes";
 import { AxiosUtil } from "../utils/AxiosUtil";
 
@@ -57,11 +57,13 @@ export const PurchaseOrderService = {
 
   async getByParams(
     status = "",
-  ): Promise<{ ok: true; data: PurchaseOrderServiceResult } | { ok: false; message: string }> {
+    sortField = ""
+  ): Promise<{ ok: true; data: PurchaseOrderType[] } | { ok: false; message: string }> {
 
     // เรียก backend จริง
     const params = {
       status: status,
+      order_by: sortField
     }
     try {
       const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
@@ -248,7 +250,7 @@ export const PurchaseOrderService = {
     }
 
     try {
-      const res = await AxiosUtil.createRequest<PoOrderItemResponse[]>({
+      const res = await AxiosUtil.createRequest<PurchaseOrderItemType[]>({
         method: "GET",
         url: `/purchase-order-items/${purchase_order_id}`,
       });

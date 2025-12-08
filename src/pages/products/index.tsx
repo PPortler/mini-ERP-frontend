@@ -159,23 +159,27 @@ function ProductPage() {
     accessor: 'action',
     cell: (row: ProductType) => (
       <Group gap="xs">
+        {/* ปุ่ม view ทุก role สามารถเห็น */}
         <ActionIcon color="green" onClick={() => handleNavigateToStock(row.product_id)}>
           <VisibilityIcon fontSize="small" />
         </ActionIcon>
-        <ActionIcon color="blue" onClick={() => handleEdit(row)}>
-          <EditIcon fontSize="small" />
-        </ActionIcon>
-        <ActionIcon color="red" onClick={() => handleDelete(row)}>
-          <DeleteIcon fontSize="small" />
-        </ActionIcon>
+
+        {/* ปุ่ม edit/delete เฉพาะ admin หรือ staff */}
+        {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
+          <>
+            <ActionIcon color="blue" onClick={() => handleEdit(row)}>
+              <EditIcon fontSize="small" />
+            </ActionIcon>
+            <ActionIcon color="red" onClick={() => handleDelete(row)}>
+              <DeleteIcon fontSize="small" />
+            </ActionIcon>
+          </>
+        )}
       </Group>
     ),
   };
 
-  const columnsWithAction =
-    roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
-      ? [...columnProducts]
-      : [...columnProducts, actionColumn];
+  const columnsWithAction = [...columnProducts, actionColumn];
 
   return (
     <Box>

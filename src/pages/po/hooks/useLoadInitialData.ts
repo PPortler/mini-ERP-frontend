@@ -10,11 +10,10 @@ import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSea
 export const useLoadInitialData = () => {
     const [searchParams] = useSearchParams();
 
-    const statusParam = searchParams.get("status");
-    const initialStatus = statusParam && !isNaN(Number(statusParam))
-        ? statusParam
-        : "";
-        
+    const initialStatus = searchParams.get("status") || "";
+    const initialSortField = searchParams.get("sortField") || "";
+
+    const [sortField, setSortField] = useState<string>(initialSortField);
     const [status, setStatus] = useState<string>(initialStatus);
     const [loading, setLoading] = useState<boolean>(false)
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrderType[]>([]);
@@ -22,6 +21,7 @@ export const useLoadInitialData = () => {
     const [error, setError] = useState<string | null>(null);
 
     useSyncStateWithSearchParams({
+        sortField,
         status,
     });
 
@@ -30,7 +30,7 @@ export const useLoadInitialData = () => {
             setLoading(true);
 
             const [poRes, supplierRes, productRes] = await Promise.all([
-                PurchaseOrderService.getByParams(status),
+                PurchaseOrderService.getByParams(status, sortField),
                 SupplierService.getAll(),
                 ProductService.getAll(),
             ]);
@@ -51,7 +51,7 @@ export const useLoadInitialData = () => {
         } finally {
             setLoading(false);
         }
-    }, [status]);
+    }, [status, sortField]);
 
     useEffect(() => {
         fetchData();
@@ -64,6 +64,7 @@ export const useLoadInitialData = () => {
         refetch: fetchData,
         loading,
         status,
-        setStatus
+        setStatus,
+        setSortField
     };
 };

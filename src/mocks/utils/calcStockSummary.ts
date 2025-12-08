@@ -1,5 +1,5 @@
 import { TYPE_STOCK_TRANSECTION } from "../../constants/enum/enum";
-import type { StockTransactionType } from "../../services/StockService";
+import type { StockTransactionType } from "../../types/stockTransection";
 
 export const calcStockSummary = (transactions: StockTransactionType[]) => {
   const stockIn = transactions

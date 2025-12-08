@@ -7,8 +7,9 @@ interface POConfirmMessageProps {
     nextStatus?: string;
 }
 
-interface PoConfirmProductType extends ProductType {
+interface PoConfirmProductType {
     quantity?: number;
+    product?: ProductType
     price?: number;
 }
 
@@ -35,9 +36,9 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
                 <>
                     <Divider label="Products" labelPosition="center" />
                     {(po.purchase_order_items as PoConfirmProductType[]).map((p) => (
-                        <Group justify="space-between" key={p.product_id}>
+                        <Group justify="space-between" key={p.product?.product_id}>
                             <Box>
-                                {p.product.product_code}/{p.product.name}
+                                {p.product?.product_code}/{p.product?.name}
                             </Box>
                             <Box>
                                 {p.quantity} x {p.price?.toLocaleString()} Bath

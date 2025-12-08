@@ -66,9 +66,14 @@ export default function DataTable<T>({
     onPageSizeChange?.(size);
   };
 
-  const handleSortChange = (field: string, order: string) => {
+  const handleSortChange = (field: string) => {
     setSortField?.(field);
-    setSortOrder?.(order);
+
+    if (setSortOrder) {
+      const isActive = sortField === field;
+      const nextOrder = isActive && sortOrder === SORT_BY_TYPE.ASC ? SORT_BY_TYPE.DESC : SORT_BY_TYPE.ASC;
+      setSortOrder(nextOrder);
+    }
   };
 
   const formatCellValue = (value: number | string | null | undefined) => {
@@ -87,19 +92,18 @@ export default function DataTable<T>({
           <Table.Tr>
             {columns.map((col) => {
               const accessor = String(col.accessor);
-              const isActive = sortField === accessor;
-              const nextOrder = isActive && sortOrder === SORT_BY_TYPE.ASC ? SORT_BY_TYPE.DESC : SORT_BY_TYPE.ASC;
+              // const isActive = sortField === accessor;
+              // const nextOrder = isActive && sortOrder === SORT_BY_TYPE.ASC ? SORT_BY_TYPE.DESC : SORT_BY_TYPE.ASC;
 
               return (
                 <Table.Th
                   key={accessor}
                   style={{ cursor: "pointer", userSelect: "none" }}
-                  onClick={() => handleSortChange?.(accessor, nextOrder)}
+                  onClick={() => handleSortChange(accessor)}
                 >
                   <Group gap={6}>
                     <span>{col.header}</span>
-
-                    {isActive && (
+                    {sortField === accessor && sortOrder && (
                       <>
                         {sortOrder === SORT_BY_TYPE.ASC ? (
                           <ArrowDropUpIcon fontSize="small" />

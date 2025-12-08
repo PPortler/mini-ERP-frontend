@@ -77,8 +77,8 @@ const FormModel = <T extends Record<string, unknown>>({
       >
         {fields.map((f) => {
           const handleChange = (val: unknown) => {
-            form.setFieldValue(f.name as keyof T, val as T[keyof T]);
-            if (f.onChange) f.onChange(val, form.values); // เรียก callback ออกไป
+            form.setFieldValue(f.name as any, val as any);
+            if (f.onChange) f.onChange(val, form.values); 
           };
 
           return f.type === "select" ? (

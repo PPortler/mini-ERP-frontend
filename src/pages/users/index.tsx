@@ -12,7 +12,7 @@ import DataTable from "../../components/Table/DataTable";
 import ConfirmModal from "../../components/Models/ConfirmModel";
 import FormModel from "../../components/Models/FormModel";
 import { ROLES } from "../../constants/enum/enum";
-import { userSchema } from "../../schemas/userSchema";
+import { userCreateSchema, userEditSchema } from "../../schemas/userSchema";
 import { parseDate } from "../../utils/getDateUtils";
 import { loadingActions } from "../../stores/loadingStore";
 
@@ -187,7 +187,7 @@ function UserManagementPage() {
 
             {modalType === 'form' && (
                 <FormModel<UserInfoType>
-                    validationSchema={userSchema}
+                    validationSchema={selectedItem ? userEditSchema : userCreateSchema}
                     opened={modalOpen}
                     onClose={() => setModalOpen(false)}
                     title={
@@ -207,8 +207,8 @@ function UserManagementPage() {
                     }
                     fields={[
                         { name: 'username', label: 'Username', type: 'text', required: true },
-                        { name: 'password', label: 'Password', type: 'password', required: true },
-                        { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
+                        { name: 'password', label: 'Password', type: 'password', required: !selectedItem },
+                        // { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
                         { name: 'first_name', label: 'First Name', type: 'text', required: true },
                         { name: 'last_name', label: 'Last Name', type: 'text', required: true },
                         {

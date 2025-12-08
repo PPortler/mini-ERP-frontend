@@ -18,7 +18,7 @@ export const UserService = {
         try {
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "GET",
-                url: "/users",
+                url: "/user",
             });
 
             if (!res.ok) return { ok: false, message: res.message };
@@ -54,11 +54,12 @@ export const UserService = {
                 username: users.username,
                 password: users.password,
                 first_name: users.first_name,
-                last_name: users.last_name
+                last_name: users.last_name,
+                role: users.role
             }
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "POST",
-                url: "/users",
+                url: "/user",
                 data: payload,
             });
 
@@ -91,15 +92,16 @@ export const UserService = {
 
         try {
             const payload = {
-                user_id: users.user_id,
+                // user_id: users.user_id,
                 username: users.username,
                 password: users.password,
                 first_name: users.first_name,
-                last_name: users.last_name
+                last_name: users.last_name,
+                role: users.role
             }
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "PUT",
-                url: `/users/${user_id}`,
+                url: `/user/${user_id}`,
                 data: payload,
             });
 
@@ -129,7 +131,7 @@ export const UserService = {
         try {
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "DELETE",
-                url: `/users/${user_id}`,
+                url: `/user/${user_id}`,
             });
 
             if (!res.ok) return { ok: false, message: res.message };

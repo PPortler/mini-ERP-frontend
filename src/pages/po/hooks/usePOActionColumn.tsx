@@ -68,6 +68,17 @@ export default function usePOActionColumn(
 
         buttons.push(
           <ActionIcon
+            key={`manage-${row.purchase_order_id}`}
+            color="teal"
+            onClick={() => handleManageProducts(row)}
+            title="Manage Products"
+          >
+            <InventoryIcon fontSize="small" />
+          </ActionIcon>
+        );
+
+        buttons.push(
+          <ActionIcon
             key={`edit-${row.purchase_order_id}`}
             color="cyan"
             onClick={() => handleEditPO(row)}
@@ -77,16 +88,6 @@ export default function usePOActionColumn(
           </ActionIcon>
         );
 
-        buttons.push(
-          <ActionIcon
-            key={`manage-${row.purchase_order_id}`}
-            color="teal"
-            onClick={() => handleManageProducts(row)}
-            title="Manage Products"
-          >
-            <InventoryIcon fontSize="small" />
-          </ActionIcon>
-        );
         buttons.push(
           <ActionIcon
             key={`cancel-${row.purchase_order_id}`}
