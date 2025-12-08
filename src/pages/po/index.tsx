@@ -11,7 +11,7 @@ import { getRoleCurrent } from "../../utils/RoleUtil";
 import DataTable from "../../components/Table/DataTable";
 import { poOrderSchema } from "../../schemas/poOrderSchema";
 import usePOActionColumn from "./hooks/usePOActionColumn";
-import StatusBadge from "../../components/Polish/StatusBagde";
+import StatusBadge from "../../components/UI/StatusBagde";
 import AppButton from "../../components/Form/AppButton";
 import { useStore } from "@nanostores/react";
 import { $authUser } from "../../stores/authUserStore";
