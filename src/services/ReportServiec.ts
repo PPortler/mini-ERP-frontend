@@ -179,7 +179,8 @@ export const ReportService = {
       const res = await AxiosUtil.createRequest({
         method: "GET",
         url: `/reports/purchase-summary/export`,
-        params: params
+        params: params,
+        responseType: "blob",
       });
       if (!res.ok) {
         return { ok: false, message: res.message };
@@ -202,6 +203,5 @@ export const ReportService = {
       return { ok: false, message };
     }
   },
-
 
 };

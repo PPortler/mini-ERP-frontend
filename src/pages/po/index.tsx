@@ -25,7 +25,7 @@ export default function PoPage() {
         refetch,
         loading,
         setStatus,
-        setSortField,
+        // setSortField,
         status
     } = useLoadInitialData();
     const navigate = useNavigate();
@@ -187,10 +187,10 @@ export default function PoPage() {
                     />
                     {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
-                    )}
+                    )} 
                 </Group>
                 <DataTable
-                    setSortField={setSortField}
+                    // setSortField={setSortField}
                     loading={loading}
                     columns={columnsWithAction}
                     data={purchaseOrders}

@@ -91,14 +91,17 @@ export const UserService = {
         }
 
         try {
-            const payload = {
-                // user_id: users.user_id,
+            const payload: Partial<UserInfoType> = {
                 username: users.username,
-                password: users.password,
                 first_name: users.first_name,
                 last_name: users.last_name,
                 role: users.role
+            };
+
+            if (users.password) {
+                payload.password = users.password;
             }
+            
             const res = await AxiosUtil.createRequest<UserResponse>({
                 method: "PUT",
                 url: `/user/${user_id}`,

@@ -206,7 +206,7 @@ function UserManagementPage() {
                         }
                     }
                     fields={[
-                        { name: 'username', label: 'Username', type: 'text', required: true },
+                        { name: 'username', label: 'Username', type: 'text', required: true, disabled: !!selectedItem },
                         { name: 'password', label: 'Password', type: 'password', required: !selectedItem },
                         // { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
                         { name: 'first_name', label: 'First Name', type: 'text', required: true },
