@@ -1,13 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
 import type { ProductStockType } from "../../../../types/product";
 import { StockService } from "../../../../services/StockService";
 
 
-export const useLoadInitialData = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
-
-    const productId = parseInt(searchParams.get("pdId") || "").toString();
+export const useLoadInitialData = (productId: string) => {
 
     const [product, setProduct] = useState<ProductStockType>();
     const [error, setError] = useState<string | null>(null);
@@ -42,6 +38,5 @@ export const useLoadInitialData = () => {
         product,
         error,
         refetch: fetchData,
-        setSearchParams
     };
 };

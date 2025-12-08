@@ -3,6 +3,7 @@ import DataTable from '../../components/Table/DataTable'
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { columnProducts } from '../../constants/columnTable';
 import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 // import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getRoleCurrent } from '../../utils/RoleUtil';
@@ -158,8 +159,8 @@ function ProductPage() {
     accessor: 'action',
     cell: (row: ProductType) => (
       <Group gap="xs">
-        <ActionIcon color="blue" onClick={() => handleNavigateToStock(row.product_id)}>
-          <EditIcon fontSize="small" />
+        <ActionIcon color="green" onClick={() => handleNavigateToStock(row.product_id)}>
+          <VisibilityIcon fontSize="small" />
         </ActionIcon>
         <ActionIcon color="blue" onClick={() => handleEdit(row)}>
           <EditIcon fontSize="small" />
