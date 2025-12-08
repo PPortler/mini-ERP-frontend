@@ -7,7 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { parseDate } from '../../../utils/getDateUtils';
 import { Skeleton } from "@mantine/core";
-import { SummaryCard } from '../../dashboard/components/SummaryCard';
+import { SummaryCard } from '../../../components/Polish/SummaryCard';
 import ChartWrapper from '../../../components/Polish/ChartWrapper';
 import type { ApexOptions } from "apexcharts";
 import { useStockMovement } from './hooks/useStockMovement';
@@ -41,7 +41,6 @@ function StockProductPage() {
             text: `Stock Movement: ${product?.name} `,
             align: "center",
         },
-
     });
 
     return (
