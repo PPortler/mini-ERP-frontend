@@ -7,7 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { parseDate } from '../../../utils/getDateUtils';
 import { Skeleton } from "@mantine/core";
-import { SummaryCard } from '../../../components/Polish/SummaryCard';
+import { SummaryCard } from '../../../components/UI/SummaryCard';
 import ChartWrapper from '../../../components/Polish/ChartWrapper';
 import type { ApexOptions } from "apexcharts";
 import { useStockMovement } from './hooks/useStockMovement';

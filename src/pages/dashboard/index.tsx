@@ -2,7 +2,7 @@ import { Card, Grid, Group, Title } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import type { ApexOptions } from "apexcharts";
-import { SummaryCard } from "../../components/Polish/SummaryCard";
+import { SummaryCard } from "../../components/UI/SummaryCard";
 import { columnProducts } from "../../constants/columnTable";
 import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
 import AppDatePicker from "../../components/Form/AppDatePicker";
