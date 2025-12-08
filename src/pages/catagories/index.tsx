@@ -1,6 +1,6 @@
 import { Box, Card, Group, Title, ActionIcon } from '@mantine/core';
 import { useState } from 'react';
-import DataTable from '../../components/Table/DataTable';
+import DataTable, { type Column } from '../../components/Table/DataTable';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getRoleCurrent } from '../../utils/RoleUtil';
@@ -14,7 +14,6 @@ import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
 import AppButton from '../../components/Form/AppButton';
 import { categorySchema } from '../../schemas/categorySchema';
-import { columnCategory } from '../../constants/columnTable';
 import { loadingActions } from '../../stores/loadingStore';
 
 function CatagoriesPage() {
@@ -147,6 +146,11 @@ function CatagoriesPage() {
             );
         },
     };
+
+    const columnCategory: Column<CatagoriesType>[] = [
+        { header: 'Category Name', accessor: 'name' },
+        { header: 'Description', accessor: 'description' },
+    ];
 
     const columnsWithAction =
         (roleCurrent === ROLES.ADMIN)

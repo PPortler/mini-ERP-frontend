@@ -1,12 +1,12 @@
 import { Card, Grid, Group, Title } from "@mantine/core";
-import DataTable from "../../components/Table/DataTable";
+import DataTable, { type Column } from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import type { ApexOptions } from "apexcharts";
 import { SummaryCard } from "../../components/UI/SummaryCard";
-import { columnProducts } from "../../constants/columnTable";
 import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
 import AppDatePicker from "../../components/Form/AppDatePicker";
 import ChartWrapper from "../../components/Polish/ChartWrapper";
+import type { ProductType } from "../../types/product";
 
 export default function Dashboard() {
   const {
@@ -58,6 +58,17 @@ export default function Dashboard() {
       align: "center"
     }
   };
+
+  const columnProducts: Column<ProductType>[] = [
+    { header: "Product Code", accessor: "product_code" },
+    { header: "Product Name", accessor: "name" },
+    { header: "Cost Price", accessor: "cost_price" },
+    { header: "Selling Price", accessor: "selling_price" },
+    {
+      header: "Categoty", accessor: "category_name",
+    },
+    { header: "Min Stock", accessor: "min_stock" },
+  ];
 
   return (
     <Grid gutter="lg">
