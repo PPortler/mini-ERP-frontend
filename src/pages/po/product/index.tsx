@@ -92,7 +92,6 @@ export default function PoProductPage() {
             refetch();
             setModalOpen(false);
             setSelectedItem(null);
-            // setSelectedProduct(null)
         } catch (err: unknown) {
             if (err instanceof Error) {
                 notify({ type: "error", message: err.message });
@@ -184,63 +183,54 @@ export default function PoProductPage() {
                 <DataTable loading={loading} columns={columnsWithAction} data={poItems} pageSize={10} />
             </Card>
 
-            {modalConfirmOpen && (
-                <ConfirmModal
-                    opened={modalConfirmOpen}
-                    onClose={() => setModalConfirmOpen(false)}
-                    title="Confirm Delete Product"
-                    message={`Do you want to delete product: "${selectedItem?.product?.name}" ?`}
-                    onConfirm={handleDeleteItem}
-                />
-            )}
+            <ConfirmModal
+                opened={modalConfirmOpen}
+                onClose={() => setModalConfirmOpen(false)}
+                title="Confirm Delete Product"
+                message={`Do you want to delete product: "${selectedItem?.product?.name}" ?`}
+                onConfirm={handleDeleteItem}
+            />
 
-            {modalOpen && (
-                <FormModel
-                    opened={modalOpen}
-                    onClose={() => {
-                        setModalOpen(false)
-                        // setSelectedProduct(null)
-                    }}
-                    title={!selectedItem ? "Add PO Item" : "Edit PO Item"}
-                    initialValues={selectedItem ||
+            <FormModel
+                opened={modalOpen}
+                onClose={() => {
+                    setModalOpen(false)
+                }}
+                title={!selectedItem ? "Add PO Item" : "Edit PO Item"}
+                initialValues={selectedItem ||
+                {
+                    purchase_order_item_id: "",
+                    purchase_order_id: purchase_order_id ?? "",
+                    product_id: "",
+                    quantity: 1,
+                    price: 0
+                }}
+                fields={[
                     {
-                        purchase_order_item_id: "",
-                        purchase_order_id: purchase_order_id ?? "",
-                        product_id: "",
-                        quantity: 1,
-                        price: 0
-                    }}
-                    fields={[
-                        {
-                            name: "product_id",
-                            label: "Product",
-                            type: "select",
+                        name: "product_id",
+                        label: "Product",
+                        type: "select",
+                        required: true,
+                        options: productOptions,
+                    },
+                    { name: "quantity", label: "Quantity", type: "number", required: true, },
+                    ...(selectedItem
+                        ? [{
+                            name: "price",
+                            label: "Price",
+                            type: "number",
                             required: true,
-                            options: productOptions,
-                            // onChange: (val) => {
-                            //     const prod = productOptions.find(p => p.value === val as string);
-                            //     setSelectedProduct(prod ?? null);
-                            // }
-                        },
-                        { name: "quantity", label: "Quantity", type: "number", required: true, },
-                        ...(selectedItem
-                            ? [{
-                                name: "price",
-                                label: "Price",
-                                type: "number",
-                                required: true,
-                                helperText: `Cost Price: ${selectedItem.product?.cost_price}/${selectedItem.product?.unit}`
-                            }]
-                            : [])
-                    ]}
-                    onSubmit={saveItem}
-                    validationSchema={
-                        selectedItem
-                            ? poOrderItemsSchemaEdit
-                            : poOrderItemsSchemaAdd
-                    }
-                />
-            )}
+                            helperText: `Cost Price: ${selectedItem.product?.cost_price}/${selectedItem.product?.unit}`
+                        }]
+                        : [])
+                ]}
+                onSubmit={saveItem}
+                validationSchema={
+                    selectedItem
+                        ? poOrderItemsSchemaEdit
+                        : poOrderItemsSchemaAdd
+                }
+            />
         </Box>
     );
 }

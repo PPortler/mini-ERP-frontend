@@ -3,7 +3,7 @@ import type { PurchaseOrderType } from "../../../types/purchaes";
 import type { ProductType } from "../../../types/product";
 
 interface POConfirmMessageProps {
-    po: PurchaseOrderType;
+    po?: PurchaseOrderType | undefined;
     nextStatus?: string;
 }
 
@@ -13,7 +13,7 @@ interface PoConfirmProductType {
     price?: number;
 }
 
-export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStatus }) => {
+export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po={purchase_order_id:"", supplier_id:"", status:"", total_amount: 0}, nextStatus }) => {
     return (
         <Stack gap="sm">
             {/* ข้อความยืนยัน */}

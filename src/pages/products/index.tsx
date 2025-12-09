@@ -248,58 +248,54 @@ function ProductPage() {
         />
       </Card>
 
-      {modalType === 'confirm' && (
-        <ConfirmModal
-          opened={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title="Confirm Delete Product"
-          message={`Do you want to delete product: "${selectedProduct?.name}" ?`}
-          onConfirm={confirmDelete}
-        />
-      )}
+      <ConfirmModal
+        opened={modalType === 'confirm' && modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Confirm Delete Product"
+        message={`Do you want to delete product: "${selectedProduct?.name}" ?`}
+        onConfirm={confirmDelete}
+      />
+      <FormModel<ProductType>
+        validationSchema={productSchema}
+        opened={modalType === 'form' && modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          selectedProduct
+            ? `Edit Product: "${selectedProduct.name}"`
+            : 'Crteate New Product'
+        }
+        initialValues={
+          selectedProduct || {
+            product_id: '',
+            product_code: '',
+            name: '',
+            cost_price: 0,
+            selling_price: 0,
+            min_stock: 0,
+            unit: '',
+            category_id: '',
+            stock: 0,
+          }
+        }
+        fields={[
+          { name: 'product_code', label: 'Product Code', type: 'text', required: true, disabled: !!selectedProduct },
+          { name: 'name', label: 'Product Name', type: 'text', required: true },
+          { name: 'cost_price', label: 'Cost Price', type: 'number', required: true },
+          { name: 'selling_price', label: 'Selling Price', type: 'number', required: true },
+          { name: 'min_stock', label: 'Min Stock', type: 'number', required: true },
+          { name: 'unit', label: 'Unit', type: 'string', required: true },
+          {
+            name: "category_id",
+            label: "Category",
+            type: "select",
+            disabled: !!selectedProduct,
+            options: categoryOptions,
+            required: true
+          },
+        ]}
+        onSubmit={saveItems}
+      />
 
-      {modalType === 'form' && (
-        <FormModel<ProductType>
-          validationSchema={productSchema}
-          opened={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title={
-            selectedProduct
-              ? `Edit Product: "${selectedProduct.name}"`
-              : 'Crteate New Product'
-          }
-          initialValues={
-            selectedProduct || {
-              product_id: '',
-              product_code: '',
-              name: '',
-              cost_price: 0,
-              selling_price: 0,
-              min_stock: 0,
-              unit: '',
-              category_id: '',
-              stock: 0,
-            }
-          }
-          fields={[
-            { name: 'product_code', label: 'Product Code', type: 'text', required: true, disabled: !!selectedProduct },
-            { name: 'name', label: 'Product Name', type: 'text', required: true },
-            { name: 'cost_price', label: 'Cost Price', type: 'number', required: true },
-            { name: 'selling_price', label: 'Selling Price', type: 'number', required: true },
-            { name: 'min_stock', label: 'Min Stock', type: 'number', required: true },
-            { name: 'unit', label: 'Unit', type: 'string', required: true },
-            {
-              name: "category_id",
-              label: "Category",
-              type: "select",
-              disabled: !!selectedProduct,
-              options: categoryOptions,
-              required: true
-            },
-          ]}
-          onSubmit={saveItems}
-        />
-      )}
     </Box>
   )
 }

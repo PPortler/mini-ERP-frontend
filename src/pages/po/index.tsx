@@ -20,7 +20,7 @@ import { loadingActions } from "../../stores/loadingStore";
 import FilterInputs from "../../components/Filters/FilterSearch";
 
 export default function PoPage() {
-    const { 
+    const {
         purchaseOrders,
         suppliers,
         refetch,
@@ -140,7 +140,6 @@ export default function PoPage() {
             header: "Status", accessor: "status",
             cell: (row: PurchaseOrderType) => <StatusBadge status={row.status} />,
         },
-        // { header: "Total", accessor: "total_amount" },
         {
             header: "Created At", accessor: "created_at",
             cell: (row: PurchaseOrderType) => {
@@ -188,7 +187,7 @@ export default function PoPage() {
                     />
                     {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
                         <AppButton loading={loading} onClick={handleCreatePO}>Create Po.</AppButton>
-                    )} 
+                    )}
                 </Group>
                 <DataTable
                     // setSortField={setSortField}
@@ -199,30 +198,28 @@ export default function PoPage() {
                 />
             </Card>
             {/* Form Modal สำหรับสร้าง/แก้ไข PO */}
-            {modalOpen && (
-                <FormModel
-                    validationSchema={poOrderSchema}
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title={!selectedPO ? "Create Purchase Order" : `Edit Purchase Order ${selectedPO.purchase_order_id}`}
-                    initialValues={selectedPO || {
-                        purchase_order_id: "",
-                        supplier_id: "",
-                        status: STATUS_PO.DRAFT,
-                        total_amount: 0,
-                    }}
-                    fields={[
-                        {
-                            name: "supplier_id",
-                            label: "Supplier",
-                            type: "select",
-                            required: true,
-                            options: supplierOptions,
-                        },
-                    ]}
-                    onSubmit={savePO}
-                />
-            )}
+            <FormModel
+                validationSchema={poOrderSchema}
+                opened={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={!selectedPO ? "Create Purchase Order" : `Edit Purchase Order ${selectedPO.purchase_order_id}`}
+                initialValues={selectedPO || {
+                    purchase_order_id: "",
+                    supplier_id: "",
+                    status: STATUS_PO.DRAFT,
+                    total_amount: 0,
+                }}
+                fields={[
+                    {
+                        name: "supplier_id",
+                        label: "Supplier",
+                        type: "select",
+                        required: true,
+                        options: supplierOptions,
+                    },
+                ]}
+                onSubmit={savePO}
+            />
         </Box>
     );
 }

@@ -207,31 +207,27 @@ function CatagoriesPage() {
             </Card>
 
             {/* Form */}
-            {modalType === 'form' && (
-                <FormModel
-                    validationSchema={categorySchema}
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title={selectedCategory ? `Edit Category ${selectedCategory.name}` : 'Create Category'}
-                    initialValues={selectedCategory || { category_id: '', name: '', description: '' }}
-                    fields={[
-                        { name: 'name', label: 'Category Name', type: 'text', required: true },
-                        { name: 'description', label: 'Description', type: 'text', required: true },
-                    ]}
-                    onSubmit={saveCategory}
-                />
-            )}
+            <FormModel
+                validationSchema={categorySchema}
+                opened={modalType === 'form' && modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={selectedCategory ? `Edit Category ${selectedCategory.name}` : 'Create Category'}
+                initialValues={selectedCategory || { category_id: '', name: '', description: '' }}
+                fields={[
+                    { name: 'name', label: 'Category Name', type: 'text', required: true },
+                    { name: 'description', label: 'Description', type: 'text', required: true },
+                ]}
+                onSubmit={saveCategory}
+            />
 
             {/* Confirm */}
-            {modalType === 'confirm' && selectedCategory && (
-                <ConfirmModal
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title="Confirm Delete Category"
-                    message={`Do you want to delete category: "${selectedCategory.name}" ?`}
-                    onConfirm={confirmDelete}
-                />
-            )}
+            <ConfirmModal
+                opened={modalType === 'confirm' && modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Confirm Delete Category"
+                message={`Do you want to delete category: "${selectedCategory?.name}" ?`}
+                onConfirm={confirmDelete}
+            />
         </Box>
     );
 }

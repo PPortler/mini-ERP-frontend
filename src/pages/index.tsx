@@ -3,13 +3,10 @@ import { TextInput, PasswordInput, Button, Paper, Title, Stack, Box } from '@man
 import { useForm } from '@mantine/form';
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 import { AuthService } from '../services/AuthService';
-import { useNavigate } from "react-router-dom";
 import { authActions } from '../stores/authUserStore';
 import { loadingActions } from '../stores/loadingStore';
 
 export default function LoginPage() {
-    const navigate = useNavigate();
-
     const form = useForm<LoginFormValues>({
         initialValues: {
             username: "",
@@ -36,9 +33,6 @@ export default function LoginPage() {
                 if (user) {
                     authActions.setAuth(user.access_token ?? "", user);
                 }
-
-                const rolePath = "/dashboard";
-                navigate(rolePath, { replace: true });
 
             } else {
                 form.setErrors({

@@ -207,54 +207,49 @@ function UserManagementPage() {
                 />
             </Card>
 
-            {modalType === 'confirm' && (
-                <ConfirmModal
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title="ยืนยันการลบ user"
-                    message={`คุณต้องการลบ user: "${selectedItem?.username}" ใช่หรือไม่?`}
-                    onConfirm={confirmDelete}
-                />
-            )}
-
-            {modalType === 'form' && (
-                <FormModel<UserInfoType>
-                    validationSchema={selectedItem ? userEditSchema : userCreateSchema}
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title={
-                        selectedItem
-                            ? `Edit user: "${selectedItem.username}"`
-                            : 'Create New User'
+            <ConfirmModal
+                opened={modalType === 'confirm' && modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="ยืนยันการลบ user"
+                message={`คุณต้องการลบ user: "${selectedItem?.username}" ใช่หรือไม่?`}
+                onConfirm={confirmDelete}
+            />
+            <FormModel<UserInfoType>
+                validationSchema={selectedItem ? userEditSchema : userCreateSchema}
+                opened={modalType === 'form' && modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={
+                    selectedItem
+                        ? `Edit user: "${selectedItem.username}"`
+                        : 'Create New User'
+                }
+                initialValues={
+                    selectedItem || {
+                        user_id: '',
+                        first_name: '',
+                        last_name: '',
+                        username: '',
+                        password: '',
+                        role: '',
                     }
-                    initialValues={
-                        selectedItem || {
-                            user_id: '',
-                            first_name: '',
-                            last_name: '',
-                            username: '',
-                            password: '',
-                            role: '',
-                        }
-                    }
-                    fields={[
-                        { name: 'username', label: 'Username', type: 'text', required: true },
-                        { name: 'password', label: 'Password', type: 'password', required: !selectedItem },
-                        // { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
-                        { name: 'first_name', label: 'First Name', type: 'text', required: true },
-                        { name: 'last_name', label: 'Last Name', type: 'text', required: true },
-                        {
-                            name: 'role',
-                            label: 'Role',
-                            type: 'select',
-                            // disabled: !!selectedItem,
-                            options: roleOptions,
-                            required: true
-                        },
-                    ]}
-                    onSubmit={saveItems}
-                />
-            )}
+                }
+                fields={[
+                    { name: 'username', label: 'Username', type: 'text', required: true },
+                    { name: 'password', label: 'Password', type: 'password', required: !selectedItem },
+                    // { name: 'confirmed_password', label: 'Confirm Password', type: 'password', required: true },
+                    { name: 'first_name', label: 'First Name', type: 'text', required: true },
+                    { name: 'last_name', label: 'Last Name', type: 'text', required: true },
+                    {
+                        name: 'role',
+                        label: 'Role',
+                        type: 'select',
+                        // disabled: !!selectedItem,
+                        options: roleOptions,
+                        required: true
+                    },
+                ]}
+                onSubmit={saveItems}
+            />
         </Box>
     )
 }

@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import Dashboard from '../pages/dashboard';
 import LoginPage from '../pages';
 import ProtectedRoute from './ProtectedRoute';
-import GlobalLayout from '../components/layout/GlobalLayout';
+import GlobalLayout from '../components/Layout/GlobalLayout';
 import ProductPage from '../pages/products';
 import { ROLES } from '../constants/enum/enum';
 import CatagoriesPage from '../pages/catagories';

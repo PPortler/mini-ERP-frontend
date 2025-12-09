@@ -108,7 +108,7 @@ export default function StockTransactionsPage() {
         { header: "Reference", accessor: "reference" },
         { header: "Create By", accessor: "created_by" },
     ]
-    
+
     return (
         <Box>
             <Card shadow="sm" padding="lg">
@@ -173,33 +173,31 @@ export default function StockTransactionsPage() {
                     sortOrder={sortOrder}
                 />
             </Card>
-            {modalOpen && (
-                <FormModel<StockTransactionType>
-                    validationSchema={stockTransactionSchema}
-                    opened={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    title={modalType === TYPE_STOCK_TRANSECTION.ADJUST ? `Stock ${TYPE_STOCK_TRANSECTION.ADJUST}` : `Stock ${TYPE_STOCK_TRANSECTION.OUT}`}
-                    initialValues={{
-                        stock_transaction_id: '',
-                        product_id: '',
-                        type: modalType || '',
-                        quantity: 0,
-                        reason: '',
-                    }}
-                    fields={[
-                        {
-                            name: "product_id",
-                            label: "Product",
-                            type: "select",
-                            options: productsOption,
-                            required: true
-                        },
-                        { name: 'quantity', label: 'Quantity', type: 'number', required: true },
-                        { name: 'reason', label: 'Reason', type: 'text', required: modalType === TYPE_STOCK_TRANSECTION.ADJUST },
-                    ]}
-                    onSubmit={handleStock}
-                />
-            )}
+            <FormModel<StockTransactionType>
+                validationSchema={stockTransactionSchema}
+                opened={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title={modalType === TYPE_STOCK_TRANSECTION.ADJUST ? `Stock ${TYPE_STOCK_TRANSECTION.ADJUST}` : `Stock ${TYPE_STOCK_TRANSECTION.OUT}`}
+                initialValues={{
+                    stock_transaction_id: '',
+                    product_id: '',
+                    type: modalType || '',
+                    quantity: 0,
+                    reason: '',
+                }}
+                fields={[
+                    {
+                        name: "product_id",
+                        label: "Product",
+                        type: "select",
+                        options: productsOption,
+                        required: true
+                    },
+                    { name: 'quantity', label: 'Quantity', type: 'number', required: true },
+                    { name: 'reason', label: 'Reason', type: 'text', required: modalType === TYPE_STOCK_TRANSECTION.ADJUST },
+                ]}
+                onSubmit={handleStock}
+            />
         </Box>
     );
 }

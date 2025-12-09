@@ -161,33 +161,29 @@ export default function usePOActionColumn(
       return (
         <>
           <Group gap="xs">{buttons}</Group>
-          {currentPO && (
-            <ConfirmModal
-              opened={confirmStatusOpen && currentPO.purchase_order_id === row.purchase_order_id}
-              onClose={() => setConfirmStatusOpen(false)}
-              title="Confirm Change PO Status"
-              message={
-                <POConfirmMessage po={currentPO} nextStatus={nextStatus} />
-              }
-              onConfirm={() => {
-                if (currentPO) handleChangeStatus(currentPO, nextStatus);
-                setConfirmStatusOpen(false);
-              }}
-            />
-          )}
+          <ConfirmModal
+            opened={!!currentPO && !!confirmStatusOpen && currentPO.purchase_order_id === row.purchase_order_id}
+            onClose={() => setConfirmStatusOpen(false)}
+            title="Confirm Change PO Status"
+            message={
+              <POConfirmMessage po={currentPO || undefined} nextStatus={nextStatus} />
+            }
+            onConfirm={() => {
+              if (currentPO) handleChangeStatus(currentPO, nextStatus);
+              setConfirmStatusOpen(false);
+            }}
+          />
 
-          {currentPO && (
-            <ConfirmModal
-              opened={confirmDeleteOpen && currentPO.purchase_order_id === row.purchase_order_id}
-              onClose={() => setConfirmDeleteOpen(false)}
-              title="Confirm Delete PO"
-              message="Do you want to delete this Purchase Order?"
-              onConfirm={() => {
-                if (currentPO) handleDeletePO(currentPO);
-                setConfirmDeleteOpen(false);
-              }}
-            />
-          )}
+          <ConfirmModal
+            opened={!!currentPO && !!confirmDeleteOpen && currentPO.purchase_order_id === row.purchase_order_id}
+            onClose={() => setConfirmDeleteOpen(false)}
+            title="Confirm Delete PO"
+            message="Do you want to delete this Purchase Order?"
+            onConfirm={() => {
+              if (currentPO) handleDeletePO(currentPO);
+              setConfirmDeleteOpen(false);
+            }}
+          />
         </>
       );
     },

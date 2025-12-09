@@ -170,44 +170,39 @@ function SupplierPage() {
         <DataTable loading={loading} columns={columnsWithAction} data={data} pageSize={10} />
       </Card>
 
-      {modalType === 'confirm' && (
-        <ConfirmModal
-          opened={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title="Confirm Delete Supplier"
-          message={`Do you want to delete supplier: "${selectedItem?.name}" ?`}
-          onConfirm={confirmDelete}
-        />
-      )}
-
-      {modalType === 'form' && (
-        <FormModel<SupplierType>
-          validationSchema={supplierSchema}
-          opened={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title={
-            selectedItem
-              ? `Edit Supplier "${selectedItem.name}"`
-              : 'Create New Supplier'
+      <ConfirmModal
+        opened={modalType === 'confirm' && modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Confirm Delete Supplier"
+        message={`Do you want to delete supplier: "${selectedItem?.name}" ?`}
+        onConfirm={confirmDelete}
+      />
+      <FormModel<SupplierType>
+        validationSchema={supplierSchema}
+        opened={modalType === 'form' && modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          selectedItem
+            ? `Edit Supplier "${selectedItem.name}"`
+            : 'Create New Supplier'
+        }
+        initialValues={
+          selectedItem || {
+            supplier_id: '',
+            name: '',
+            phone: '',
+            email: '',
+            address: '',
           }
-          initialValues={
-            selectedItem || {
-              supplier_id: '',
-              name: '',
-              phone: '',
-              email: '',
-              address: '',
-            }
-          }
-          fields={[
-            { name: 'name', label: 'Supplier Name', type: 'text', required: true },
-            { name: 'phone', label: 'Phone', type: 'text', required: true },
-            { name: 'email', label: 'Email', type: 'text', required: true },
-            { name: 'address', label: 'Address', type: 'text', required: true },
-          ]}
-          onSubmit={saveItems}
-        />
-      )}
+        }
+        fields={[
+          { name: 'name', label: 'Supplier Name', type: 'text', required: true },
+          { name: 'phone', label: 'Phone', type: 'text', required: true },
+          { name: 'email', label: 'Email', type: 'text', required: true },
+          { name: 'address', label: 'Address', type: 'text', required: true },
+        ]}
+        onSubmit={saveItems}
+      />
     </Box>
   )
 }
