@@ -63,6 +63,27 @@ async function createRequest<T>(params: RequestParams): RequestReturn<T> {
 
 if (import.meta.env.VITE_USE_MOCK !== 'true') {
 
+  let isRefreshing = false;
+
+  interface FailedQueueItem {
+    resolve: (token: string) => void;
+    reject: (error: unknown) => void;
+  }
+
+  let failedQueue: FailedQueueItem[] = [];
+
+  const processQueue = (error: unknown, token: string | null = null) => {
+    failedQueue.forEach((prom) => {
+      if (error) {
+        prom.reject(error);
+      } else if (token) {
+        prom.resolve(token);
+      }
+    });
+
+    failedQueue = [];
+  };
+
   baseAxios.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -74,6 +95,22 @@ if (import.meta.env.VITE_USE_MOCK !== 'true') {
       }
 
       originalRequest._retry = true;
+
+      // ถ้ากำลัง refresh อยู่ → รอ queue
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          const queueItem: FailedQueueItem = {
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(baseAxios(originalRequest));
+            },
+            reject,
+          };
+          failedQueue.push(queueItem);
+        });
+      }
+
+      isRefreshing = true;
 
       try {
         // ยิง refresh token API
@@ -93,17 +130,23 @@ if (import.meta.env.VITE_USE_MOCK !== 'true') {
         if (user) {
           $authUser.set({ ...user, access_token: newAccessToken });
         }
+        processQueue(null, newAccessToken);
 
         // เพิ่ม token ใหม่ใน header แล้วยิงใหม่
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return baseAxios(originalRequest);
       } catch (refreshErr) {
+        processQueue(refreshErr, null);
+
         // refresh fail → logout
         localStorage.removeItem("access_token");
+        localStorage.removeItem("userInfo");
         $authUser.set(null);
 
         return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
       }
     }
   );
