@@ -63,7 +63,7 @@ export const PurchaseOrderService = {
     // เรียก backend จริง
     const params = {
       status: status,
-      order_by: sortField
+      order_by: sortField,
     }
     try {
       const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({

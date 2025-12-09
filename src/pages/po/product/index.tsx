@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Group, Title, ActionIcon, Text } from "@mantine/core";
+import { Box, Card, Group, Title, ActionIcon, Text, Stack } from "@mantine/core";
 import DataTable from "../../../components/Table/DataTable";
 import FormModel from "../../../components/Models/FormModel";
 import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
@@ -17,6 +17,7 @@ import AppButton from "../../../components/Form/AppButton";
 import { STATUS_PO } from "../../../constants/enum/enum";
 import { loadingActions } from "../../../stores/loadingStore";
 import ConfirmModal from "../../../components/Models/ConfirmModel";
+import { AppText } from "../../../components/UI/Text/AppText";
 
 export default function PoProductPage() {
     const location = useLocation();
@@ -155,8 +156,8 @@ export default function PoProductPage() {
     return (
         <Box>
             <Card shadow="sm" padding="lg">
-                <Group justify="space-between" mb="md">
-                    <Group>
+                <Group justify="space-between" align="end" mb="md">
+                    <Group align="start">
                         <IconButton
                             onClick={() => navigate(-1)}
                             size="medium"
@@ -165,7 +166,13 @@ export default function PoProductPage() {
                         >
                             <ArrowBackIcon />
                         </IconButton>
-                        <Title order={3}>PO Items for {purchase_order_id}</Title>
+                        <Stack gap={1}>
+                            <Title order={3} mb="">PO Items for {purchase_order_id}</Title>
+                            <AppText loading={loading} skeletonWidth={200} c="dimmed">Supplier: {poOrderInfo?.supplier?.name}</AppText>
+                            <AppText loading={loading} skeletonWidth={200} c="dimmed">Email: {poOrderInfo?.supplier?.email}</AppText>
+                            <AppText loading={loading} skeletonWidth={220} c="dimmed">Phone: {poOrderInfo?.supplier?.phone}</AppText>
+                            <AppText loading={loading} skeletonWidth={250} c="dimmed">Address: {poOrderInfo?.supplier?.address}</AppText>
+                        </Stack>
                     </Group>
                     {poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT && (
                         <AppButton loading={loading} onClick={handleAddItem}>

@@ -20,7 +20,8 @@ import { loadingActions } from "../../stores/loadingStore";
 import FilterInputs from "../../components/Filters/FilterSearch";
 
 export default function PoPage() {
-    const { purchaseOrders,
+    const { 
+        purchaseOrders,
         suppliers,
         refetch,
         loading,

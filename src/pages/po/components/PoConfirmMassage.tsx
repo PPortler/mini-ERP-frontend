@@ -25,18 +25,19 @@ export const POConfirmMessage: React.FC<POConfirmMessageProps> = ({ po, nextStat
 
             {/* ข้อมูล PO */}
             <Stack gap={2} mt="sm">
-                <Group gap="apart">
-                    <Text><b>PO ID:</b> {po.purchase_order_id}</Text>
-                </Group>
+                <Text><b>PO ID:</b> {po.purchase_order_id}</Text>
                 <Text><b>Supplier:</b> {po.supplier_name}</Text>
+                <Text><b>Email:</b> {po.supplier?.email}</Text>
+                <Text><b>Phone:</b> {po.supplier?.phone}</Text>
+                <Text><b>Address:</b> {po.supplier?.address}</Text>
             </Stack>
 
             {/* รายการสินค้า */}
             {po.purchase_order_items && po.purchase_order_items.length > 0 && (
                 <>
                     <Divider label="Products" labelPosition="center" />
-                    {(po.purchase_order_items as PoConfirmProductType[]).map((p) => (
-                        <Group justify="space-between" key={p.product?.product_id}>
+                    {(po.purchase_order_items as PoConfirmProductType[]).map((p, index) => (
+                        <Group justify="space-between" key={index}>
                             <Box>
                                 {p.product?.product_code}/{p.product?.name}
                             </Box>

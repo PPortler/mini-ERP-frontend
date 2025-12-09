@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
-import { ProductService } from "../../../services/ProductService";
 import { SupplierService } from "../../../services/SupplierService";
 import type { PurchaseOrderType } from "../../../types/purchaes";
 import type { SupplierType } from "../../../types/suppliers";
@@ -29,15 +28,13 @@ export const useLoadInitialData = () => {
         try {
             setLoading(true);
 
-            const [poRes, supplierRes, productRes] = await Promise.all([
+            const [poRes, supplierRes] = await Promise.all([
                 PurchaseOrderService.getByParams(status, sortField),
                 SupplierService.getAll(),
-                ProductService.getAll(),
             ]);
 
             if (!poRes.ok) throw new Error(poRes.message || "Failed to load purchase orders");
             if (!supplierRes.ok) throw new Error(supplierRes.message || "Failed to load suppliers");
-            if (!productRes.ok) throw new Error(productRes.message || "Failed to load products");
 
             setPurchaseOrders(poRes.data);
             setSuppliers(supplierRes.data);
