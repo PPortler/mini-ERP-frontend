@@ -14,7 +14,7 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 import { ProductService } from '../../services/ProductService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
-import AppButton from '../../components/Form/AppButton';
+import AppButton from '../../components/UI/Button/AppButton';
 import { productSchema } from '../../schemas/productSchema';
 import { loadingActions } from '../../stores/loadingStore';
 import { useNavigate } from 'react-router-dom';
@@ -158,11 +158,9 @@ function ProductPage() {
     accessor: 'action',
     cell: (row: ProductType) => (
       <Group gap="xs">
-        {/* ปุ่ม view ทุก role สามารถเห็น */}
         <ActionIcon color="green" onClick={() => handleNavigateToStock(row.product_id)}>
           <VisibilityIcon fontSize="small" />
         </ActionIcon>
-        {/* ปุ่ม edit/delete เฉพาะ admin หรือ staff */}
         {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
           <>
             <ActionIcon color="blue" onClick={() => handleEdit(row)}>

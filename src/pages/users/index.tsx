@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ActionIcon, Box, Card, Group, Title } from "@mantine/core";
 import type { Column } from "../../components/Table/DataTable";
-import AppButton from "../../components/Form/AppButton";
+import AppButton from "../../components/UI/Button/AppButton";
 import DataTable from "../../components/Table/DataTable";
 import ConfirmModal from "../../components/Models/ConfirmModel";
 import FormModel from "../../components/Models/FormModel";

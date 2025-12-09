@@ -12,7 +12,7 @@ import ConfirmModal from '../../components/Models/ConfirmModel';
 import { SupplierService } from '../../services/SupplierService';
 import { notify } from '../../utils/Notify';
 import { supplierSchema } from '../../schemas/supplierSchema';
-import AppButton from '../../components/Form/AppButton';
+import AppButton from '../../components/UI/Button/AppButton';
 import { loadingActions } from '../../stores/loadingStore';
 
 function SupplierPage() {

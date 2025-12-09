@@ -2,12 +2,12 @@ import { Box, Card, Group, Title, Tabs } from "@mantine/core";
 import DataTable from "../../components/Table/DataTable";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import { parseDDMMYYYY, parseMonthString, toDDMMYYYY, toMMYYYY } from "../../utils/formatDate";
-import AppButton from "../../components/Form/AppButton";
+import AppButton from "../../components/UI/Button/AppButton";
 import type { StockMovementItemType, StockSummaryProductType } from "../../types/reports";
 import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
 import { TAB_TYPES_REPORTS } from "./const/enum";
-import AppDatePicker from "../../components/Form/AppDatePicker";
+import AppDatePicker from "../../components/UI/Button/AppDatePicker";
 import { loadingActions } from "../../stores/loadingStore";
 import { parseDate } from "../../utils/getDateUtils";
 

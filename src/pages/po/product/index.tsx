@@ -6,19 +6,17 @@ import { PurchaseOrderService } from "../../../services/PurchaseOrderService";
 import { notify } from "../../../utils/Notify";
 import type { PurchaseOrderItemType } from "../../../types/purchaes";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
-import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useLocation } from "react-router-dom";
 import { poOrderItemsSchemaAdd, poOrderItemsSchemaEdit } from "../../../schemas/poOrderItemSchema";
-import AppButton from "../../../components/Form/AppButton";
+import AppButton from "../../../components/UI/Button/AppButton";
 import { ROLES, STATUS_PO } from "../../../constants/enum/enum";
 import { loadingActions } from "../../../stores/loadingStore";
 import ConfirmModal from "../../../components/Models/ConfirmModel";
 import { AppText } from "../../../components/UI/Text/AppText";
 import { getRoleCurrent } from "../../../utils/RoleUtil";
+import { BackButton } from "../../../components/UI/Button/BackButton";
 
 export default function PoProductPage() {
     const roleCurrent = getRoleCurrent()
@@ -26,7 +24,6 @@ export default function PoProductPage() {
     const searchParams = new URLSearchParams(location.search);
     const purchase_order_id = searchParams.get("po");
     const { poItems, refetch, products, loading, poOrderInfo } = useLoadInitialData(purchase_order_id!);
-    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [modalConfirmOpen, setModalConfirmOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItemType | null>(null);
@@ -159,14 +156,7 @@ export default function PoProductPage() {
             <Card shadow="sm" padding="lg">
                 <Group justify="space-between" align="end" mb="md">
                     <Group align="start">
-                        <IconButton
-                            onClick={() => navigate(-1)}
-                            size="medium"
-                            color="primary"
-                            aria-label="back"
-                        >
-                            <ArrowBackIcon />
-                        </IconButton>
+                        <BackButton />
                         <Stack gap={1}>
                             <Title order={3} mb="">PO Items for {purchase_order_id}</Title>
                             {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (

@@ -12,7 +12,7 @@ import { useLoadInitialData } from './hooks/useLoadInitialData';
 import { CatagoriesService } from '../../services/CatagoriesService';
 import { notify } from '../../utils/Notify';
 import FilterInputs from '../../components/Filters/FilterSearch';
-import AppButton from '../../components/Form/AppButton';
+import AppButton from '../../components/UI/Button/AppButton';
 import { categorySchema } from '../../schemas/categorySchema';
 import { loadingActions } from '../../stores/loadingStore';
 

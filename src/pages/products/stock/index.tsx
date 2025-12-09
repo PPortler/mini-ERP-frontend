@@ -2,9 +2,6 @@ import { Badge, Box, Card, Divider, Grid, Group, Stack, Text } from '@mantine/co
 import { useLoadInitialData } from './hooks/useLoadInitialData'
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import IconButton from '@mui/material/IconButton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate } from 'react-router-dom';
 import { parseDate } from '../../../utils/getDateUtils';
 import { Skeleton } from "@mantine/core";
 import { SummaryCard } from '../../../components/UI/SummaryCard';
@@ -12,6 +9,7 @@ import ChartWrapper from '../../../components/Polish/ChartWrapper';
 import type { ApexOptions } from "apexcharts";
 import { useStockMovement } from './hooks/useStockMovement';
 import { InfoCard } from './components/InfoCard';
+import { BackButton } from '../../../components/UI/Button/BackButton';
 
 function StockProductPage() {
 
@@ -23,7 +21,6 @@ function StockProductPage() {
         response?.stock_summary
     );
 
-    const navigate = useNavigate();
     const product = response?.product;
     const stock = response?.stock_summary;
     const isLowStock = response?.is_low_stock;
@@ -48,18 +45,9 @@ function StockProductPage() {
         <Box>
             <Card shadow="sm" padding="lg">
                 <Stack gap="md">
-
                     {/* Header */}
                     <Group justify="space-between">
-                        <IconButton
-                            onClick={() => navigate(-1)}
-                            size="medium"
-                            color="primary"
-                            aria-label="back"
-                        >
-                            <ArrowBackIcon />
-                        </IconButton>
-
+                        <BackButton />
                         <Box style={{ flex: 1 }}>
                             {loading ? (
                                 <>
