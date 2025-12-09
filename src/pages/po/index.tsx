@@ -5,7 +5,7 @@ import type { PurchaseOrderType } from "../../types/purchaes";
 import FormModel from "../../components/Models/FormModel";
 import { notify } from "../../utils/Notify";
 import { PurchaseOrderService } from "../../services/PurchaseOrderService";
-import { ROLES, STATUS_PO } from "../../constants/enum/enum";
+import { ROLES, STATUS_PO, TABLE_CONFIG } from "../../constants/enum/enum";
 import { useNavigate } from "react-router-dom";
 import { getRoleCurrent } from "../../utils/RoleUtil";
 import DataTable from "../../components/Table/DataTable";
@@ -199,7 +199,7 @@ export default function PoPage() {
                     loading={loading}
                     columns={columnsWithAction}
                     data={purchaseOrders}
-                    pageSize={10}
+                    pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE}
                 />
             </Card>
             {/* Form Modal สำหรับสร้าง/แก้ไข PO */}

@@ -12,6 +12,7 @@ export interface ApiPaginationResponse<T> {
   page: number;
   pageSize: number;
   totalPages: number;
+  Total?: number //sometime backend sent it
 }
 
 export type ProductResponse = ApiPaginationResponse<ProductType[]> & {

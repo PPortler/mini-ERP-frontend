@@ -8,13 +8,41 @@ import { useState } from "react";
 import ViewModal from "../../components/Models/ViewModal";
 import InfoRow from "../../components/UI/Text/InfoRow";
 import { AppText } from "../../components/UI/Text/AppText";
-import { AUDIT_STATUS } from "../../constants/enum/enum";
+import { ACTION_METHOD, AUDIT_STATUS } from "../../constants/enum/enum";
 import StatusBadge from "../../components/UI/StatusBagde";
+import FilterInputs from "../../components/Filters/FilterSearch";
+import AppDatePicker from "../../components/UI/Button/AppDatePicker";
+import { parseDDMMYYYY, toDDMMYYYY } from "../../utils/formatDate";
 
 function AuditLogPage() {
-  const { auditLogs, loading } = useLoadInitialData();
+  const {
+    auditLogs,
+    loading,
+    page,
+    pageSize,
+    setPage,
+    setPageSize,
+    date,
+    action,
+    userId,
+    setUserId,
+    setDate,
+    total,
+    setAction,
+    users
+  } = useLoadInitialData();
   const [isModalView, setIsModalView] = useState<boolean>()
   const [selectedItem, setSelectedItem] = useState<AuditLogType>()
+
+  const userOption = users.map(item => ({
+    label: item.username,
+    value: item.user_id.toString()
+  }));
+
+  const actionMethodOptions = Object.entries(ACTION_METHOD).map(([, value]) => ({
+    label: value,
+    value: value
+  }));
 
   const OpenViewDetail = (items: AuditLogType) => {
     setSelectedItem(items);
@@ -68,11 +96,44 @@ function AuditLogPage() {
         <Title order={3} mb="md">
           Audit Logs
         </Title>
+        <Group justify="space-between">
+          <FilterInputs
+            fields={[
+              {
+                key: "username",
+                label: "Username",
+                type: "select",
+                value: userId,
+                options: userOption,
+                onChange: setUserId,
+              },
+              {
+                key: "action",
+                label: "Action",
+                type: "select",
+                value: action,
+                options: actionMethodOptions,
+                onChange: setAction,
+              },
+            ]}
+          />
+          <AppDatePicker
+            label="Date"
+            value={parseDDMMYYYY(date)}
+            onChange={(newValue) => setDate(toDDMMYYYY(newValue))}
+            views={["year", "month", "day"]}
+          />
 
+        </Group>
         <DataTable
           loading={loading}
           data={auditLogs}
-          columns={columnsWithAction} pageSize={15}
+          columns={columnsWithAction}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          page={page}
+          onPageSizeChange={setPageSize}
+          total={total}
         />
       </Card>
 
@@ -87,7 +148,7 @@ function AuditLogPage() {
               <InfoRow label="Created At" value={`${parseDate(selectedItem.created_at || "").dateString}, ${parseDate(selectedItem.created_at || "").timeString}`} />
               <InfoRow label="User ID" value={selectedItem.user_id} />
               <InfoRow label="Audit Log ID" value={selectedItem.audit_log_id} />
-              <InfoRow label="User" value={selectedItem.username} />
+              <InfoRow label="Username" value={selectedItem.username} />
               <InfoRow label="Action" value={selectedItem.action} />
               <InfoRow label="Path" value={selectedItem.path} />
               <InfoRow

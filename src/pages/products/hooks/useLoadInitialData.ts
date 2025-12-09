@@ -9,7 +9,7 @@ import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSea
 import { SEARCH_CONFIG, TABLE_CONFIG } from "../../../constants/enum/enum";
 
 export const useLoadInitialData = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const initialPage = parseInt(searchParams.get("page") || TABLE_CONFIG.DEFAULT_PAGE.toString());
   const initialPageSize = parseInt(searchParams.get("pageSize") || TABLE_CONFIG.DEFAULT_PAGE_SIZE.toString());
@@ -95,6 +95,5 @@ export const useLoadInitialData = () => {
     setSortField,
     sortField,
     sortOrder,
-    setSearchParams
   };
 };

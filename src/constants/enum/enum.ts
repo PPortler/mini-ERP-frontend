@@ -34,7 +34,7 @@ export const SORT_BY_TYPE = {
 }
 
 export const TABLE_CONFIG = {
-  DEFAULT_PAGE_SIZE: 10,
+  DEFAULT_PAGE_SIZE: 20,
   DEFAULT_PAGE: 1
 }
 
@@ -53,4 +53,12 @@ export const AUDIT_STATUS = {
   PENDING: "pending",
   SUCCESS: "success",
   FAILED: "Failed"
+}
+
+export const ACTION_METHOD = {
+  POST: "POST",
+  PUT: "PUT",
+  GET: "GET",
+  DELETE: "DELETE",
+  PATCH: "PATCH"
 }

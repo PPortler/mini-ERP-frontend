@@ -24,20 +24,19 @@ export const AuditLogService = {
   async getByParams(
     page?: number,
     pageSize?: number,
-    search?: string,
-    sortField?: string,
-    sortOrder?: string
+    action?: string,
+    userId?: string,
+    date?: string
   ): Promise<{ ok: true; data: AuditLogResponse } | { ok: false; message: string }> {
     // if (import.meta.env.VITE_USE_MOCK === "true") {
     //   return { ok: true, data: mockAuditLogs };
     // }
-
     const params = {
       page: page,
       pageSize: pageSize,
-      search: search,
-      sortField: sortField,
-      sortOrder: sortOrder
+      action: action,
+      user: userId,
+      date: date
     }
     try {
       const res = await AxiosUtil.createRequest<AuditLogResponse>({
@@ -46,9 +45,16 @@ export const AuditLogService = {
         params,
       });
       if (!res.ok) return { ok: false, message: res.message };
-      
+
+     const mappedData: AuditLogResponse = {
+                ...res.data,
+                data: {
+                  ...res.data.Items ?? [],
+                },
+            };
+
       return {
-        ok: true, data: res.data,
+        ok: true, data: mappedData,
       };
     } catch (err: unknown) {
       let message = "Error to load data.";

@@ -4,7 +4,7 @@ import { useLoadInitialData } from './hooks/useLoadInitialData';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getRoleCurrent } from '../../utils/RoleUtil';
-import { ROLES } from '../../constants/enum/enum';
+import { ROLES, TABLE_CONFIG } from '../../constants/enum/enum';
 import { useState } from 'react';
 import type { SupplierType } from '../../types/suppliers';
 import FormModel from '../../components/Models/FormModel';
@@ -167,7 +167,11 @@ function SupplierPage() {
             )}
           </Box>
         </Group>
-        <DataTable loading={loading} columns={columnsWithAction} data={data} pageSize={10} />
+        <DataTable 
+        loading={loading} 
+        columns={columnsWithAction} 
+        data={data} 
+        pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE} />
       </Card>
 
       <ConfirmModal
