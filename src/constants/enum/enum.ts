@@ -48,3 +48,9 @@ export const CATEGORY_MENU = {
   PURCHASE: "Purchase",
   ADMIN: "Admin"
 }
+
+export const AUDIT_STATUS = {
+  PENDING: "pending",
+  SUCCESS: "success",
+  FAILED: "Failed"
+}

@@ -138,7 +138,15 @@ export default function PoPage() {
         },
         {
             header: "Status", accessor: "status",
-            cell: (row: PurchaseOrderType) => <StatusBadge status={row.status} />,
+            cell: (row: PurchaseOrderType) => {
+                const statusColor: Record<string, string> = {
+                    [STATUS_PO.DRAFT]: "gray",
+                    [STATUS_PO.CONFIRMED]: "blue",
+                    [STATUS_PO.RECEIVED]: "green",
+                    [STATUS_PO.CANCELLED]: "red",
+                };
+                return <StatusBadge statusColor={statusColor} status={row.status} />
+            },
         },
         {
             header: "Created At", accessor: "created_at",

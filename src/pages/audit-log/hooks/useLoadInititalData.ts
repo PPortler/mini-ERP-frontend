@@ -10,14 +10,13 @@ export const useLoadInitialData = () => {
   const fetchAuditLogs = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await AuditLogService.getAll();
+      const res = await AuditLogService.getByParams();
       if (res.ok) {
-        setAuditLogs(res.data);
+        setAuditLogs(res.data.Items || []);
         setError(null);
       } else {
         setError(res.message || "Failed to load audit logs");
       }
-
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || "Failed to load audit logs");

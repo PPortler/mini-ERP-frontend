@@ -36,5 +36,5 @@ export type UserResponse = ApiPaginationResponse<UserInfoType[]> & {
   users?: UserInfoType[]
 };
 export type AuditLogResponse = ApiPaginationResponse<AuditLogType[]> & {
-  auditLog?: AuditLogType[]
+  Items?: AuditLogType[]
 };

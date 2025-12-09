@@ -42,18 +42,13 @@ export const AuditLogService = {
     try {
       const res = await AxiosUtil.createRequest<AuditLogResponse>({
         method: "GET",
-        url: "/audit-log",
+        url: "/audit-logs",
         params,
       });
       if (!res.ok) return { ok: false, message: res.message };
-
-      const mappedData: AuditLogResponse = {
-        ...res.data,
-        data: res.data.auditLog ?? [],
-      };
-
+      
       return {
-        ok: true, data: mappedData,
+        ok: true, data: res.data,
       };
     } catch (err: unknown) {
       let message = "Error to load data.";
