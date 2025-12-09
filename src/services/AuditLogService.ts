@@ -1,6 +1,7 @@
 import { AxiosUtil } from "../utils/AxiosUtil";
 import { mockAuditLogs } from "../mocks/mockAuditLogs"; // ไฟล์ mock ที่เราสร้างก่อนหน้านี้
 import type { AuditLogType } from "../types/auditLog";
+import type { AuditLogResponse } from "../types/apiResponse";
 export type AuditLogListResponse = AuditLogType[];
 
 export type AuditLogServiceResult =
@@ -18,6 +19,49 @@ export const AuditLogService = {
       method: "GET",
       url: "/audit-logs",
     });
+  },
+
+  async getByParams(
+    page?: number,
+    pageSize?: number,
+    search?: string,
+    sortField?: string,
+    sortOrder?: string
+  ): Promise<{ ok: true; data: AuditLogResponse } | { ok: false; message: string }> {
+    // if (import.meta.env.VITE_USE_MOCK === "true") {
+    //   return { ok: true, data: mockAuditLogs };
+    // }
+
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      search: search,
+      sortField: sortField,
+      sortOrder: sortOrder
+    }
+    try {
+      const res = await AxiosUtil.createRequest<AuditLogResponse>({
+        method: "GET",
+        url: "/audit-log",
+        params,
+      });
+      if (!res.ok) return { ok: false, message: res.message };
+
+      const mappedData: AuditLogResponse = {
+        ...res.data,
+        data: res.data.auditLog ?? [],
+      };
+
+      return {
+        ok: true, data: mappedData,
+      };
+    } catch (err: unknown) {
+      let message = "Error to load data.";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      return { ok: false, message };
+    }
   },
 
   // // ดึง audit log ตาม ID

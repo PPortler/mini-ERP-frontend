@@ -1,3 +1,4 @@
+import type { AuditLogType } from "./auditLog";
 import type { CatagoriesType } from "./catagories";
 import type { ProductType } from "./product";
 import type { PurchaseOrderType } from "./purchaes";
@@ -33,4 +34,7 @@ export type StockTransactionResponse = ApiPaginationResponse<StockTransactionTyp
 };
 export type UserResponse = ApiPaginationResponse<UserInfoType[]> & {
   users?: UserInfoType[]
+};
+export type AuditLogResponse = ApiPaginationResponse<AuditLogType[]> & {
+  auditLog?: AuditLogType[]
 };
