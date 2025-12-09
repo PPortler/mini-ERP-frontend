@@ -161,10 +161,7 @@ export default function PoPage() {
         handleDeletePO
     );
 
-    const columnsWithAction =
-        roleCurrent !== ROLES.ADMIN && roleCurrent !== ROLES.STAFF
-            ? [...columnPoOrder]
-            : [...columnPoOrder, actionColumn];
+    const columnsWithAction = [...columnPoOrder, actionColumn];
 
     return (
         <Box>

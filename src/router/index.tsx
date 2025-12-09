@@ -109,7 +109,7 @@ export const router = createBrowserRouter([
     {
         path: "po/products",
         element: (
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
+            <ProtectedRoute allowedRoles={getRolesByPath("/po")}>
                 <GlobalLayout>
                     <PoProductPage />
                 </GlobalLayout>

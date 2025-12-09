@@ -14,12 +14,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useLocation } from "react-router-dom";
 import { poOrderItemsSchemaAdd, poOrderItemsSchemaEdit } from "../../../schemas/poOrderItemSchema";
 import AppButton from "../../../components/Form/AppButton";
-import { STATUS_PO } from "../../../constants/enum/enum";
+import { ROLES, STATUS_PO } from "../../../constants/enum/enum";
 import { loadingActions } from "../../../stores/loadingStore";
 import ConfirmModal from "../../../components/Models/ConfirmModel";
 import { AppText } from "../../../components/UI/Text/AppText";
+import { getRoleCurrent } from "../../../utils/RoleUtil";
 
 export default function PoProductPage() {
+    const roleCurrent = getRoleCurrent()
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const purchase_order_id = searchParams.get("po");
@@ -167,10 +169,14 @@ export default function PoProductPage() {
                         </IconButton>
                         <Stack gap={1}>
                             <Title order={3} mb="">PO Items for {purchase_order_id}</Title>
-                            <AppText loading={loading} skeletonWidth={200} c="dimmed">Supplier: {poOrderInfo?.supplier?.name}</AppText>
-                            <AppText loading={loading} skeletonWidth={200} c="dimmed">Email: {poOrderInfo?.supplier?.email}</AppText>
-                            <AppText loading={loading} skeletonWidth={220} c="dimmed">Phone: {poOrderInfo?.supplier?.phone}</AppText>
-                            <AppText loading={loading} skeletonWidth={250} c="dimmed">Address: {poOrderInfo?.supplier?.address}</AppText>
+                            {(roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) && (
+                                <>
+                                    <AppText loading={loading} skeletonWidth={200} c="dimmed">Supplier: {poOrderInfo?.supplier?.name}</AppText>
+                                    <AppText loading={loading} skeletonWidth={200} c="dimmed">Email: {poOrderInfo?.supplier?.email}</AppText>
+                                    <AppText loading={loading} skeletonWidth={220} c="dimmed">Phone: {poOrderInfo?.supplier?.phone}</AppText>
+                                    <AppText loading={loading} skeletonWidth={250} c="dimmed">Address: {poOrderInfo?.supplier?.address}</AppText>
+                                </>
+                            )}
                         </Stack>
                     </Group>
                     {poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT && (

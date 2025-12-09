@@ -3,9 +3,12 @@ import { PurchaseOrderService } from "../../../../services/PurchaseOrderService"
 import { ProductService } from "../../../../services/ProductService";
 import type { PurchaseOrderItemType, PurchaseOrderType } from "../../../../types/purchaes";
 import type { ProductType } from "../../../../types/product";
+import { getRoleCurrent } from "../../../../utils/RoleUtil";
+import { ROLES } from "../../../../constants/enum/enum";
 
 export const useLoadInitialData = (purchase_order_id: string) => {
 
+  const roleCurrent = getRoleCurrent()
   const [loading, setLoading] = useState<boolean>(false);
   const [poItems, setPoItems] = useState<PurchaseOrderItemType[]>([]);
   const [poOrderInfo, setPoOrderInfo] = useState<PurchaseOrderType>();
@@ -19,13 +22,17 @@ export const useLoadInitialData = (purchase_order_id: string) => {
       // Fetch PO items
       const poRes = await PurchaseOrderService.getItemsByPOId(purchase_order_id);
 
-      if(!poRes.ok) throw new Error(poRes.message || "Failed to fetch PO items");
+      if (!poRes.ok) throw new Error(poRes.message || "Failed to fetch PO items");
       setPoItems(poRes.data);
 
       // Fetch PO order info
-      const poOrderRes = await PurchaseOrderService.getById(purchase_order_id);
-      if(!poOrderRes.ok) throw new Error(poOrderRes.message || "Failed to fetch PO order info");
-      setPoOrderInfo(poOrderRes.data!);
+      if (roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) {
+        const poOrderRes = await PurchaseOrderService.getById(purchase_order_id);
+        if (!poOrderRes.ok) {
+          throw new Error(poOrderRes.message || "Failed to fetch PO order info");
+        }
+        setPoOrderInfo(poOrderRes.data!);
+      }
 
       // Fetch products
       const productRes = await ProductService.getAll();

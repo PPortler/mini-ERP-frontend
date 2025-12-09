@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ActionIcon, Group } from "@mantine/core";
 import ConfirmModal from "../../../components/Models/ConfirmModel";
 import type { PurchaseOrderType } from "../../../types/purchaes";
-import { STATUS_PO } from "../../../constants/enum/enum";
+import { ROLES, STATUS_PO } from "../../../constants/enum/enum";
+import { POConfirmMessage } from "../components/PoConfirmMassage";
+import { notify } from "../../../utils/Notify";
 
 // Icons
 import CheckIcon from "@mui/icons-material/Check";
@@ -10,9 +12,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-// import DeleteIcon from "@mui/icons-material/Delete";
-import { POConfirmMessage } from "../components/PoConfirmMassage";
-import { notify } from "../../../utils/Notify";
+import { getRoleCurrent } from "../../../utils/RoleUtil";
 
 export default function usePOActionColumn(
   handleEditPO: (po: PurchaseOrderType) => void,
@@ -20,9 +20,9 @@ export default function usePOActionColumn(
   handleChangeStatus: (po: PurchaseOrderType, status: string) => void,
   handleDeletePO: (po: PurchaseOrderType) => void
 ) {
+  const roleCurrent = getRoleCurrent()
   const [confirmStatusOpen, setConfirmStatusOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-
   const [currentPO, setCurrentPO] = useState<PurchaseOrderType | null>(null);
   const [nextStatus, setNextStatus] = useState<string>("");
 
@@ -43,16 +43,26 @@ export default function usePOActionColumn(
     setConfirmStatusOpen(true);
   };
 
-  // const openDeleteConfirm = (po: PurchaseOrderType) => {
-  //   setCurrentPO(po);
-  //   setConfirmDeleteOpen(true);
-  // };
-
   const actionColumn = {
     header: "Action",
     accessor: "action",
     cell: (row: PurchaseOrderType) => {
       const buttons: React.ReactNode[] = [];
+
+      if (roleCurrent === ROLES.VIEWER) {
+        return (
+          <Group gap="xs">
+            <ActionIcon
+              key={`view-${row.purchase_order_id}`}
+              color="teal"
+              onClick={() => handleManageProducts(row)}
+              title="View Products"
+            >
+              <InventoryIcon fontSize="small" />
+            </ActionIcon>
+          </Group>
+        );
+      }
 
       if (row.status === STATUS_PO.DRAFT) {
         buttons.push(
@@ -98,16 +108,6 @@ export default function usePOActionColumn(
             <CancelIcon fontSize="small" />
           </ActionIcon>
         );
-        // buttons.push(
-        //   <ActionIcon
-        //     key={`delete-${row.purchase_order_id}`}
-        //     color="red"
-        //     onClick={() => openStatusConfirm(row, STATUS_PO.CANCELLED)}
-        //     title="Delete PO"
-        //   >
-        //     <DeleteIcon fontSize="small" />
-        //   </ActionIcon>
-        // );
       }
 
       else if (row.status === STATUS_PO.CONFIRMED) {
