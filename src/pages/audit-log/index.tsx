@@ -75,7 +75,7 @@ function AuditLogPage() {
         return <>{dateString}, {timeString}</>;
       }
     },
-    { header: "Audit ID", accessor: "audit_log_id" },
+    // { header: "Audit ID", accessor: "audit_log_id" },
     { header: "Username", accessor: "username" },
     { header: "Action", accessor: "action" },
     { header: "Path", accessor: "path" },
@@ -85,7 +85,6 @@ function AuditLogPage() {
         return <StatusBadge statusColor={statusColor} status={row.status} />
       }
     },
-
   ];
 
   const columnsWithAction = [...columnAuditLogs, actionColumn];

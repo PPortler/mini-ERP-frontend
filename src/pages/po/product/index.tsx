@@ -146,8 +146,12 @@ export default function PoProductPage() {
         ),
     };
 
+    const isShowAction =
+        (roleCurrent === ROLES.ADMIN || roleCurrent === ROLES.STAFF) &&
+        poOrderInfo?.status === STATUS_PO.DRAFT;
+
     const columnsWithAction =
-        poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT
+        isShowAction
             ? [...columns, actionColumn]
             : [...columns];
 
@@ -163,13 +167,13 @@ export default function PoProductPage() {
                                 <>
                                     <AppText loading={loading} skeletonWidth={200} c="dimmed">Supplier: {poOrderInfo?.supplier?.name}</AppText>
                                     <AppText loading={loading} skeletonWidth={200} c="dimmed">Email: {poOrderInfo?.supplier?.email}</AppText>
-                                    <AppText loading={loading} skeletonWidth={220} c="dimmed">Phone: {poOrderInfo?.supplier?.phone}</AppText>
+                                    <AppText loading={loading} skeletonWidth={180} c="dimmed">Phone: {poOrderInfo?.supplier?.phone}</AppText>
                                     <AppText loading={loading} skeletonWidth={250} c="dimmed">Address: {poOrderInfo?.supplier?.address}</AppText>
                                 </>
                             )}
                         </Stack>
                     </Group>
-                    {poOrderInfo && poOrderInfo.status === STATUS_PO.DRAFT && (
+                    {isShowAction && (
                         <AppButton loading={loading} onClick={handleAddItem}>
                             Add Item
                         </AppButton>
