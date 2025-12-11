@@ -104,7 +104,7 @@ export default function StockTransactionsPage() {
         { header: "Type", accessor: "type" },
         { header: "Quantity", accessor: "quantity" },
         { header: "Reason", accessor: "reason" },
-        { header: "Reference", accessor: "reference" },
+        { header: "Reference", accessor: "reference_id" },
         { header: "Create By", accessor: "created_by" },
     ]
 

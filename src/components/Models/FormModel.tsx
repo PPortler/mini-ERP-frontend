@@ -84,7 +84,7 @@ const FormModel = <T extends Record<string, unknown>>({
       >
         {fields.map((f) => {
           const handleChange = (val: unknown) => {
-            form.setFieldValue(f.name as any, val as any);
+            form.setFieldValue(f.name, val as never);
             if (f.onChange) f.onChange(val, form.values);
           };
 
