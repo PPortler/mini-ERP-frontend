@@ -103,6 +103,7 @@ const FormModel = <T extends Record<string, unknown>>({
                 disabled={f.disabled}
                 error={form.errors[f.name]}
                 placeholder={f.placeholder || `Upload ${f.label}`}
+                description={f.helperText}
                 onChange={(file) => {
                   handleChange(file);
                 }}

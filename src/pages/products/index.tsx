@@ -314,6 +314,7 @@ function ProductPage() {
             label: "Product Image",
             type: "file",
             accept: ["jpg", "jpeg", "png"],
+            helperText: ` ${selectedProduct?.image_url ? `Previously uploaded file: ${selectedProduct?.image_url}` : ``}`,
             required: false,
           },
         ]}

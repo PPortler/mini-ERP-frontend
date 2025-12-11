@@ -245,6 +245,7 @@ export default function PoPage() {
                         label: "File",
                         type: "file",
                         accept: ["jpg", "jpeg", "png", "pdf", "docx"],
+                        helperText: ` ${selectedPO?.image_url ? `Previously uploaded file: ${selectedPO?.image_url}` : ``}`,
                         required: false,
                     },
                 ]}
