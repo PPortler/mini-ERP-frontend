@@ -59,6 +59,12 @@ const FormModel = <T extends Record<string, unknown>>({
   });
 
   useEffect(() => {
+    if (!opened) {
+      form.reset();
+    }
+  }, [opened]);
+
+  useEffect(() => {
     const mappedValues: Partial<T> = { ...initialValues };
     fields.forEach(f => {
       const key = f.name as keyof T;

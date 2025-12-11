@@ -135,16 +135,32 @@ export const PurchaseOrderService = {
       return { ok: true, data: [newPO] };
     }
     try {
-      const payload = {
-        supplier_id: po.supplier_id,
-        created_by: po.created_by
+      const formData = new FormData();
+
+      formData.append("supplier_id", po.supplier_id);
+      if (po.image_url && po.image_url instanceof File) {
+        formData.append("image", po.image_url);
       }
 
       const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
         method: "POST",
         url: "/purchase-orders",
-        data: payload,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      // const payload = {
+      //   supplier_id: po.supplier_id,
+      //   created_by: po.created_by
+      // }
+
+      // const res = await AxiosUtil.createRequest<PurchaseOrderResponse>({
+      //   method: "POST",
+      //   url: "/purchase-orders",
+      //   data: payload,
+      // });
 
       if (!res.ok) {
         return { ok: false, message: res.message };
@@ -204,14 +220,26 @@ export const PurchaseOrderService = {
       return { ok: true, data: [mockPurchaseOrders[idx]] };
     }
     try {
-      const payload = {
-        supplier_id: po.supplier_id,
-        created_by: po.created_by
+      // const payload = {
+      //   supplier_id: po.supplier_id,
+      //   created_by: po.created_by
+      // }
+
+      const formData = new FormData();
+
+      formData.append("supplier_id", po?.supplier_id || "");
+      formData.append("created_by", po?.created_by || "");
+      if (po.image_url && po.image_url instanceof File) {
+        formData.append("image", po.image_url);
       }
+
       const res = await AxiosUtil.createRequest<PurchaseOrderType[]>({
         method: "PUT",
         url: `/purchase-orders/${purchase_order_id}`,
-        data: payload,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       if (!res.ok) return { ok: false, message: res.message || "Failed to update PO status" };
 

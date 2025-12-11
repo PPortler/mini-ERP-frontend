@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Group, Title } from "@mantine/core";
+import { Anchor, Box, Card, Group, Title } from "@mantine/core";
 import { useLoadInitialData } from "./hooks/useLoadInitialData";
 import type { PurchaseOrderType } from "../../types/purchaes";
 import FormModel from "../../components/Models/FormModel";
@@ -150,6 +150,23 @@ export default function PoPage() {
             },
         },
         {
+            header: "Image Url", accessor: "image_url",
+            cell: (row: PurchaseOrderType) => {
+                if (!row.image_url) return "-";
+                return (
+                    <Anchor
+                        href={row.image_url.toString()}
+                        target="_blank"
+                        underline="never"
+                    >
+                        <AppButton size="xs" variant="light" color="blue">
+                            Link
+                        </AppButton>
+                    </Anchor>
+                );
+            }
+        },
+        {
             header: "Created At", accessor: "created_at",
             cell: (row: PurchaseOrderType) => {
                 const { dateString, timeString } = parseDate(row.created_at || "");
@@ -222,6 +239,13 @@ export default function PoPage() {
                         type: "select",
                         required: true,
                         options: supplierOptions,
+                    },
+                    {
+                        name: "image_url",
+                        label: "File",
+                        type: "file",
+                        accept: ["jpg", "jpeg", "png", "pdf", "docx"],
+                        required: false,
                     },
                 ]}
                 onSubmit={savePO}

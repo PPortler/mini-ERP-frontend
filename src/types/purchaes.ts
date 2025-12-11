@@ -13,6 +13,7 @@ export type PurchaseOrderType = {
   purchase_order_items?: ProductType[]
   supplier?: SupplierType
   products?: ProductType[]
+  image_url?: string | File
 };
 
 export type PurchaseOrderItemType = {

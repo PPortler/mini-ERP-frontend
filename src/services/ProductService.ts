@@ -147,7 +147,6 @@ export const ProductService = {
         formData.append("product_image", product.product_image_url);
       }
       
-
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
         method: "POST",
         url: "/products",
