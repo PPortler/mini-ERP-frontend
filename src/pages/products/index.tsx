@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Card, Group, Title } from '@mantine/core'
+import { ActionIcon, Anchor, Box, Card, Group, Title } from '@mantine/core'
 import DataTable, { type Column } from '../../components/Table/DataTable'
 import { useLoadInitialData } from './hooks/useLoadInitialData';
 import EditIcon from '@mui/icons-material/Edit';
@@ -107,7 +107,6 @@ function ProductPage() {
   const saveItems = async (updatedProduct: ProductType) => {
     loadingActions.show();
 
-    console.log("product: ", updatedProduct)
     try {
       let result;
       if (!updatedProduct.product_id) {
@@ -120,6 +119,7 @@ function ProductPage() {
           unit: updatedProduct.unit,
           category_id: updatedProduct.category_id,
           stock: updatedProduct.stock,
+          product_image_url: updatedProduct.product_image_url
         });
       } else {
         result = await ProductService.update(updatedProduct.product_id, updatedProduct);
@@ -184,6 +184,24 @@ function ProductPage() {
     { header: "Selling Price", accessor: "selling_price" },
     {
       header: "Categoty", accessor: "category_name",
+    },
+    {
+      header: "Image Url", accessor: "image_url",
+      cell: (row: ProductType) => {
+        if (!row.image_url) return "-";
+
+        return (
+          <Anchor
+            href={row.image_url}
+            target="_blank"
+            underline="never"
+          >
+            <AppButton size="xs" variant="light" color="blue">
+              Link
+            </AppButton>
+          </Anchor>
+        );
+      }
     },
     { header: "Min Stock", accessor: "min_stock" },
   ];
@@ -292,10 +310,10 @@ function ProductPage() {
             required: true
           },
           {
-            name: "product_image",
+            name: "product_image_url",
             label: "Product Image",
             type: "file",
-            accept: ["jpg", "jpeg", "png", "pdf"],
+            accept: ["jpg", "jpeg", "png"],
             required: false,
           },
         ]}

@@ -26,12 +26,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "9",
     category: findCategory("9"),
-    product_image: {
-      fileName: "superglue-12ml.png",
-      fileSize: 204800,
-      extension: "png",
-      url: "https://your-storage.com/images/superglue-12ml.png"
-    }
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
   {
     product_code: "S005",
@@ -43,6 +38,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "9",
     category: findCategory("9"),
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
   {
     product_code: "S004",
@@ -54,6 +50,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "3",
     category: findCategory("3"),
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
   {
     product_code: "S003",
@@ -65,6 +62,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "3",
     category: findCategory("3"),
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
   {
     product_code: "S002",
@@ -76,6 +74,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "1",
     category: findCategory("1"),
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
   {
     product_code: "S001",
@@ -87,6 +86,7 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "5",
     category: findCategory("5"),
+    product_image_url: "https://your-storage.com/images/superglue-12ml.png"
   },
 ];
 

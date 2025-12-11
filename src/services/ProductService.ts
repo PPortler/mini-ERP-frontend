@@ -71,6 +71,7 @@ export const ProductService = {
         url: "/products",
         params,
       });
+
       if (!res.ok) return { ok: false, message: res.message };
 
       const mappedProducts = (res.data.products ?? []).map((p) => ({
@@ -142,9 +143,10 @@ export const ProductService = {
       formData.append("min_stock", String(product.min_stock));
       formData.append("category_id", product.category_id);
 
-      if (product.product_image instanceof File) {
-        formData.append("product_image", product.product_image);
+      if (product.product_image_url && product.product_image_url instanceof File) {
+        formData.append("product_image", product.product_image_url);
       }
+      
 
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
         method: "POST",
@@ -177,43 +179,43 @@ export const ProductService = {
     }
 
     try {
-      // const payload = {
-      //   product_code: product.product_code,
-      //   name: product.name,
-      //   cost_price: product.cost_price,
-      //   selling_price: product.selling_price,
-      //   unit: product.unit,
-      //   min_stock: product.min_stock,
-      // };
-
-      // const res = await AxiosUtil.createRequest<{ product: ProductType }>({
-      //   method: "PUT",
-      //   url: `/products/${product_id}`,
-      //   data: payload,
-      // });
-
-
-      const formData = new FormData();
-
-      formData.append("product_code", product.product_code || "");
-      formData.append("name", product.name || "");
-      formData.append("cost_price", String(product.cost_price));
-      formData.append("selling_price", String(product.selling_price));
-      formData.append("unit", product.unit || "");
-      formData.append("min_stock", String(product.min_stock));
-
-      if (product.product_image instanceof File) {
-        formData.append("product_image", product.product_image);
-      }
+      const payload = {
+        product_code: product.product_code,
+        name: product.name,
+        cost_price: product.cost_price,
+        selling_price: product.selling_price,
+        unit: product.unit,
+        min_stock: product.min_stock,
+      };
 
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
-        method: "POST",
-        url: "/products",
-        data: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        method: "PUT",
+        url: `/products/${product_id}`,
+        data: payload,
       });
+
+
+      // const formData = new FormData();
+
+      // formData.append("product_code", product.product_code || "");
+      // formData.append("name", product.name || "");
+      // formData.append("cost_price", String(product.cost_price));
+      // formData.append("selling_price", String(product.selling_price));
+      // formData.append("unit", product.unit || "");
+      // formData.append("min_stock", String(product.min_stock));
+
+      // if (product.product_image instanceof File) {
+      //   formData.append("product_image", product.product_image);
+      // }
+
+      // const res = await AxiosUtil.createRequest<{ product: ProductType }>({
+      //   method: "POST",
+      //   url: "/products",
+      //   data: formData,
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
 
       if (!res.ok) return { ok: false, message: res.message };
 

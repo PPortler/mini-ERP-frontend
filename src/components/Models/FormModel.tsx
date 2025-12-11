@@ -1,8 +1,7 @@
-import { Modal, Button, Group, TextInput, Select, FileInput, Paper, Box, Text } from "@mantine/core";
+import { Modal, Button, Group, TextInput, Select, FileInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ValidationError, type ObjectSchema } from "yup";
-import type { FileType } from "../../types/file";
 
 type Field = {
   name: string;
@@ -13,7 +12,7 @@ type Field = {
   required?: boolean;
   placeholder?: string;
   helperText?: string;
-  accept?: string[];
+  accept?: string[]
   onChange?: (value: unknown, values: Record<string, unknown>) => void;
 };
 
@@ -36,9 +35,6 @@ const FormModel = <T extends Record<string, unknown>>({
   onSubmit,
   validationSchema,
 }: ReusableFormModalProps<T>) => {
-  const [uploadedFiles, setUploadedFiles] = useState<FileType[]>([]);
-  const [fileInputKey, setFileInputKey] = useState(0);
-
   const form = useForm<T>({
     initialValues,
     validate: validationSchema
@@ -62,42 +58,12 @@ const FormModel = <T extends Record<string, unknown>>({
       : undefined,
   });
 
-  const handleDelete = (fieldName: string) => {
-    setUploadedFiles([]);
-    form.setFieldValue(fieldName as any, null);
-    setFileInputKey(prev => prev + 1);
-  };
-
   useEffect(() => {
     const mappedValues: Partial<T> = { ...initialValues };
     fields.forEach(f => {
       const key = f.name as keyof T;
       if (f.type === "number" && mappedValues[key] === 0) {
         mappedValues[key] = undefined;
-      }
-      if (f.type === "file") {
-        const value = initialValues[f.name] as FileType;
-        if (!value) return;
-        let normalizedArray: FileType[] = [];
-
-        // case: backend sent array
-        if (Array.isArray(value)) {
-          normalizedArray = value;
-        }
-        // case: backend sent object
-        else if (typeof value === "object") {
-          normalizedArray = [value];
-        }
-
-        // map ให้เป็นรูปแบบที่ UI ใช้
-        const mapped = normalizedArray.map(file => ({
-          fileName: file.fileName,
-          extension: file.extension,
-          fileUrl: file.fileUrl,
-          fileSize: file.fileSize || 0,
-        }));
-
-        setUploadedFiles(mapped);
       }
     });
     form.setValues(mappedValues as T);
@@ -118,86 +84,24 @@ const FormModel = <T extends Record<string, unknown>>({
 
           if (f.type === "file") {
             return (
-              <>
-                <FileInput
-                  mb="sm"
-                  key={f.name + fileInputKey}
-                  label={
-                    <span>
-                      {f.label} {f.required && <span style={{ color: "red" }}>*</span>}
-                    </span>
-                  }
-                  accept={f.accept?.map(ext => "." + ext).join(",")}
-                  disabled={f.disabled}
-                  error={form.errors[f.name]}
-                  placeholder={f.placeholder || `Upload ${f.label}`}
-                  onChange={(file) => {
-                    if (!file) return;
-                    if (!(file instanceof File)) {
-                      form.setFieldError(f.name, "Invalid file");
-                      return;
-                    }
-                    form.setFieldValue(f.name as any, file);
-                    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-                    const preview = {
-                      fileName: file.name,
-                      extension: ext,
-                      fileSize: file.size,
-                      fileUrl: URL.createObjectURL(file),
-                    };
+              <FileInput
+                mb="sm"
+                key={f.name}
 
-                    setUploadedFiles([preview]);
-                  }}
-                />
-
-                {uploadedFiles.length > 0 && (
-                  <Box mt="sm">
-                    {uploadedFiles.map((file, idx) => (
-                      <Paper
-                        key={idx}
-                        withBorder
-                        radius="md"
-                        p="sm"
-                        mt="xs"
-                      >
-                        <Group justify="space-between" gap="apart" align="center">
-                          <Box>
-                            <Text size="sm" fw={500} lineClamp={1}
-                              style={{
-                                maxWidth: 300,
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {file.fileName}
-                            </Text>
-                            <Text size="xs" c="dimmed"
-                              style={{
-                                maxWidth: 100,
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {file.extension?.toUpperCase()} • {(file.fileSize / 1024).toFixed(1)} KB
-                            </Text>
-                          </Box>
-
-                          <Button
-                            color="red"
-                            variant="light"
-                            size="xs"
-                            onClick={() => handleDelete(f.name)}
-                          >
-                            ลบ
-                          </Button>
-                        </Group>
-                      </Paper>
-                    ))}
-                  </Box>
-                )}
-              </>
+                label={
+                  <span>
+                    {f.label} {f.required && <span style={{ color: 'red' }}>*</span>}
+                  </span>
+                }
+                accept={f.accept?.map(ext => "." + ext).join(",")}
+                disabled={f.disabled}
+                error={form.errors[f.name]}
+                placeholder={f.placeholder || `Upload ${f.label}`}
+                onChange={(file) => {
+                  handleChange(file);
+                }}
+                onBlur={() => form.validateField(f.name)}
+              />
             )
           }
 
