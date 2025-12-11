@@ -21,6 +21,12 @@ export const TYPE_STOCK_TRANSECTION = {
   ADJUST: "ADJUST"
 }
 
+export const TAB_TYPES_REPORTS = {
+  SUMMARY: "summary",
+  MOVEMENTS: "movements",
+  PURCHASES: "purchases",
+} as const
+
 export const STATUS_PO = {
   DRAFT: "DRAFT",
   CONFIRMED: "CONFIRMED",

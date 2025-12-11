@@ -4,7 +4,7 @@ import type { PurchaseSummaryItemType, StockMovementItemType, StockSummaryProduc
 import { toDDMMYYYY, toMMYYYY } from "../../../utils/formatDate";
 import { useSearchParams } from "react-router-dom";
 import { useSyncStateWithSearchParams } from "../../../hooks/useSyncStateWithSearchParams";
-import { TAB_TYPES_REPORTS } from "../const/enum";
+import { TAB_TYPES_REPORTS } from "../../../constants/enum/enum";
 
 export const useLoadInitialData = () => {
     const [searchParams, setSearchParams] = useSearchParams();

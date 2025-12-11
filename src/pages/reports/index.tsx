@@ -9,13 +9,7 @@ import { notify } from "../../utils/Notify";
 import AppDatePicker from "../../components/UI/Button/AppDatePicker";
 import { loadingActions } from "../../stores/loadingStore";
 import { parseDate } from "../../utils/getDateUtils";
-import { TABLE_CONFIG } from "../../constants/enum/enum";
-
-const TAB_TYPES_REPORTS = {
-  SUMMARY: "summary",
-  MOVEMENTS: "movements",
-  PURCHASES: "purchases",
-} as const;
+import { TAB_TYPES_REPORTS, TABLE_CONFIG } from "../../constants/enum/enum";
 
 function ReportPage() {
     const {
