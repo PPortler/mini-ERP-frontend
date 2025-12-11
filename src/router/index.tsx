@@ -15,7 +15,6 @@ import ReportPage from '../pages/reports';
 import UserManagementPage from '../pages/users';
 import { getRolesByPath } from '../utils/getRoleByPath';
 import StockProductPage from '../pages/products/stock';
-// import StockPage from '../pages/products/stock';
 
 export const router = createBrowserRouter([
     {

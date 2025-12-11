@@ -6,10 +6,16 @@ import AppButton from "../../components/UI/Button/AppButton";
 import type { StockMovementItemType, StockSummaryProductType } from "../../types/reports";
 import { ReportService } from "../../services/ReportServiec";
 import { notify } from "../../utils/Notify";
-import { TAB_TYPES_REPORTS } from "./const/enum";
 import AppDatePicker from "../../components/UI/Button/AppDatePicker";
 import { loadingActions } from "../../stores/loadingStore";
 import { parseDate } from "../../utils/getDateUtils";
+import { TABLE_CONFIG } from "../../constants/enum/enum";
+
+const TAB_TYPES_REPORTS = {
+  SUMMARY: "summary",
+  MOVEMENTS: "movements",
+  PURCHASES: "purchases",
+} as const;
 
 function ReportPage() {
     const {
@@ -140,7 +146,7 @@ function ReportPage() {
                                 loading={loading}
                                 columns={columnStockSummay}
                                 data={stockSummary}
-                                pageSize={10}
+                                pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE}
                             />
                         </Box>
                     )}
@@ -172,11 +178,10 @@ function ReportPage() {
                                 loading={loading}
                                 columns={columnStockMovement}
                                 data={stockMovements}
-                                pageSize={10}
+                                pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE}
                             />
                         </Box>
                     )}
-
                     {tab === TAB_TYPES_REPORTS.PURCHASES && (
                         <Box pt="md">
                             <Group justify="space-between" mb="md">
@@ -197,7 +202,7 @@ function ReportPage() {
                                 loading={loading}
                                 columns={columnPoSummary}
                                 data={Array.isArray(purchaseSummary) ? purchaseSummary : []}
-                                pageSize={10}
+                                pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE}
                             />
                         </Box>
                     )}
