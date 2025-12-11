@@ -107,6 +107,7 @@ function ProductPage() {
   const saveItems = async (updatedProduct: ProductType) => {
     loadingActions.show();
 
+    console.log("product: ", updatedProduct)
     try {
       let result;
       if (!updatedProduct.product_id) {
@@ -289,6 +290,13 @@ function ProductPage() {
             disabled: !!selectedProduct,
             options: categoryOptions,
             required: true
+          },
+          {
+            name: "product_image",
+            label: "Product Image",
+            type: "file",
+            accept: ["jpg", "jpeg", "png", "pdf"],
+            required: false,
           },
         ]}
         onSubmit={saveItems}

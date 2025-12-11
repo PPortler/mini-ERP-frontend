@@ -1,4 +1,5 @@
 import type { CatagoriesType } from "./catagories"
+import type { FileType } from "./file";
 
 export type ProductType = {
     product_id: string,
@@ -14,6 +15,7 @@ export type ProductType = {
     category_name?: string | null;
     created_at?: string,
     updated_at?: string
+    product_image?: FileType
 }
 
 export type StockSummaryType = {

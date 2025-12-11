@@ -55,10 +55,11 @@ export default function PoPage() {
 
     const savePO = async (values: PurchaseOrderType) => {
         loadingActions.show();
+
         const prepare = {
             ...values,
             supplier_id: values.supplier_id,
-            created_by: user?.user_id,
+            created_by: user?.id,
         }
         try {
             let result;

@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useLocation } from "react-router-dom";
 import { poOrderItemsSchemaAdd, poOrderItemsSchemaEdit } from "../../../schemas/poOrderItemSchema";
 import AppButton from "../../../components/UI/Button/AppButton";
-import { ROLES, STATUS_PO } from "../../../constants/enum/enum";
+import { ROLES, STATUS_PO, TABLE_CONFIG } from "../../../constants/enum/enum";
 import { loadingActions } from "../../../stores/loadingStore";
 import ConfirmModal from "../../../components/Models/ConfirmModel";
 import { AppText } from "../../../components/UI/Text/AppText";
@@ -180,7 +180,7 @@ export default function PoProductPage() {
                     )}
                 </Group>
 
-                <DataTable loading={loading} columns={columnsWithAction} data={poItems} pageSize={10} />
+                <DataTable loading={loading} columns={columnsWithAction} data={poItems} pageSize={TABLE_CONFIG.DEFAULT_PAGE_SIZE} />
             </Card>
 
             <ConfirmModal

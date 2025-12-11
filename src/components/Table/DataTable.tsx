@@ -77,7 +77,7 @@ export default function DataTable<T>({
   };
 
   const formatCellValue = (value: number | string | null | undefined) => {
-    if (value == null) return "-";
+    if (value == null || value === "") return "-";
     if (typeof value === "number") return value.toLocaleString();
     return value;
   };

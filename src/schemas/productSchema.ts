@@ -31,10 +31,10 @@ export const productSchema = yup.object().shape({
     .min(0, "ขั้นต่ำสต็อกต้องมากกว่าหรือเท่ากับ 0")
     .required("กรุณากรอกจำนวนขั้นต่ำ"),
 
-  category_id: yup
-    .string()
-    .uuid("รูปแบบหมวดหมู่ไม่ถูกต้อง")
-    .required("กรุณาเลือกหมวดหมู่สินค้า"),
+  // category_id: yup
+  //   .string()
+  //   .uuid("รูปแบบหมวดหมู่ไม่ถูกต้อง")
+  //   .required("กรุณาเลือกหมวดหมู่สินค้า"),
 
   stock: yup
     .number()

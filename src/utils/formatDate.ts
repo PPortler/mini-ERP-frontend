@@ -4,6 +4,12 @@ export const toDDMMYYYY = (date: Date | null) => {
   if (!date) return "";
   return format(date, "dd-MM-yyyy");
 };
+
+export const toYYYYMMDD = (date: Date | null) => {
+  if (!date) return "";
+  return format(date, "yyyy-MM-dd");
+};
+
 export const toMMYYYY = (date: Date | null) => {
   if (!date) return "";
   return format(date, "MM-yyyy");
@@ -20,3 +26,11 @@ export const parseDDMMYYYY = (value: string) => {
   const [dd, mm, yyyy] = value.split("-");
   return new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
 };
+
+
+export const parseYYYYMMDD = (value: string) => {
+  if (!value) return null;
+  const [yyyy, mm, dd] = value.split("-");
+  return new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
+};
+

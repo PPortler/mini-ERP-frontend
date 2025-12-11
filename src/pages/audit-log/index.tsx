@@ -12,7 +12,7 @@ import { ACTION_METHOD, AUDIT_STATUS } from "../../constants/enum/enum";
 import StatusBadge from "../../components/UI/StatusBagde";
 import FilterInputs from "../../components/Filters/FilterSearch";
 import AppDatePicker from "../../components/UI/Button/AppDatePicker";
-import { parseDDMMYYYY, toDDMMYYYY } from "../../utils/formatDate";
+import { parseYYYYMMDD, toYYYYMMDD } from "../../utils/formatDate";
 
 function AuditLogPage() {
   const {
@@ -118,8 +118,8 @@ function AuditLogPage() {
           />
           <AppDatePicker
             label="Date"
-            value={parseDDMMYYYY(date)}
-            onChange={(newValue) => setDate(toDDMMYYYY(newValue))}
+            value={parseYYYYMMDD(date)}
+            onChange={(newValue) => setDate(toYYYYMMDD(newValue))}
             views={["year", "month", "day"]}
           />
 

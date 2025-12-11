@@ -21,6 +21,7 @@
     "@mui/material": "^7.3.6",
     "@mui/x-date-pickers": "^8.19.0",
     "@nanostores/react": "^1.0.0",
+    "@tabler/icons-react": "^3.35.0",
     "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "js-cookie": "^3.0.5",

@@ -26,6 +26,12 @@ export const mockProducts: ProductType[] = [
     unit: "Ozn",
     category_id: "9",
     category: findCategory("9"),
+    product_image: {
+      fileName: "superglue-12ml.png",
+      fileSize: 204800,
+      extension: "png",
+      url: "https://your-storage.com/images/superglue-12ml.png"
+    }
   },
   {
     product_code: "S005",

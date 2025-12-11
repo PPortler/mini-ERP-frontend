@@ -27,7 +27,7 @@ export const ProductService = {
       if (!res.ok) {
         return { ok: false, message: res.message };
       }
-    
+
       return {
         ok: true,
         data: res.data.products,
@@ -107,7 +107,7 @@ export const ProductService = {
     });
   },
 
-  // เพิ่มสินค้าใหม่
+  // create products
   async create(product: Omit<ProductType, "product_id">): Promise<ProductServiceResult> {
     if (import.meta.env.VITE_USE_MOCK === "true") {
       const newProduct = { ...product, product_id: crypto.randomUUID() };
@@ -116,20 +116,43 @@ export const ProductService = {
     }
 
     try {
-      const payload = {
-        product_code: product.product_code,
-        name: product.name,
-        cost_price: Number(product.cost_price),
-        selling_price: Number(product.selling_price),
-        unit: product.unit,
-        min_stock: Number(product.min_stock),
-        category_id: product.category_id
-      };
+      // const payload = {
+      //   product_code: product.product_code,
+      //   name: product.name,
+      //   cost_price: Number(product.cost_price),
+      //   selling_price: Number(product.selling_price),
+      //   unit: product.unit,
+      //   min_stock: Number(product.min_stock),
+      //   category_id: product.category_id
+      // };
+
+      // const res = await AxiosUtil.createRequest<{ product: ProductType }>({
+      //   method: "POST",
+      //   url: "/products",
+      //   data: payload,
+      // });
+
+      const formData = new FormData();
+
+      formData.append("product_code", product.product_code);
+      formData.append("name", product.name);
+      formData.append("cost_price", String(product.cost_price));
+      formData.append("selling_price", String(product.selling_price));
+      formData.append("unit", product.unit);
+      formData.append("min_stock", String(product.min_stock));
+      formData.append("category_id", product.category_id);
+
+      if (product.product_image instanceof File) {
+        formData.append("product_image", product.product_image);
+      }
 
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
         method: "POST",
         url: "/products",
-        data: payload,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (!res.ok) return { ok: false, message: res.message };
@@ -154,19 +177,42 @@ export const ProductService = {
     }
 
     try {
-      const payload = {
-        product_code: product.product_code,
-        name: product.name,
-        cost_price: product.cost_price,
-        selling_price: product.selling_price,
-        unit: product.unit,
-        min_stock: product.min_stock,
-      };
+      // const payload = {
+      //   product_code: product.product_code,
+      //   name: product.name,
+      //   cost_price: product.cost_price,
+      //   selling_price: product.selling_price,
+      //   unit: product.unit,
+      //   min_stock: product.min_stock,
+      // };
+
+      // const res = await AxiosUtil.createRequest<{ product: ProductType }>({
+      //   method: "PUT",
+      //   url: `/products/${product_id}`,
+      //   data: payload,
+      // });
+
+
+      const formData = new FormData();
+
+      formData.append("product_code", product.product_code || "");
+      formData.append("name", product.name || "");
+      formData.append("cost_price", String(product.cost_price));
+      formData.append("selling_price", String(product.selling_price));
+      formData.append("unit", product.unit || "");
+      formData.append("min_stock", String(product.min_stock));
+
+      if (product.product_image instanceof File) {
+        formData.append("product_image", product.product_image);
+      }
 
       const res = await AxiosUtil.createRequest<{ product: ProductType }>({
-        method: "PUT",
-        url: `/products/${product_id}`,
-        data: payload,
+        method: "POST",
+        url: "/products",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (!res.ok) return { ok: false, message: res.message };
@@ -207,5 +253,5 @@ export const ProductService = {
       return { ok: false, message };
     }
   },
-  
+
 };

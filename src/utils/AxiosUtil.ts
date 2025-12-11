@@ -23,6 +23,7 @@ type RequestParams = {
   data?: unknown;
   params?: Record<string, unknown>;
   responseType?: "json" | "blob" | "arraybuffer" | "text";
+  headers?: Record<string, string>;
 };
 
 // type ของ return
@@ -35,6 +36,9 @@ async function createRequest<T>(params: RequestParams): RequestReturn<T> {
     const axiosConfig = {
       params: params.params,
       responseType: params.responseType || "json",
+      headers: {
+        ...params.headers,
+      },
     };
     if (params.method === "GET") {
       response = await baseAxios.get<T>(params.url, axiosConfig);

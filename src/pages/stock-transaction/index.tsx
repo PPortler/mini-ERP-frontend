@@ -39,7 +39,6 @@ export default function StockTransactionsPage() {
     } = useLoadInitialData();
     const roleCurrent = getRoleCurrent();
     const authUser = useStore($authUser)
-
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState<string>();
 
@@ -52,7 +51,7 @@ export default function StockTransactionsPage() {
         loadingActions.show();
         const prepare = {
             ...item,
-            created_by: authUser?.user_id
+            created_by: authUser?.id
         };
         try {
             let res: StockServiceResult | undefined
